@@ -379,10 +379,6 @@ public class UIBuilder : MonoBehaviour
         btnRect.sizeDelta = new Vector2(480, 100);
         btnRect.anchoredPosition = position;
 
-        // Adicionar borda/outline ao botão
-        Image outlineImage = btnGO.AddComponent<Image>();
-        outlineImage.raycastTarget = false;
-
         // Texto do botão
         GameObject txtGO = new GameObject("Text");
         txtGO.transform.SetParent(btnGO.transform);
