@@ -1,8 +1,12 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+#if UNITY_EDITOR
+using UnityEditor;
+
 /// <summary>
 /// BrokenScriptFinder - Encontra e lista todos os GameObjects com scripts faltando
+/// Nota: Este script apenas funciona no Unity Editor
 /// </summary>
 public class BrokenScriptFinder : MonoBehaviour
 {
@@ -86,7 +90,13 @@ public class BrokenScriptFinder : MonoBehaviour
     
     private object elementAtIndex(SerializedProperty property)
     {
-        // Simples verificação
         return property.objectReferenceValue != null ? property.objectReferenceValue : null;
     }
 }
+
+#else
+
+// Stub para compilação em runtime (não funciona em runtime)
+public class BrokenScriptFinder : MonoBehaviour { }
+
+#endif
