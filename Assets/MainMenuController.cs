@@ -70,6 +70,7 @@ public class MainMenuController : MonoBehaviour
 
     private void Awake()
     {
+        Debug.Log("[MainMenu] Awake()");
         AutoAssignIfMissing();
         
         // Auto-atribuir Controllers se não forem atribuídos
@@ -85,31 +86,36 @@ public class MainMenuController : MonoBehaviour
         {
             dailyQuestsController = GetComponentInChildren<DailyQuestsScreenController>(true);
         }
+        
+        // INICIALIZAR COMO VISÍVEL DESDE ATÉ (será escondido se não estiver em menu)
+        isMainMenuVisible = true;
+        UpdatePanels();
     }
 
     private void OnEnable()
     {
         Debug.Log("[MainMenu] OnEnable() - Se inscrevendo em eventos...");
         
-        // Esperar que o GameManager esteja inicializado
-        if (GameManager.Instance == null)
-        {
-            Debug.LogWarning("[MainMenu] GameManager.Instance is NULL! Tentando novamente no próximo frame...");
-            // Invocar OnEnable novamente no próximo frame
-            Invoke(nameof(OnEnable), 0.1f);
-            return;
-        }
-
+        // SEMPRE se inscrever nos eventos
         GameManager.onMainMenuChanged += SetVisible;
         ScoreManager.onCoinsChanged += HandleCoinsChanged;
         UpgradeManager.onUpgradesChanged += RefreshUpgradeLabels;
         SkinManager.onSkinsChanged += RefreshUpgradeLabels;
         SettingsManager.onSettingsChanged += RefreshSettingsUI;
         
-        // AGORA que GameManager está pronto, inicializar visibilidade
-        bool shouldBeVisible = GameManager.Instance.IsInMainMenu;
-        Debug.Log($"[MainMenu] GameManager.Instance.IsInMainMenu = {shouldBeVisible}");
-        SetVisible(shouldBeVisible);
+        // FORÇAR INICIALIZAÇÃO - Assumir que estamos no menu mainInício
+        Debug.Log($"[MainMenu] GameManager.Instance = {GameManager.Instance}");
+        if (GameManager.Instance != null)
+        {
+            Debug.Log($"[MainMenu] IsInMainMenu = {GameManager.Instance.IsInMainMenu}");
+            SetVisible(GameManager.Instance.IsInMainMenu);
+        }
+        else
+        {
+            // Se GameManager não existe ainda, assumir menu visível
+            Debug.LogWarning("[MainMenu] GameManager não existe - Assumindo menu visível!");
+            SetVisible(true);
+        }
         
         RefreshUpgradeLabels();
         RefreshSettingsUI();
@@ -139,19 +145,11 @@ public class MainMenuController : MonoBehaviour
 
     public void OpenShop()
     {
-        Debug.Log($"[MainMenu] OpenShop() called - isMainMenuVisible={isMainMenuVisible}, shopPanelRoot={shopPanelRoot}");
-        
-        if (!isMainMenuVisible)
-        {
-            Debug.LogWarning("[MainMenu] OpenShop() failed - not in main menu visible state");
-            return;
-        }
-
+        Debug.Log($"[MainMenu] OpenShop() called");
         isShopOpen = true;
         isSettingsOpen = false;
         UpdatePanels();
         RefreshUpgradeLabels();
-        Debug.Log("[MainMenu] Shop opened successfully");
     }
 
     public void CloseShop()
@@ -162,11 +160,7 @@ public class MainMenuController : MonoBehaviour
 
     public void OpenSettings()
     {
-        if (!isMainMenuVisible)
-        {
-            return;
-        }
-
+        Debug.Log($"[MainMenu] OpenSettings() called");
         isSettingsOpen = true;
         isShopOpen = false;
         UpdatePanels();
@@ -181,11 +175,7 @@ public class MainMenuController : MonoBehaviour
 
     public void OpenLeaderboard()
     {
-        if (!isMainMenuVisible)
-        {
-            return;
-        }
-
+        Debug.Log($"[MainMenu] OpenLeaderboard() called");
         isSettingsOpen = false;
         isShopOpen = false;
         UpdatePanels();
@@ -208,11 +198,7 @@ public class MainMenuController : MonoBehaviour
 
     public void OpenDailyQuests()
     {
-        if (!isMainMenuVisible)
-        {
-            return;
-        }
-
+        Debug.Log($"[MainMenu] OpenDailyQuests() called");
         isSettingsOpen = false;
         isShopOpen = false;
         UpdatePanels();
@@ -743,7 +729,7 @@ public class MainMenuController : MonoBehaviour
         
         if (panelRoot != null)
         {
-            bool mainActive = isMainMenuVisible && !isShopOpen && !isSettingsOpen;
+            bool mainActive = !isShopOpen && !isSettingsOpen;
             panelRoot.SetActive(mainActive);
             Debug.Log($"  panelRoot -> {mainActive}");
         }
@@ -754,9 +740,8 @@ public class MainMenuController : MonoBehaviour
 
         if (shopPanelRoot != null)
         {
-            bool shopActive = isMainMenuVisible && isShopOpen;
-            shopPanelRoot.SetActive(shopActive);
-            Debug.Log($"  shopPanelRoot -> {shopActive}");
+            shopPanelRoot.SetActive(isShopOpen);
+            Debug.Log($"  shopPanelRoot -> {isShopOpen}");
         }
         else
         {
@@ -765,9 +750,8 @@ public class MainMenuController : MonoBehaviour
 
         if (settingsPanelRoot != null)
         {
-            bool settingsActive = isMainMenuVisible && isSettingsOpen;
-            settingsPanelRoot.SetActive(settingsActive);
-            Debug.Log($"  settingsPanelRoot -> {settingsActive}");
+            settingsPanelRoot.SetActive(isSettingsOpen);
+            Debug.Log($"  settingsPanelRoot -> {isSettingsOpen}");
         }
         else
         {
