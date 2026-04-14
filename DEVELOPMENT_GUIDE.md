@@ -44,7 +44,7 @@ Scene Root
         ├── CoinPickupSpawner
         ├── AudioManager
         ├── UpgradeManager
-        ├── SkinManager
+        ├── SkinManager (DEBUG ONLY - skins removidas da loja em v1.1)
         ├── SettingsManager
         └── UIBootstrapper
 ├── CanvasHUD
@@ -123,7 +123,8 @@ Scene Root
 - Survival time: Segundos em sessão
 
 **Salvamento:**
-- PlayerPrefs keys: `Highscore`, `Coins`, `Upgrade_*`, `Skin_*`
+- PlayerPrefs keys: `Highscore`, `Coins`, `Upgrade_*`
+- Nota: Chaves `Skin_*` são legado (skins removidas da loja em v1.1, apenas debug)
 
 ### 3.5 UpgradeManager (Progressão Econômica)
 

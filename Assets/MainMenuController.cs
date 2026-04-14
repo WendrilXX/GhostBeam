@@ -33,6 +33,11 @@ public class MainMenuController : MonoBehaviour
     public Button lunaSkinButton;
     public Button flashSkinButton;
     public Slider masterVolumeSlider;
+    
+    // Novos Controllers
+    public ShopScreenController shopController;
+    public LeaderboardScreenController leaderboardController;
+    public DailyQuestsScreenController dailyQuestsController;
 
     private const string PanelObjectName = "PanelMenu";
     private const string ShopPanelObjectName = "PanelLoja";
@@ -66,6 +71,20 @@ public class MainMenuController : MonoBehaviour
     private void Awake()
     {
         AutoAssignIfMissing();
+        
+        // Auto-atribuir Controllers se não forem atribuídos
+        if (shopController == null)
+        {
+            shopController = GetComponentInChildren<ShopScreenController>(true);
+        }
+        if (leaderboardController == null)
+        {
+            leaderboardController = GetComponentInChildren<LeaderboardScreenController>(true);
+        }
+        if (dailyQuestsController == null)
+        {
+            dailyQuestsController = GetComponentInChildren<DailyQuestsScreenController>(true);
+        }
     }
 
     private void OnEnable()
@@ -138,6 +157,54 @@ public class MainMenuController : MonoBehaviour
     {
         isSettingsOpen = false;
         UpdatePanels();
+    }
+
+    public void OpenLeaderboard()
+    {
+        if (!isMainMenuVisible)
+        {
+            return;
+        }
+
+        isSettingsOpen = false;
+        isShopOpen = false;
+
+        if (leaderboardController != null)
+        {
+            leaderboardController.SetVisible(true);
+        }
+    }
+
+    public void CloseLeaderboard()
+    {
+        if (leaderboardController != null)
+        {
+            leaderboardController.SetVisible(false);
+        }
+    }
+
+    public void OpenDailyQuests()
+    {
+        if (!isMainMenuVisible)
+        {
+            return;
+        }
+
+        isSettingsOpen = false;
+        isShopOpen = false;
+
+        if (dailyQuestsController != null)
+        {
+            dailyQuestsController.SetVisible(true);
+        }
+    }
+
+    public void CloseDailyQuests()
+    {
+        if (dailyQuestsController != null)
+        {
+            dailyQuestsController.SetVisible(false);
+        }
     }
 
     public void SetMasterVolume(float value)
