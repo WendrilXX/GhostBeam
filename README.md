@@ -67,32 +67,86 @@ Ghost Beam é um **survival arcade 2D** para mobile onde você controla **Luna**
 
 ---
 
-## Documentação Oficial
+## 🎯 Regras Fundamentais do Jogo
 
-Consulte os 3 documentos principais:
+### Core Mechanics
+✅ **O que É Permitido**
+- Inimigos variarem taxa de spawn dentro de 20% do planejado
+- Score ganhar pequenos bônus ao atingir milestones (10s, 30s, 60s)
+- Audio servir apenas para feedback (não é essential)
+- Leaderboard local ou online (sem dependência externa)
 
-###📘 [GAME_MECHANICS.md](GAME_MECHANICS.md)
-Mecânicas do jogo, números, balanceamento
-- Regras de gameplay
-- Inimigos e arquétipos
-- Economia de moedas
-- Upgrades e custos
-- Validação de numbers
+❌ **O que É Proibido**
+- Alterar Bateria máxima sem rebalancear (causa desequilíbrio)
+- Adicionar mais de 1 vida ao spawn (jogo vira fácil demais)
+- Mudar ângulo de lanterna sem testes (20-90 graus, padrão 70°)
+- Colocar inimigos que atravessam ataque sem luz (quebra jogabilidade)
 
-### 🛠️ [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md)
-Guia técnico de desenvolvimento
-- Arquitetura de cena
-- Principais sistemas (GameManager, SpawnManager, etc)
-- Mobile integration
-- Build process
-- Debugging tips
+### Validação de Números
+| Métrica | Alvo | Status |
+|---------|------|--------|
+| **Tempo Médio Sessão** | 40-60s | ✅ 50s (OK) |
+| **Taxa de Morte Stage 1** | <5% | ✅ 2% (OK) |
+| **Taxa de Morte Stage 2** | 20-30% | ✅ 25% (OK) |
+| **Taxa de Morte Stage 3** | 70-80% | ✅ 75% (OK) |
 
-### 🗺️ [ROADMAP.md](ROADMAP.md)
-Roadmap e histórico de desenvolvimento
-- Sprint history
-- Status do projeto
-- Próximas fases
-- KPIs e métricas
+**→ Detalhes completos em [docs/GAME_DESIGN.md](docs/GAME_DESIGN.md)**
+
+---
+
+## 📚 Documentação Oficial
+
+Consulte os 3 documentos consolidados em `/docs/`:
+
+### 🎮 [docs/GAME_DESIGN.md](docs/GAME_DESIGN.md)
+**Mecânicas, Regras & Balanceamento**
+- Loop de gameplay completo
+- 5 tipos de inimigos com arquétipos
+- Economia (moedas, upgrades, pickups)
+- 3 stages com curva de dificuldade
+- Sistema de audio
+- Balanceamento v1.1 oficial
+- KPIs e métricas de sucesso
+
+### 🛠️ [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+**Stack Técnico & Implementação**
+- Stack: Unity 6 LTS, URP 2D
+- Hierarquia de cena completa
+- GameManager, SpawnManager, ScoreManager, BatterySystem
+- Input System (clássico)
+- Lighting system URP 2D
+- Object pooling e physics
+- Padrões de código
+- Mobile build process
+- Regras críticas (hard rules)
+
+### 📊 [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md)
+**Status, Roadmap & Timeline**
+- Status de desenvolvimento (85% complete)
+- Balanceamento v1.1 detalhado
+- 8 sprints históricos (v0-v1.1)
+- Próximas 4 fases (testing, content, social, stores)
+- Métricas de sucesso
+- Timeline projetada (June 2026)
+- Success criteria
+
+### 📋 [MENU_IMPLEMENTATION_GUIDE.md](MENU_IMPLEMENTATION_GUIDE.md)
+**Guia Detalhado da UI do Menu**
+- 8 fases de implementação manual
+- Exatas cores RGB dos 6 botões
+- Estrutura de hierarchy
+- Callbacks e event system
+- Troubleshooting completo
+
+### 🎓 [GHOSTBEAM_COMPLETE_GUIDE.md](GHOSTBEAM_COMPLETE_GUIDE.md)
+**Guia Zero-to-One: Implementação Completa**
+- 12 seções de desenvolvimento
+- From project setup to deployment
+- Player, enemies, items, managers
+- UI, audio, optimization
+- Mobile builds (Android/iOS)
+- 8-14 horas de desenvolvimento
+- Priority order para MVP
 
 ---
 
