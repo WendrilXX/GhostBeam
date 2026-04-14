@@ -51,7 +51,12 @@ public class ShopScreenController : MonoBehaviour
     {
         if (closeButton != null)
         {
-            closeButton.onClick.AddListener(() => SetVisible(false));
+            closeButton.onClick.RemoveAllListeners();
+            closeButton.onClick.AddListener(() =>
+            {
+                MainMenuController menu = FindObjectOfType<MainMenuController>();
+                if (menu != null) menu.CloseShop();
+            });
         }
 
         if (buyButtons != null && buyButtons.Length > 0)
@@ -59,6 +64,7 @@ public class ShopScreenController : MonoBehaviour
             for (int i = 0; i < buyButtons.Length; i++)
             {
                 int index = i;
+                buyButtons[i].onClick.RemoveAllListeners();
                 buyButtons[i].onClick.AddListener(() => HandleBuy(index));
             }
         }

@@ -53,7 +53,12 @@ public class DailyQuestsScreenController : MonoBehaviour
 
                 if (closeButton != null)
                 {
-                    closeButton.onClick.AddListener(() => SetVisible(false));
+                    closeButton.onClick.RemoveAllListeners();
+                    closeButton.onClick.AddListener(() =>
+                    {
+                        MainMenuController menu = FindObjectOfType<MainMenuController>();
+                        if (menu != null) menu.CloseDailyQuests();
+                    });
                 }
             }
         }

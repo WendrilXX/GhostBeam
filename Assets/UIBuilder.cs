@@ -52,34 +52,101 @@ public class UIBuilder : MonoBehaviour
 
         canvasGO.AddComponent<GraphicRaycaster>();
 
-        // Background
+        // Background com gradiente
         Image bgImage = canvasGO.AddComponent<Image>();
-        bgImage.color = new Color(0.1f, 0.1f, 0.15f, 1f);
+        bgImage.color = new Color(0.08f, 0.08f, 0.12f, 1f);
 
-        // Título
-        CreateTitle(canvasGO.transform, "GHOST BEAM", new Vector2(0, 300));
+        // SafeArea para notch
+        SafeAreaFitter safeArea = canvasGO.AddComponent<SafeAreaFitter>();
+        
+        // Título com styling
+        CreateTitle(canvasGO.transform, "GHOST BEAM", new Vector2(0, 350));
 
-        // Botões
-        CreateMainMenuButton(canvasGO.transform, "Play", new Vector2(0, 140), Color.green);
-        CreateMainMenuButton(canvasGO.transform, "Loja", new Vector2(-250, 20), new Color(1, 0.6f, 0.2f, 1));
-        CreateMainMenuButton(canvasGO.transform, "Ranking", new Vector2(0, 20), Color.cyan);
-        CreateMainMenuButton(canvasGO.transform, "Desafios", new Vector2(250, 20), new Color(0.8f, 0.2f, 1, 1));
-        CreateMainMenuButton(canvasGO.transform, "Configurações", new Vector2(0, -100), Color.yellow);
+        // Botão JOGAR (destaque verde)
+        Button playBtn = CreateMainMenuButton(canvasGO.transform, "Play", new Vector2(0, 200), new Color(0.2f, 1f, 0.2f, 1), 120);
+        if (playBtn != null)
+        {
+            playBtn.onClick.AddListener(() =>
+            {
+                if (GameManager.Instance != null)
+                    GameManager.Instance.StartGameplayFromMenu();
+            });
+        }
 
-        // Melhor Score
+        // Layout para 3 botões em linha
+        // LOJA (Laranja)
+        Button shopBtn = CreateMainMenuButton(canvasGO.transform, "LOJA", new Vector2(-270, 50), new Color(1f, 0.65f, 0.2f, 1), 90);
+        if (shopBtn != null)
+        {
+            shopBtn.onClick.AddListener(() =>
+            {
+                MainMenuController menu = FindObjectOfType<MainMenuController>();
+                if (menu != null) menu.OpenShop();
+            });
+        }
+
+        // RANKING (Ciano)
+        Button rankBtn = CreateMainMenuButton(canvasGO.transform, "RANKING", new Vector2(0, 50), new Color(0.2f, 1f, 1f, 1), 90);
+        if (rankBtn != null)
+        {
+            rankBtn.onClick.AddListener(() =>
+            {
+                MainMenuController menu = FindObjectOfType<MainMenuController>();
+                if (menu != null) menu.OpenLeaderboard();
+            });
+        }
+
+        // DESAFIOS (Magenta)
+        Button questsBtn = CreateMainMenuButton(canvasGO.transform, "DESAFIOS", new Vector2(270, 50), new Color(1f, 0.2f, 1f, 1), 90);
+        if (questsBtn != null)
+        {
+            questsBtn.onClick.AddListener(() =>
+            {
+                MainMenuController menu = FindObjectOfType<MainMenuController>();
+                if (menu != null) menu.OpenDailyQuests();
+            });
+        }
+
+        // CONFIGURAÇÕES (Amarelo)
+        Button settingsBtn = CreateMainMenuButton(canvasGO.transform, "CONFIG", new Vector2(0, -80), new Color(1f, 1f, 0.2f, 1), 90);
+        if (settingsBtn != null)
+        {
+            settingsBtn.onClick.AddListener(() =>
+            {
+                MainMenuController menu = FindObjectOfType<MainMenuController>();
+                if (menu != null) menu.OpenSettings();
+            });
+        }
+
+        // SAIR (Vermelho)
+        Button quitBtn = CreateMainMenuButton(canvasGO.transform, "SAIR", new Vector2(0, -150), new Color(1f, 0.3f, 0.3f, 1), 80);
+        if (quitBtn != null)
+        {
+            quitBtn.onClick.AddListener(() =>
+            {
+                #if UNITY_EDITOR
+                    UnityEditor.EditorApplication.isPlaying = false;
+                #else
+                    Application.Quit();
+                #endif
+            });
+        }
+
+        // Melhor Score (em baixo)
         GameObject bestScoreGO = new GameObject("BestScore");
         bestScoreGO.transform.SetParent(canvasGO.transform);
         TextMeshProUGUI bestScoreTM = bestScoreGO.AddComponent<TextMeshProUGUI>();
         bestScoreTM.text = "MELHOR: 0";
-        bestScoreTM.fontSize = 40;
+        bestScoreTM.fontSize = 48;
+        bestScoreTM.fontStyle = FontStyles.Bold;
         bestScoreTM.alignment = TextAlignmentOptions.Bottom;
-        bestScoreTM.color = new Color(1, 0.8f, 0, 1);
+        bestScoreTM.color = new Color(1f, 0.84f, 0, 1);
 
         RectTransform bestScoreRect = bestScoreGO.GetComponent<RectTransform>();
         bestScoreRect.anchorMin = new Vector2(0.5f, 0);
         bestScoreRect.anchorMax = new Vector2(0.5f, 0);
-        bestScoreRect.sizeDelta = new Vector2(600, 100);
-        bestScoreRect.anchoredPosition = new Vector2(0, 50);
+        bestScoreRect.sizeDelta = new Vector2(900, 120);
+        bestScoreRect.anchoredPosition = new Vector2(0, 40);
     }
 
     private void BuildGameplayHUD()
@@ -180,7 +247,7 @@ public class UIBuilder : MonoBehaviour
         GameObject panelGO = new GameObject("Panel");
         panelGO.transform.SetParent(canvasGO.transform);
         Image panelImage = panelGO.AddComponent<Image>();
-        panelImage.color = new Color(0, 0, 0, 0.9f);
+        panelImage.color = new Color(0, 0, 0, 0.95f);
 
         RectTransform panelRect = panelGO.GetComponent<RectTransform>();
         panelRect.anchorMin = Vector2.zero;
@@ -189,10 +256,10 @@ public class UIBuilder : MonoBehaviour
         panelRect.offsetMax = Vector2.zero;
 
         // Título
-        CreateGameOverText(panelGO.transform, "Title", "CONFIGURAÇÕES", new Vector2(0, 250), 50, Color.white);
+        CreateGameOverText(panelGO.transform, "Title", "CONFIGURAÇÕES", new Vector2(0, 250), 50, Color.yellow);
 
         // Volume label
-        CreateGameOverText(panelGO.transform, "VolumeLabel", "Volume", new Vector2(-200, 100), 36, Color.white);
+        CreateGameOverText(panelGO.transform, "VolumeLabel", "VOLUME", new Vector2(-200, 100), 36, Color.white);
 
         // Volume slider (placeholder)
         GameObject volumeSliderGO = new GameObject("VolumeSlider");
@@ -207,7 +274,7 @@ public class UIBuilder : MonoBehaviour
         volumeSliderRect.anchoredPosition = new Vector2(0, 100);
 
         // Vibração toggle
-        CreateGameOverText(panelGO.transform, "VibraLabel", "Vibração", new Vector2(-200, -50), 36, Color.white);
+        CreateGameOverText(panelGO.transform, "VibraLabel", "VIBRAÇÃO", new Vector2(-200, -50), 36, Color.white);
 
         GameObject vibraToggleGO = new GameObject("VibraToggle");
         vibraToggleGO.transform.SetParent(panelGO.transform);
@@ -220,7 +287,12 @@ public class UIBuilder : MonoBehaviour
         vibraToggleRect.anchoredPosition = new Vector2(150, -50);
 
         // Botão Voltar
-        CreateGameOverButton(panelGO.transform, "BtnBack", "VOLTAR", new Vector2(0, -200), Color.red);
+        Button backBtn = CreateGameOverButton(panelGO.transform, "BtnBack", "VOLTAR", new Vector2(0, -200), Color.red);
+        backBtn.onClick.AddListener(() =>
+        {
+            MainMenuController menu = FindObjectOfType<MainMenuController>();
+            if (menu != null) menu.CloseSettings();
+        });
 
         canvasGO.SetActive(false);
     }
@@ -270,18 +342,19 @@ public class UIBuilder : MonoBehaviour
 
         TextMeshProUGUI tmp = go.AddComponent<TextMeshProUGUI>();
         tmp.text = text;
-        tmp.fontSize = 80;
+        tmp.fontSize = 90;
+        tmp.fontStyle = FontStyles.Bold;
         tmp.alignment = TextAlignmentOptions.Center;
-        tmp.color = new Color(0, 1, 1, 1);
+        tmp.color = new Color(0.2f, 1f, 1f, 1);
 
         RectTransform rect = go.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = new Vector2(900, 200);
+        rect.sizeDelta = new Vector2(1000, 200);
         rect.anchoredPosition = position;
     }
 
-    private void CreateMainMenuButton(Transform parent, string label, Vector2 position, Color color)
+    private Button CreateMainMenuButton(Transform parent, string label, Vector2 position, Color color, int fontSize = 80)
     {
         GameObject btnGO = new GameObject($"Btn{label}");
         btnGO.transform.SetParent(parent);
@@ -292,27 +365,42 @@ public class UIBuilder : MonoBehaviour
         Button btn = btnGO.AddComponent<Button>();
         btn.targetGraphic = btnImage;
 
+        // Adicionar ColorTransition para feedback visual
+        ColorBlock colors = btn.colors;
+        colors.normalColor = color;
+        colors.highlightedColor = new Color(color.r * 1.3f, color.g * 1.3f, color.b * 1.3f, 1f);
+        colors.pressedColor = new Color(color.r * 0.7f, color.g * 0.7f, color.b * 0.7f, 1f);
+        colors.disabledColor = new Color(0.7f, 0.7f, 0.7f, 0.5f);
+        btn.colors = colors;
+
         RectTransform btnRect = btnGO.GetComponent<RectTransform>();
         btnRect.anchorMin = new Vector2(0.5f, 0.5f);
         btnRect.anchorMax = new Vector2(0.5f, 0.5f);
-        btnRect.sizeDelta = new Vector2(400, 80);
+        btnRect.sizeDelta = new Vector2(480, 100);
         btnRect.anchoredPosition = position;
+
+        // Adicionar borda/outline ao botão
+        Image outlineImage = btnGO.AddComponent<Image>();
+        outlineImage.raycastTarget = false;
 
         // Texto do botão
         GameObject txtGO = new GameObject("Text");
         txtGO.transform.SetParent(btnGO.transform);
 
         TextMeshProUGUI txt = txtGO.AddComponent<TextMeshProUGUI>();
-        txt.text = label.ToUpper();
-        txt.fontSize = 40;
+        txt.text = label;
+        txt.fontSize = fontSize;
+        txt.fontStyle = FontStyles.Bold;
         txt.alignment = TextAlignmentOptions.Center;
-        txt.color = Color.black;
+        txt.color = Color.white;
 
         RectTransform txtRect = txtGO.GetComponent<RectTransform>();
         txtRect.anchorMin = Vector2.zero;
         txtRect.anchorMax = Vector2.one;
         txtRect.offsetMin = Vector2.zero;
         txtRect.offsetMax = Vector2.zero;
+
+        return btn;
     }
 
     private void CreateHUDText(Transform parent, string name, Vector2 position, TextAnchor alignment, string text, int fontSize, Color color)
@@ -374,7 +462,7 @@ public class UIBuilder : MonoBehaviour
         shopController.shopPanelRoot = panelGO;
 
         Image panelImage = panelGO.AddComponent<Image>();
-        panelImage.color = new Color(0, 0, 0, 0.9f);
+        panelImage.color = new Color(0, 0, 0, 0.95f);
 
         RectTransform panelRect = panelGO.GetComponent<RectTransform>();
         panelRect.anchorMin = Vector2.zero;
@@ -383,7 +471,7 @@ public class UIBuilder : MonoBehaviour
         panelRect.offsetMax = Vector2.zero;
 
         // Título
-        CreateGameOverText(panelGO.transform, "Title", "LOJA", new Vector2(0, 250), 50, new Color(1, 0.6f, 0.2f, 1));
+        CreateGameOverText(panelGO.transform, "Title", "LOJA", new Vector2(0, 250), 50, new Color(1f, 0.65f, 0.2f, 1));
 
         // Moedas
         GameObject coinsGO = new GameObject("CoinsDisplay");
@@ -391,8 +479,9 @@ public class UIBuilder : MonoBehaviour
         TextMeshProUGUI coinsTM = coinsGO.AddComponent<TextMeshProUGUI>();
         coinsTM.text = "MOEDAS: 0";
         coinsTM.fontSize = 36;
+        coinsTM.fontStyle = FontStyles.Bold;
         coinsTM.alignment = TextAlignmentOptions.Center;
-        coinsTM.color = new Color(1, 0.84f, 0, 1);
+        coinsTM.color = new Color(1f, 0.84f, 0, 1);
         shopController.shopCoinsText = coinsTM;
 
         RectTransform coinsRect = coinsGO.GetComponent<RectTransform>();
@@ -401,17 +490,25 @@ public class UIBuilder : MonoBehaviour
         coinsRect.sizeDelta = new Vector2(600, 100);
         coinsRect.anchoredPosition = new Vector2(0, 180);
 
-        // Items da loja (3 botões)
+        // Items da loja (3 botões) + guardar referências
         Color[] itemColors = { new Color(0, 0.8f, 1, 1), new Color(1, 0.6f, 0, 1), new Color(0.6f, 0.2f, 1, 1) };
         string[] itemNames = { "Item 1\n100 coins", "Item 2\n150 coins", "Item 3\n200 coins" };
 
+        Button[] shopButtons = new Button[3];
         for (int i = 0; i < 3; i++)
         {
-            CreateGameOverButton(panelGO.transform, $"BtnItem{i}", itemNames[i], new Vector2((i - 1) * 250, 50), itemColors[i]);
+            shopButtons[i] = CreateGameOverButton(panelGO.transform, $"BtnItem{i}", itemNames[i], new Vector2((i - 1) * 250, 50), itemColors[i]);
         }
+        shopController.buyButtons = shopButtons;
 
         // Botão Voltar
-        CreateGameOverButton(panelGO.transform, "BtnClose", "VOLTAR", new Vector2(0, -200), Color.red);
+        Button closeBtn = CreateGameOverButton(panelGO.transform, "BtnClose", "VOLTAR", new Vector2(0, -200), Color.red);
+        closeBtn.onClick.AddListener(() =>
+        {
+            MainMenuController menu = FindObjectOfType<MainMenuController>();
+            if (menu != null) menu.CloseShop();
+        });
+        shopController.closeButton = closeBtn;
 
         canvasGO.SetActive(false);
     }
@@ -434,7 +531,7 @@ public class UIBuilder : MonoBehaviour
         leaderboardController.leaderboardPanelRoot = panelGO;
 
         Image panelImage = panelGO.AddComponent<Image>();
-        panelImage.color = new Color(0, 0, 0, 0.9f);
+        panelImage.color = new Color(0, 0, 0, 0.95f);
 
         RectTransform panelRect = panelGO.GetComponent<RectTransform>();
         panelRect.anchorMin = Vector2.zero;
@@ -443,7 +540,7 @@ public class UIBuilder : MonoBehaviour
         panelRect.offsetMax = Vector2.zero;
 
         // Título
-        CreateGameOverText(panelGO.transform, "Title", "RANKING", new Vector2(0, 250), 50, Color.cyan);
+        CreateGameOverText(panelGO.transform, "Title", "RANKING", new Vector2(0, 250), 50, new Color(0.2f, 1f, 1f, 1));
 
         // Rank do jogador
         GameObject rankGO = new GameObject("PlayerRank");
@@ -451,8 +548,9 @@ public class UIBuilder : MonoBehaviour
         TextMeshProUGUI rankTM = rankGO.AddComponent<TextMeshProUGUI>();
         rankTM.text = "SEU RANK: #1";
         rankTM.fontSize = 32;
+        rankTM.fontStyle = FontStyles.Bold;
         rankTM.alignment = TextAlignmentOptions.Center;
-        rankTM.color = new Color(1, 0.84f, 0, 1);
+        rankTM.color = new Color(1f, 0.84f, 0, 1);
         leaderboardController.playerRankText = rankTM;
 
         RectTransform rankRect = rankGO.GetComponent<RectTransform>();
@@ -478,6 +576,11 @@ public class UIBuilder : MonoBehaviour
 
         // Botão Voltar
         Button closeBtn = CreateGameOverButton(panelGO.transform, "BtnClose", "VOLTAR", new Vector2(0, -200), Color.red);
+        closeBtn.onClick.AddListener(() =>
+        {
+            MainMenuController menu = FindObjectOfType<MainMenuController>();
+            if (menu != null) menu.CloseLeaderboard();
+        });
         leaderboardController.closeButton = closeBtn;
 
         canvasGO.SetActive(false);
@@ -501,7 +604,7 @@ public class UIBuilder : MonoBehaviour
         questsController.questsPanelRoot = panelGO;
 
         Image panelImage = panelGO.AddComponent<Image>();
-        panelImage.color = new Color(0, 0, 0, 0.9f);
+        panelImage.color = new Color(0, 0, 0, 0.95f);
 
         RectTransform panelRect = panelGO.GetComponent<RectTransform>();
         panelRect.anchorMin = Vector2.zero;
@@ -510,7 +613,7 @@ public class UIBuilder : MonoBehaviour
         panelRect.offsetMax = Vector2.zero;
 
         // Título
-        CreateGameOverText(panelGO.transform, "Title", "DESAFIOS DIÁRIOS", new Vector2(0, 250), 50, new Color(0.8f, 0.2f, 1, 1));
+        CreateGameOverText(panelGO.transform, "Title", "DESAFIOS", new Vector2(0, 250), 50, new Color(1f, 0.2f, 1f, 1));
 
         // Reset time
         GameObject timeGO = new GameObject("ResetTime");
@@ -518,6 +621,7 @@ public class UIBuilder : MonoBehaviour
         TextMeshProUGUI timeTM = timeGO.AddComponent<TextMeshProUGUI>();
         timeTM.text = "RESET: 23:45";
         timeTM.fontSize = 28;
+        timeTM.fontStyle = FontStyles.Bold;
         timeTM.alignment = TextAlignmentOptions.Center;
         timeTM.color = new Color(0.7f, 0.7f, 0.7f, 1);
         questsController.resetTimeText = timeTM;
@@ -545,6 +649,11 @@ public class UIBuilder : MonoBehaviour
 
         // Botão Voltar
         Button closeBtn = CreateGameOverButton(panelGO.transform, "BtnClose", "VOLTAR", new Vector2(0, -200), Color.red);
+        closeBtn.onClick.AddListener(() =>
+        {
+            MainMenuController menu = FindObjectOfType<MainMenuController>();
+            if (menu != null) menu.CloseDailyQuests();
+        });
         questsController.closeButton = closeBtn;
 
         canvasGO.SetActive(false);
@@ -561,6 +670,14 @@ public class UIBuilder : MonoBehaviour
         Button btn = btnGO.AddComponent<Button>();
         btn.targetGraphic = btnImage;
 
+        // Adicionar ColorTransition para feedback visual
+        ColorBlock colors = btn.colors;
+        colors.normalColor = color;
+        colors.highlightedColor = new Color(color.r * 1.3f, color.g * 1.3f, color.b * 1.3f, 1f);
+        colors.pressedColor = new Color(color.r * 0.7f, color.g * 0.7f, color.b * 0.7f, 1f);
+        colors.disabledColor = new Color(0.7f, 0.7f, 0.7f, 0.5f);
+        btn.colors = colors;
+
         RectTransform btnRect = btnGO.GetComponent<RectTransform>();
         btnRect.anchorMin = new Vector2(0.5f, 0.5f);
         btnRect.anchorMax = new Vector2(0.5f, 0.5f);
@@ -574,6 +691,7 @@ public class UIBuilder : MonoBehaviour
         TextMeshProUGUI txt = txtGO.AddComponent<TextMeshProUGUI>();
         txt.text = label;
         txt.fontSize = 32;
+        txt.fontStyle = FontStyles.Bold;
         txt.alignment = TextAlignmentOptions.Center;
         txt.color = Color.white;
 
