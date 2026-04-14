@@ -80,7 +80,7 @@ public class UIBuilder : MonoBehaviour
         {
             shopBtn.onClick.AddListener(() =>
             {
-                MainMenuController menu = FindObjectOfType<MainMenuController>();
+                MainMenuController menu = FindAnyObjectByType<MainMenuController>();
                 if (menu != null) menu.OpenShop();
             });
         }
@@ -91,7 +91,7 @@ public class UIBuilder : MonoBehaviour
         {
             rankBtn.onClick.AddListener(() =>
             {
-                MainMenuController menu = FindObjectOfType<MainMenuController>();
+                MainMenuController menu = FindAnyObjectByType<MainMenuController>();
                 if (menu != null) menu.OpenLeaderboard();
             });
         }
@@ -102,7 +102,7 @@ public class UIBuilder : MonoBehaviour
         {
             questsBtn.onClick.AddListener(() =>
             {
-                MainMenuController menu = FindObjectOfType<MainMenuController>();
+                MainMenuController menu = FindAnyObjectByType<MainMenuController>();
                 if (menu != null) menu.OpenDailyQuests();
             });
         }
@@ -113,7 +113,7 @@ public class UIBuilder : MonoBehaviour
         {
             settingsBtn.onClick.AddListener(() =>
             {
-                MainMenuController menu = FindObjectOfType<MainMenuController>();
+                MainMenuController menu = FindAnyObjectByType<MainMenuController>();
                 if (menu != null) menu.OpenSettings();
             });
         }
@@ -290,7 +290,7 @@ public class UIBuilder : MonoBehaviour
         Button backBtn = CreateGameOverButton(panelGO.transform, "BtnBack", "VOLTAR", new Vector2(0, -200), Color.red);
         backBtn.onClick.AddListener(() =>
         {
-            MainMenuController menu = FindObjectOfType<MainMenuController>();
+            MainMenuController menu = FindAnyObjectByType<MainMenuController>();
             if (menu != null) menu.CloseSettings();
         });
 
@@ -501,7 +501,7 @@ public class UIBuilder : MonoBehaviour
         Button closeBtn = CreateGameOverButton(panelGO.transform, "BtnClose", "VOLTAR", new Vector2(0, -200), Color.red);
         closeBtn.onClick.AddListener(() =>
         {
-            MainMenuController menu = FindObjectOfType<MainMenuController>();
+            MainMenuController menu = FindAnyObjectByType<MainMenuController>();
             if (menu != null) menu.CloseShop();
         });
         shopController.closeButton = closeBtn;
@@ -574,7 +574,7 @@ public class UIBuilder : MonoBehaviour
         Button closeBtn = CreateGameOverButton(panelGO.transform, "BtnClose", "VOLTAR", new Vector2(0, -200), Color.red);
         closeBtn.onClick.AddListener(() =>
         {
-            MainMenuController menu = FindObjectOfType<MainMenuController>();
+            MainMenuController menu = FindAnyObjectByType<MainMenuController>();
             if (menu != null) menu.CloseLeaderboard();
         });
         leaderboardController.closeButton = closeBtn;
@@ -647,7 +647,7 @@ public class UIBuilder : MonoBehaviour
         Button closeBtn = CreateGameOverButton(panelGO.transform, "BtnClose", "VOLTAR", new Vector2(0, -200), Color.red);
         closeBtn.onClick.AddListener(() =>
         {
-            MainMenuController menu = FindObjectOfType<MainMenuController>();
+            MainMenuController menu = FindAnyObjectByType<MainMenuController>();
             if (menu != null) menu.CloseDailyQuests();
         });
         questsController.closeButton = closeBtn;

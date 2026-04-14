@@ -16,7 +16,7 @@ public class BrokenScriptFinder : MonoBehaviour
         List<GameObject> brokenObjects = new List<GameObject>();
         
         // Procurar em toda a cena
-        foreach (GameObject go in FindObjectsOfType<GameObject>())
+        foreach (GameObject go in FindObjectsByType<GameObject>(FindObjectsSortMode.None))
         {
             SerializedObject so = new SerializedObject(go);
             SerializedProperty sp = so.FindProperty("m_Component");
@@ -58,7 +58,7 @@ public class BrokenScriptFinder : MonoBehaviour
         List<GameObject> brokenObjects = new List<GameObject>();
         int cleared = 0;
         
-        foreach (GameObject go in FindObjectsOfType<GameObject>())
+        foreach (GameObject go in FindObjectsByType<GameObject>(FindObjectsSortMode.None))
         {
             Component[] components = go.GetComponents<Component>();
             for (int i = components.Length - 1; i >= 0; i--)

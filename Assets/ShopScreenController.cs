@@ -54,7 +54,7 @@ public class ShopScreenController : MonoBehaviour
             closeButton.onClick.RemoveAllListeners();
             closeButton.onClick.AddListener(() =>
             {
-                MainMenuController menu = FindObjectOfType<MainMenuController>();
+                MainMenuController menu = FindAnyObjectByType<MainMenuController>();
                 if (menu != null) menu.CloseShop();
             });
         }
