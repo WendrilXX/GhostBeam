@@ -330,6 +330,12 @@ public class MainMenuController : MonoBehaviour
         UpdatePanels();
     }
 
+    // Public proxy para SetVisible (usado por UIInitializer e outros)
+    public void SetMenuVisible(bool visible)
+    {
+        SetVisible(visible);
+    }
+
     private void AutoAssignIfMissing()
     {
         if (panelRoot == null)
