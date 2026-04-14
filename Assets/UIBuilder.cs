@@ -15,6 +15,13 @@ public class UIBuilder : MonoBehaviour
 
     private void BuildCompleteUI()
     {
+        Debug.Log($"[UIBuilder] BuildCompleteUI() iniciado");
+        Debug.Log($"[UIBuilder] GameManager.Instance = {GameManager.Instance}");
+        if (GameManager.Instance != null)
+        {
+            Debug.Log($"[UIBuilder] GameManager.Instance.IsInMainMenu = {GameManager.Instance.IsInMainMenu}");
+        }
+
         // Main Menu
         BuildMainMenuCanvas();
 
@@ -54,6 +61,29 @@ public class UIBuilder : MonoBehaviour
             Debug.Log("✅ MainMenuController criado dinamicamente");
         }
 
+        Debug.Log($"[UIBuilder] AssignControllers - Procurando ShopScreenController...");
+        ShopScreenController shopCtrl = FindAnyObjectByType<ShopScreenController>();
+        if (shopCtrl != null)
+        {
+            Debug.Log($"[UIBuilder] ShopScreenController encontrado: {shopCtrl.gameObject.name}");
+            Debug.Log($"[UIBuilder] shopCtrl.shopPanelRoot = {shopCtrl.shopPanelRoot}");
+            
+            if (shopCtrl.shopPanelRoot != null)
+            {
+                mainMenu.shopController = shopCtrl;
+                mainMenu.shopPanelRoot = shopCtrl.shopPanelRoot;
+                Debug.Log($"✅ ShopScreenController atribuído com painelRoot: {shopCtrl.shopPanelRoot.name}");
+            }
+            else
+            {
+                Debug.LogWarning($"❌ ShopScreenController encontrado MAS shopPanelRoot é NULL!");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"❌ ShopScreenController NÃO foi encontrado!");
+        }
+
         // Atribuir Panel Raiz do Menu Principal - PROCURAR ESPECIFICAMENTE PELO CANVAS DO MENU
         Canvas[] allCanvases = FindObjectsByType<Canvas>(FindObjectsInactive.Include);
         Canvas mainMenuCanvas = System.Array.Find(allCanvases, c => c.gameObject.name == "CanvasMainMenu");
@@ -74,15 +104,6 @@ public class UIBuilder : MonoBehaviour
         else
         {
             Debug.LogWarning("❌ CanvasMainMenu não encontrado!");
-        }
-
-        // Atribuir Shop Panel Root e Controller
-        ShopScreenController shopCtrl = FindAnyObjectByType<ShopScreenController>();
-        if (shopCtrl != null && shopCtrl.shopPanelRoot != null)
-        {
-            mainMenu.shopController = shopCtrl;
-            mainMenu.shopPanelRoot = shopCtrl.shopPanelRoot;
-            Debug.Log("✅ ShopScreenController atribuído");
         }
 
         // Atribuir Settings Panel Root (procurar por canvas e painel)
