@@ -168,6 +168,7 @@ public class MainMenuController : MonoBehaviour
 
         isSettingsOpen = false;
         isShopOpen = false;
+        UpdatePanels();
 
         if (leaderboardController != null)
         {
@@ -177,6 +178,8 @@ public class MainMenuController : MonoBehaviour
 
     public void CloseLeaderboard()
     {
+        UpdatePanels();
+        
         if (leaderboardController != null)
         {
             leaderboardController.SetVisible(false);
@@ -192,6 +195,7 @@ public class MainMenuController : MonoBehaviour
 
         isSettingsOpen = false;
         isShopOpen = false;
+        UpdatePanels();
 
         if (dailyQuestsController != null)
         {
@@ -201,6 +205,8 @@ public class MainMenuController : MonoBehaviour
 
     public void CloseDailyQuests()
     {
+        UpdatePanels();
+        
         if (dailyQuestsController != null)
         {
             dailyQuestsController.SetVisible(false);

@@ -31,6 +31,8 @@ public class LeaderboardScreenController : MonoBehaviour
 
     public void SetVisible(bool visible)
     {
+        gameObject.SetActive(visible);
+        
         if (leaderboardPanelRoot != null)
         {
             leaderboardPanelRoot.SetActive(visible);

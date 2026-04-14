@@ -42,6 +42,8 @@ public class DailyQuestsScreenController : MonoBehaviour
 
     public void SetVisible(bool visible)
     {
+        gameObject.SetActive(visible);
+        
         if (questsPanelRoot != null)
         {
             questsPanelRoot.SetActive(visible);
