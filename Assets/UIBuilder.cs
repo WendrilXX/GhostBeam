@@ -466,7 +466,7 @@ public class UIBuilder : MonoBehaviour
         contentGO.transform.SetParent(panelGO.transform);
         leaderboardController.leaderboardContent = contentGO.transform;
 
-        RectTransform contentRect = contentGO.GetComponent<RectTransform>();
+        RectTransform contentRect = contentGO.AddComponent<RectTransform>();
         contentRect.anchorMin = new Vector2(0.5f, 0.5f);
         contentRect.anchorMax = new Vector2(0.5f, 0.5f);
         contentRect.sizeDelta = new Vector2(700, 300);
@@ -533,7 +533,7 @@ public class UIBuilder : MonoBehaviour
         contentGO.transform.SetParent(panelGO.transform);
         questsController.questsContent = contentGO.transform;
 
-        RectTransform contentRect = contentGO.GetComponent<RectTransform>();
+        RectTransform contentRect = contentGO.AddComponent<RectTransform>();
         contentRect.anchorMin = new Vector2(0.5f, 0.5f);
         contentRect.anchorMax = new Vector2(0.5f, 0.5f);
         contentRect.sizeDelta = new Vector2(700, 300);
