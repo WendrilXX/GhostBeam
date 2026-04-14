@@ -48,22 +48,19 @@ public class UIBuilder : MonoBehaviour
 
         CanvasScaler scaler = canvasGO.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1080, 1920);
+        scaler.referenceResolution = new Vector2(1920, 1080);  // Landscape resolution
 
         canvasGO.AddComponent<GraphicRaycaster>();
 
-        // Background com gradiente
+        // Background
         Image bgImage = canvasGO.AddComponent<Image>();
         bgImage.color = new Color(0.08f, 0.08f, 0.12f, 1f);
 
-        // SafeArea para notch
-        SafeAreaFitter safeArea = canvasGO.AddComponent<SafeAreaFitter>();
-        
         // Título com styling
-        CreateTitle(canvasGO.transform, "GHOST BEAM", new Vector2(0, 350));
+        CreateTitle(canvasGO.transform, "GHOST BEAM", new Vector2(0, 400));
 
-        // Botão JOGAR (destaque verde)
-        Button playBtn = CreateMainMenuButton(canvasGO.transform, "Play", new Vector2(0, 200), new Color(0.2f, 1f, 0.2f, 1), 120);
+        // Botão JOGAR (destaque verde) - grande, no topo
+        Button playBtn = CreateMainMenuButton(canvasGO.transform, "JOGAR", new Vector2(0, 250), new Color(0.2f, 1f, 0.2f, 1), 100, new Vector2(500, 110));
         if (playBtn != null)
         {
             playBtn.onClick.AddListener(() =>
@@ -73,9 +70,9 @@ public class UIBuilder : MonoBehaviour
             });
         }
 
-        // Layout para 3 botões em linha
+        // Linha 1: LOJA | RANKING | DESAFIOS (3 botões horizontais)
         // LOJA (Laranja)
-        Button shopBtn = CreateMainMenuButton(canvasGO.transform, "LOJA", new Vector2(-270, 50), new Color(1f, 0.65f, 0.2f, 1), 90);
+        Button shopBtn = CreateMainMenuButton(canvasGO.transform, "LOJA", new Vector2(-360, 100), new Color(1f, 0.65f, 0.2f, 1), 70, new Vector2(300, 90));
         if (shopBtn != null)
         {
             shopBtn.onClick.AddListener(() =>
@@ -86,7 +83,7 @@ public class UIBuilder : MonoBehaviour
         }
 
         // RANKING (Ciano)
-        Button rankBtn = CreateMainMenuButton(canvasGO.transform, "RANKING", new Vector2(0, 50), new Color(0.2f, 1f, 1f, 1), 90);
+        Button rankBtn = CreateMainMenuButton(canvasGO.transform, "RANKING", new Vector2(0, 100), new Color(0.2f, 1f, 1f, 1), 70, new Vector2(300, 90));
         if (rankBtn != null)
         {
             rankBtn.onClick.AddListener(() =>
@@ -97,7 +94,7 @@ public class UIBuilder : MonoBehaviour
         }
 
         // DESAFIOS (Magenta)
-        Button questsBtn = CreateMainMenuButton(canvasGO.transform, "DESAFIOS", new Vector2(270, 50), new Color(1f, 0.2f, 1f, 1), 90);
+        Button questsBtn = CreateMainMenuButton(canvasGO.transform, "DESAFIOS", new Vector2(360, 100), new Color(1f, 0.2f, 1f, 1), 70, new Vector2(300, 90));
         if (questsBtn != null)
         {
             questsBtn.onClick.AddListener(() =>
@@ -107,8 +104,9 @@ public class UIBuilder : MonoBehaviour
             });
         }
 
+        // Linha 2: CONFIG | SAIR (2 botões horizontais)
         // CONFIGURAÇÕES (Amarelo)
-        Button settingsBtn = CreateMainMenuButton(canvasGO.transform, "CONFIG", new Vector2(0, -80), new Color(1f, 1f, 0.2f, 1), 90);
+        Button settingsBtn = CreateMainMenuButton(canvasGO.transform, "CONFIG", new Vector2(-180, -50), new Color(1f, 1f, 0.2f, 1), 70, new Vector2(340, 90));
         if (settingsBtn != null)
         {
             settingsBtn.onClick.AddListener(() =>
@@ -119,7 +117,7 @@ public class UIBuilder : MonoBehaviour
         }
 
         // SAIR (Vermelho)
-        Button quitBtn = CreateMainMenuButton(canvasGO.transform, "SAIR", new Vector2(0, -150), new Color(1f, 0.3f, 0.3f, 1), 80);
+        Button quitBtn = CreateMainMenuButton(canvasGO.transform, "SAIR", new Vector2(180, -50), new Color(1f, 0.3f, 0.3f, 1), 70, new Vector2(340, 90));
         if (quitBtn != null)
         {
             quitBtn.onClick.AddListener(() =>
@@ -137,7 +135,7 @@ public class UIBuilder : MonoBehaviour
         bestScoreGO.transform.SetParent(canvasGO.transform);
         TextMeshProUGUI bestScoreTM = bestScoreGO.AddComponent<TextMeshProUGUI>();
         bestScoreTM.text = "MELHOR: 0";
-        bestScoreTM.fontSize = 48;
+        bestScoreTM.fontSize = 36;
         bestScoreTM.fontStyle = FontStyles.Bold;
         bestScoreTM.alignment = TextAlignmentOptions.Bottom;
         bestScoreTM.color = new Color(1f, 0.84f, 0, 1);
@@ -145,8 +143,8 @@ public class UIBuilder : MonoBehaviour
         RectTransform bestScoreRect = bestScoreGO.GetComponent<RectTransform>();
         bestScoreRect.anchorMin = new Vector2(0.5f, 0);
         bestScoreRect.anchorMax = new Vector2(0.5f, 0);
-        bestScoreRect.sizeDelta = new Vector2(900, 120);
-        bestScoreRect.anchoredPosition = new Vector2(0, 40);
+        bestScoreRect.sizeDelta = new Vector2(900, 100);
+        bestScoreRect.anchoredPosition = new Vector2(0, 30);
     }
 
     private void BuildGameplayHUD()
@@ -354,8 +352,11 @@ public class UIBuilder : MonoBehaviour
         rect.anchoredPosition = position;
     }
 
-    private Button CreateMainMenuButton(Transform parent, string label, Vector2 position, Color color, int fontSize = 80)
+    private Button CreateMainMenuButton(Transform parent, string label, Vector2 position, Color color, int fontSize = 80, Vector2 size = default)
     {
+        if (size == default)
+            size = new Vector2(480, 100);
+
         GameObject btnGO = new GameObject($"Btn{label}");
         btnGO.transform.SetParent(parent);
 
@@ -376,7 +377,7 @@ public class UIBuilder : MonoBehaviour
         RectTransform btnRect = btnGO.GetComponent<RectTransform>();
         btnRect.anchorMin = new Vector2(0.5f, 0.5f);
         btnRect.anchorMax = new Vector2(0.5f, 0.5f);
-        btnRect.sizeDelta = new Vector2(480, 100);
+        btnRect.sizeDelta = size;
         btnRect.anchoredPosition = position;
 
         // Texto do botão
