@@ -54,16 +54,26 @@ public class UIBuilder : MonoBehaviour
             Debug.Log("✅ MainMenuController criado dinamicamente");
         }
 
-        // Atribuir Panel Raiz do Menu Principal
-        Canvas mainMenuCanvas = FindAnyObjectByType<Canvas>();
-        if (mainMenuCanvas != null && mainMenuCanvas.gameObject.name == "CanvasMainMenu")
+        // Atribuir Panel Raiz do Menu Principal - PROCURAR ESPECIFICAMENTE PELO CANVAS DO MENU
+        Canvas[] allCanvases = FindObjectsByType<Canvas>(FindObjectsInactive.Include);
+        Canvas mainMenuCanvas = System.Array.Find(allCanvases, c => c.gameObject.name == "CanvasMainMenu");
+        
+        if (mainMenuCanvas != null)
         {
             Transform panelRoot = mainMenuCanvas.transform.Find("PanelMenu");
             if (panelRoot != null)
             {
                 mainMenu.panelRoot = panelRoot.gameObject;
-                Debug.Log("✅ Main Menu Panel atribuído");
+                Debug.Log($"✅ Main Menu Panel atribuído: {panelRoot.gameObject.name}");
             }
+            else
+            {
+                Debug.LogWarning("❌ PanelMenu não encontrado em CanvasMainMenu!");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("❌ CanvasMainMenu não encontrado!");
         }
 
         // Atribuir Shop Panel Root e Controller

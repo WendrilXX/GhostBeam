@@ -123,8 +123,11 @@ public class MainMenuController : MonoBehaviour
 
     public void OpenShop()
     {
+        Debug.Log($"[MainMenu] OpenShop() called - isMainMenuVisible={isMainMenuVisible}, shopPanelRoot={shopPanelRoot}");
+        
         if (!isMainMenuVisible)
         {
+            Debug.LogWarning("[MainMenu] OpenShop() failed - not in main menu visible state");
             return;
         }
 
@@ -132,6 +135,7 @@ public class MainMenuController : MonoBehaviour
         isSettingsOpen = false;
         UpdatePanels();
         RefreshUpgradeLabels();
+        Debug.Log("[MainMenu] Shop opened successfully");
     }
 
     public void CloseShop()
@@ -313,6 +317,7 @@ public class MainMenuController : MonoBehaviour
 
     private void SetVisible(bool visible)
     {
+        Debug.Log($"[MainMenu] SetVisible({visible}) - panelRoot={panelRoot}, shopPanelRoot={shopPanelRoot}");
         isMainMenuVisible = visible;
         if (!visible)
         {
@@ -718,19 +723,39 @@ public class MainMenuController : MonoBehaviour
 
     private void UpdatePanels()
     {
+        Debug.Log($"[MainMenu] UpdatePanels() - isMainMenuVisible={isMainMenuVisible}, isShopOpen={isShopOpen}, isSettingsOpen={isSettingsOpen}");
+        
         if (panelRoot != null)
         {
-            panelRoot.SetActive(isMainMenuVisible && !isShopOpen && !isSettingsOpen);
+            bool mainActive = isMainMenuVisible && !isShopOpen && !isSettingsOpen;
+            panelRoot.SetActive(mainActive);
+            Debug.Log($"  panelRoot -> {mainActive}");
+        }
+        else
+        {
+            Debug.LogWarning("  panelRoot is NULL!");
         }
 
         if (shopPanelRoot != null)
         {
-            shopPanelRoot.SetActive(isMainMenuVisible && isShopOpen);
+            bool shopActive = isMainMenuVisible && isShopOpen;
+            shopPanelRoot.SetActive(shopActive);
+            Debug.Log($"  shopPanelRoot -> {shopActive}");
+        }
+        else
+        {
+            Debug.LogWarning("  shopPanelRoot is NULL!");
         }
 
         if (settingsPanelRoot != null)
         {
-            settingsPanelRoot.SetActive(isMainMenuVisible && isSettingsOpen);
+            bool settingsActive = isMainMenuVisible && isSettingsOpen;
+            settingsPanelRoot.SetActive(settingsActive);
+            Debug.Log($"  settingsPanelRoot -> {settingsActive}");
+        }
+        else
+        {
+            Debug.LogWarning("  settingsPanelRoot is NULL!");
         }
     }
 
