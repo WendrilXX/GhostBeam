@@ -10,6 +10,25 @@ public class UIBuilder : MonoBehaviour
 {
     private void Awake()
     {
+        Debug.Log("[UIBuilder] Awake() - Garantindo que GameManager existe...");
+        
+        // PRIMEIRO: Garantir que GameManager foi criado
+        GameManager gm = FindAnyObjectByType<GameManager>();
+        if (gm == null)
+        {
+            Debug.LogError("[UIBuilder] ❌ CRÍTICO: GameManager não encontrado na cena!");
+            Debug.Log("[UIBuilder] Criando GameManager automaticamente...");
+            
+            GameObject gmGO = new GameObject("GameManager");
+            gm = gmGO.AddComponent<GameManager>();
+            Debug.Log("[UIBuilder] ✅ GameManager criado dinamicamente");
+        }
+        else
+        {
+            Debug.Log($"[UIBuilder] ✅ GameManager encontrado: {gm.gameObject.name}");
+        }
+
+        Debug.Log("[UIBuilder] Construindo UI completa...");
         BuildCompleteUI();
     }
 
@@ -572,6 +591,8 @@ public class UIBuilder : MonoBehaviour
 
     private void BuildShopCanvas()
     {
+        Debug.Log("[UIBuilder] BuildShopCanvas() iniciando...");
+        
         GameObject canvasGO = new GameObject("CanvasShop");
         Canvas canvas = canvasGO.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -581,11 +602,13 @@ public class UIBuilder : MonoBehaviour
 
         // Adicionar ShopScreenController
         ShopScreenController shopController = canvasGO.AddComponent<ShopScreenController>();
+        Debug.Log($"[UIBuilder] ShopScreenController criado: {shopController.gameObject.name}");
 
         // Panel
         GameObject panelGO = new GameObject("PanelLoja");
         panelGO.transform.SetParent(canvasGO.transform);
         shopController.shopPanelRoot = panelGO;
+        Debug.Log($"[UIBuilder] PanelLoja criado: {panelGO.name}, shopController.shopPanelRoot = {shopController.shopPanelRoot.name}");
 
         Image panelImage = panelGO.AddComponent<Image>();
         panelImage.color = new Color(0, 0, 0, 0.95f);
