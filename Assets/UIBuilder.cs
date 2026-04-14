@@ -36,7 +36,59 @@ public class UIBuilder : MonoBehaviour
         // Daily Quests Screen
         BuildDailyQuestsCanvas();
 
+        // Atribuir controllers ao MainMenuController
+        AssignControllersToMainMenu();
+
         Debug.Log("✅ Interface completa construída com Shop, Ranking e Desafios!");
+    }
+
+    private void AssignControllersToMainMenu()
+    {
+        MainMenuController mainMenu = FindAnyObjectByType<MainMenuController>();
+        if (mainMenu == null)
+        {
+            Debug.LogWarning("❌ MainMenuController não encontrado!");
+            return;
+        }
+
+        // Atribuir Shop Panel Root e Controller
+        ShopScreenController shopCtrl = FindAnyObjectByType<ShopScreenController>();
+        if (shopCtrl != null && shopCtrl.shopPanelRoot != null)
+        {
+            mainMenu.shopController = shopCtrl;
+            mainMenu.shopPanelRoot = shopCtrl.shopPanelRoot;
+            Debug.Log("✅ ShopScreenController atribuído");
+        }
+
+        // Atribuir Settings Panel Root (procurar por canvas e painel)
+        Canvas settingsCanvas = FindAnyObjectByType<Canvas>(FindObjectsInactive.Include);
+        if (settingsCanvas != null && settingsCanvas.gameObject.name == "CanvasSettings")
+        {
+            Transform settingsPanel = settingsCanvas.transform.Find("PanelConfiguracoes");
+            if (settingsPanel != null)
+            {
+                mainMenu.settingsPanelRoot = settingsPanel.gameObject;
+                Debug.Log("✅ Settings Panel atribuído");
+            }
+        }
+
+        // Atribuir Leaderboard Controller
+        LeaderboardScreenController leaderboardCtrl = FindAnyObjectByType<LeaderboardScreenController>();
+        if (leaderboardCtrl != null)
+        {
+            mainMenu.leaderboardController = leaderboardCtrl;
+            Debug.Log("✅ LeaderboardScreenController atribuído");
+        }
+
+        // Atribuir Daily Quests Controller
+        DailyQuestsScreenController questsCtrl = FindAnyObjectByType<DailyQuestsScreenController>();
+        if (questsCtrl != null)
+        {
+            mainMenu.dailyQuestsController = questsCtrl;
+            Debug.Log("✅ DailyQuestsScreenController atribuído");
+        }
+
+        Debug.Log("🎮 Todos os controllers atribuídos com sucesso!");
     }
 
     private void BuildMainMenuCanvas()
@@ -48,7 +100,7 @@ public class UIBuilder : MonoBehaviour
 
         CanvasScaler scaler = canvasGO.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920, 1080);  // Landscape resolution
+        scaler.referenceResolution = new Vector2(1920, 1080);
 
         canvasGO.AddComponent<GraphicRaycaster>();
 
@@ -56,11 +108,11 @@ public class UIBuilder : MonoBehaviour
         Image bgImage = canvasGO.AddComponent<Image>();
         bgImage.color = new Color(0.08f, 0.08f, 0.12f, 1f);
 
-        // Título com styling
-        CreateTitle(canvasGO.transform, "GHOST BEAM", new Vector2(0, 400));
+        // Título com styling - maior
+        CreateTitle(canvasGO.transform, "GHOST BEAM", new Vector2(0, 420), 100);
 
-        // Botão JOGAR (destaque verde) - grande, no topo
-        Button playBtn = CreateMainMenuButton(canvasGO.transform, "JOGAR", new Vector2(0, 250), new Color(0.2f, 1f, 0.2f, 1), 100, new Vector2(500, 110));
+        // Botão JOGAR (destaque verde) - maior no topo
+        Button playBtn = CreateMainMenuButton(canvasGO.transform, "JOGAR", new Vector2(0, 280), new Color(0.2f, 1f, 0.2f, 1), 110, new Vector2(580, 130));
         if (playBtn != null)
         {
             playBtn.onClick.AddListener(() =>
@@ -72,52 +124,68 @@ public class UIBuilder : MonoBehaviour
 
         // Linha 1: LOJA | RANKING | DESAFIOS (3 botões horizontais)
         // LOJA (Laranja)
-        Button shopBtn = CreateMainMenuButton(canvasGO.transform, "LOJA", new Vector2(-360, 100), new Color(1f, 0.65f, 0.2f, 1), 70, new Vector2(300, 90));
+        Button shopBtn = CreateMainMenuButton(canvasGO.transform, "LOJA", new Vector2(-420, 140), new Color(1f, 0.65f, 0.2f, 1), 75, new Vector2(340, 100));
         if (shopBtn != null)
         {
             shopBtn.onClick.AddListener(() =>
             {
                 MainMenuController menu = FindAnyObjectByType<MainMenuController>();
-                if (menu != null) menu.OpenShop();
+                if (menu != null)
+                {
+                    Debug.Log("🛍️ Abrindo LOJA...");
+                    menu.OpenShop();
+                }
             });
         }
 
         // RANKING (Ciano)
-        Button rankBtn = CreateMainMenuButton(canvasGO.transform, "RANKING", new Vector2(0, 100), new Color(0.2f, 1f, 1f, 1), 70, new Vector2(300, 90));
+        Button rankBtn = CreateMainMenuButton(canvasGO.transform, "RANKING", new Vector2(0, 140), new Color(0.2f, 1f, 1f, 1), 75, new Vector2(340, 100));
         if (rankBtn != null)
         {
             rankBtn.onClick.AddListener(() =>
             {
                 MainMenuController menu = FindAnyObjectByType<MainMenuController>();
-                if (menu != null) menu.OpenLeaderboard();
+                if (menu != null)
+                {
+                    Debug.Log("🏆 Abrindo RANKING...");
+                    menu.OpenLeaderboard();
+                }
             });
         }
 
         // DESAFIOS (Magenta)
-        Button questsBtn = CreateMainMenuButton(canvasGO.transform, "DESAFIOS", new Vector2(360, 100), new Color(1f, 0.2f, 1f, 1), 70, new Vector2(300, 90));
+        Button questsBtn = CreateMainMenuButton(canvasGO.transform, "DESAFIOS", new Vector2(420, 140), new Color(1f, 0.2f, 1f, 1), 75, new Vector2(340, 100));
         if (questsBtn != null)
         {
             questsBtn.onClick.AddListener(() =>
             {
                 MainMenuController menu = FindAnyObjectByType<MainMenuController>();
-                if (menu != null) menu.OpenDailyQuests();
+                if (menu != null)
+                {
+                    Debug.Log("⭐ Abrindo DESAFIOS...");
+                    menu.OpenDailyQuests();
+                }
             });
         }
 
         // Linha 2: CONFIG | SAIR (2 botões horizontais)
         // CONFIGURAÇÕES (Amarelo)
-        Button settingsBtn = CreateMainMenuButton(canvasGO.transform, "CONFIG", new Vector2(-180, -50), new Color(1f, 1f, 0.2f, 1), 70, new Vector2(340, 90));
+        Button settingsBtn = CreateMainMenuButton(canvasGO.transform, "CONFIG", new Vector2(-210, 0), new Color(1f, 1f, 0.2f, 1), 75, new Vector2(380, 100));
         if (settingsBtn != null)
         {
             settingsBtn.onClick.AddListener(() =>
             {
                 MainMenuController menu = FindAnyObjectByType<MainMenuController>();
-                if (menu != null) menu.OpenSettings();
+                if (menu != null)
+                {
+                    Debug.Log("⚙️ Abrindo CONFIG...");
+                    menu.OpenSettings();
+                }
             });
         }
 
         // SAIR (Vermelho)
-        Button quitBtn = CreateMainMenuButton(canvasGO.transform, "SAIR", new Vector2(180, -50), new Color(1f, 0.3f, 0.3f, 1), 70, new Vector2(340, 90));
+        Button quitBtn = CreateMainMenuButton(canvasGO.transform, "SAIR", new Vector2(210, 0), new Color(1f, 0.3f, 0.3f, 1), 75, new Vector2(380, 100));
         if (quitBtn != null)
         {
             quitBtn.onClick.AddListener(() =>
@@ -135,7 +203,7 @@ public class UIBuilder : MonoBehaviour
         bestScoreGO.transform.SetParent(canvasGO.transform);
         TextMeshProUGUI bestScoreTM = bestScoreGO.AddComponent<TextMeshProUGUI>();
         bestScoreTM.text = "MELHOR: 0";
-        bestScoreTM.fontSize = 36;
+        bestScoreTM.fontSize = 40;
         bestScoreTM.fontStyle = FontStyles.Bold;
         bestScoreTM.alignment = TextAlignmentOptions.Bottom;
         bestScoreTM.color = new Color(1f, 0.84f, 0, 1);
@@ -143,7 +211,7 @@ public class UIBuilder : MonoBehaviour
         RectTransform bestScoreRect = bestScoreGO.GetComponent<RectTransform>();
         bestScoreRect.anchorMin = new Vector2(0.5f, 0);
         bestScoreRect.anchorMax = new Vector2(0.5f, 0);
-        bestScoreRect.sizeDelta = new Vector2(900, 100);
+        bestScoreRect.sizeDelta = new Vector2(1000, 100);
         bestScoreRect.anchoredPosition = new Vector2(0, 30);
     }
 
@@ -242,7 +310,7 @@ public class UIBuilder : MonoBehaviour
         canvasGO.AddComponent<GraphicRaycaster>();
 
         // Panel
-        GameObject panelGO = new GameObject("Panel");
+        GameObject panelGO = new GameObject("PanelConfiguracoes");
         panelGO.transform.SetParent(canvasGO.transform);
         Image panelImage = panelGO.AddComponent<Image>();
         panelImage.color = new Color(0, 0, 0, 0.95f);
@@ -333,14 +401,14 @@ public class UIBuilder : MonoBehaviour
         canvasGO.SetActive(false);
     }
 
-    private void CreateTitle(Transform parent, string text, Vector2 position)
+    private void CreateTitle(Transform parent, string text, Vector2 position, int fontSize = 90)
     {
         GameObject go = new GameObject("Title");
         go.transform.SetParent(parent);
 
         TextMeshProUGUI tmp = go.AddComponent<TextMeshProUGUI>();
         tmp.text = text;
-        tmp.fontSize = 90;
+        tmp.fontSize = fontSize;
         tmp.fontStyle = FontStyles.Bold;
         tmp.alignment = TextAlignmentOptions.Center;
         tmp.color = new Color(0.2f, 1f, 1f, 1);
@@ -348,7 +416,7 @@ public class UIBuilder : MonoBehaviour
         RectTransform rect = go.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = new Vector2(1000, 200);
+        rect.sizeDelta = new Vector2(1200, 200);
         rect.anchoredPosition = position;
     }
 
