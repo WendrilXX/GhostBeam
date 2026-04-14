@@ -42,12 +42,15 @@ public partial class GameManager
 
     private void EnterMainMenuState()
     {
+        Debug.Log("[GameManager] 🎮 EnterMainMenuState() - Menu principal ativo");
+        
         IsGameOver = false;
         IsInMainMenu = true;
         IsPaused = true;
         Time.timeScale = 0f;
 
         onPauseChanged?.Invoke(true);
+        Debug.Log("[GameManager] Disparando onMainMenuChanged(true)");
         onMainMenuChanged?.Invoke(true);
     }
 

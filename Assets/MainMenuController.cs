@@ -89,12 +89,28 @@ public class MainMenuController : MonoBehaviour
 
     private void OnEnable()
     {
+        Debug.Log("[MainMenu] OnEnable() - Se inscrevendo em eventos...");
+        
+        // Esperar que o GameManager esteja inicializado
+        if (GameManager.Instance == null)
+        {
+            Debug.LogWarning("[MainMenu] GameManager.Instance is NULL! Tentando novamente no próximo frame...");
+            // Invocar OnEnable novamente no próximo frame
+            Invoke(nameof(OnEnable), 0.1f);
+            return;
+        }
+
         GameManager.onMainMenuChanged += SetVisible;
         ScoreManager.onCoinsChanged += HandleCoinsChanged;
         UpgradeManager.onUpgradesChanged += RefreshUpgradeLabels;
         SkinManager.onSkinsChanged += RefreshUpgradeLabels;
         SettingsManager.onSettingsChanged += RefreshSettingsUI;
-        SetVisible(GameManager.Instance != null && GameManager.Instance.IsInMainMenu);
+        
+        // AGORA que GameManager está pronto, inicializar visibilidade
+        bool shouldBeVisible = GameManager.Instance.IsInMainMenu;
+        Debug.Log($"[MainMenu] GameManager.Instance.IsInMainMenu = {shouldBeVisible}");
+        SetVisible(shouldBeVisible);
+        
         RefreshUpgradeLabels();
         RefreshSettingsUI();
     }
