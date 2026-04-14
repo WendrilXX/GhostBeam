@@ -13,6 +13,19 @@
 *.user
 *.VC.db
 
+# Package cache
+Packages/
+.gradle/
+.m2/
+
+# Generated
+GhostBeam_BurstDebugInformation_DoNotShip/
+Temp/
+obj/
+bin/
+*.asset
+.utmp/
+
 # OS specific
 .DS_Store
 .DS_Store?
@@ -22,6 +35,8 @@
 ehthumbs.db
 Thumbs.db
 
-# Generated
-GhostBeam_BurstDebugInformation_DoNotShip/
-Temp/
+# IDE
+.idea/
+*.swp
+*.swo
+*~
