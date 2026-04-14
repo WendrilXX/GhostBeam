@@ -45,10 +45,25 @@ public class UIBuilder : MonoBehaviour
     private void AssignControllersToMainMenu()
     {
         MainMenuController mainMenu = FindAnyObjectByType<MainMenuController>();
+        
+        // Se MainMenuController não existe, criar um
         if (mainMenu == null)
         {
-            Debug.LogWarning("❌ MainMenuController não encontrado!");
-            return;
+            GameObject menuGO = new GameObject("MainMenuController");
+            mainMenu = menuGO.AddComponent<MainMenuController>();
+            Debug.Log("✅ MainMenuController criado dinamicamente");
+        }
+
+        // Atribuir Panel Raiz do Menu Principal
+        Canvas mainMenuCanvas = FindAnyObjectByType<Canvas>();
+        if (mainMenuCanvas != null && mainMenuCanvas.gameObject.name == "CanvasMainMenu")
+        {
+            Transform panelRoot = mainMenuCanvas.transform.Find("PanelMenu");
+            if (panelRoot != null)
+            {
+                mainMenu.panelRoot = panelRoot.gameObject;
+                Debug.Log("✅ Main Menu Panel atribuído");
+            }
         }
 
         // Atribuir Shop Panel Root e Controller
@@ -61,14 +76,18 @@ public class UIBuilder : MonoBehaviour
         }
 
         // Atribuir Settings Panel Root (procurar por canvas e painel)
-        Canvas settingsCanvas = FindAnyObjectByType<Canvas>(FindObjectsInactive.Include);
-        if (settingsCanvas != null && settingsCanvas.gameObject.name == "CanvasSettings")
+        Canvas[] allCanvas = FindObjectsByType<Canvas>(FindObjectsInactive.Include);
+        foreach (Canvas canvas in allCanvas)
         {
-            Transform settingsPanel = settingsCanvas.transform.Find("PanelConfiguracoes");
-            if (settingsPanel != null)
+            if (canvas.gameObject.name == "CanvasSettings")
             {
-                mainMenu.settingsPanelRoot = settingsPanel.gameObject;
-                Debug.Log("✅ Settings Panel atribuído");
+                Transform settingsPanel = canvas.transform.Find("PanelConfiguracoes");
+                if (settingsPanel != null)
+                {
+                    mainMenu.settingsPanelRoot = settingsPanel.gameObject;
+                    Debug.Log("✅ Settings Panel atribuído");
+                }
+                break;
             }
         }
 
@@ -108,11 +127,22 @@ public class UIBuilder : MonoBehaviour
         Image bgImage = canvasGO.AddComponent<Image>();
         bgImage.color = new Color(0.08f, 0.08f, 0.12f, 1f);
 
+        // Criar Panel raiz para o menu (para compatibilidade com MainMenuController)
+        GameObject panelRootGO = new GameObject("PanelMenu");
+        panelRootGO.transform.SetParent(canvasGO.transform);
+        Image panelImage = panelRootGO.AddComponent<Image>();
+        panelImage.raycastTarget = false;
+        RectTransform panelRect = panelRootGO.GetComponent<RectTransform>();
+        panelRect.anchorMin = Vector2.zero;
+        panelRect.anchorMax = Vector2.one;
+        panelRect.offsetMin = Vector2.zero;
+        panelRect.offsetMax = Vector2.zero;
+
         // Título com styling - maior
-        CreateTitle(canvasGO.transform, "GHOST BEAM", new Vector2(0, 420), 100);
+        CreateTitle(panelRootGO.transform, "GHOST BEAM", new Vector2(0, 420), 100);
 
         // Botão JOGAR (destaque verde) - maior no topo
-        Button playBtn = CreateMainMenuButton(canvasGO.transform, "JOGAR", new Vector2(0, 280), new Color(0.2f, 1f, 0.2f, 1), 110, new Vector2(580, 130));
+        Button playBtn = CreateMainMenuButton(panelRootGO.transform, "JOGAR", new Vector2(0, 280), new Color(0.2f, 1f, 0.2f, 1), 110, new Vector2(580, 130));
         if (playBtn != null)
         {
             playBtn.onClick.AddListener(() =>
@@ -124,7 +154,7 @@ public class UIBuilder : MonoBehaviour
 
         // Linha 1: LOJA | RANKING | DESAFIOS (3 botões horizontais)
         // LOJA (Laranja)
-        Button shopBtn = CreateMainMenuButton(canvasGO.transform, "LOJA", new Vector2(-420, 140), new Color(1f, 0.65f, 0.2f, 1), 75, new Vector2(340, 100));
+        Button shopBtn = CreateMainMenuButton(panelRootGO.transform, "LOJA", new Vector2(-420, 140), new Color(1f, 0.65f, 0.2f, 1), 75, new Vector2(340, 100));
         if (shopBtn != null)
         {
             shopBtn.onClick.AddListener(() =>
@@ -139,7 +169,7 @@ public class UIBuilder : MonoBehaviour
         }
 
         // RANKING (Ciano)
-        Button rankBtn = CreateMainMenuButton(canvasGO.transform, "RANKING", new Vector2(0, 140), new Color(0.2f, 1f, 1f, 1), 75, new Vector2(340, 100));
+        Button rankBtn = CreateMainMenuButton(panelRootGO.transform, "RANKING", new Vector2(0, 140), new Color(0.2f, 1f, 1f, 1), 75, new Vector2(340, 100));
         if (rankBtn != null)
         {
             rankBtn.onClick.AddListener(() =>
@@ -154,7 +184,7 @@ public class UIBuilder : MonoBehaviour
         }
 
         // DESAFIOS (Magenta)
-        Button questsBtn = CreateMainMenuButton(canvasGO.transform, "DESAFIOS", new Vector2(420, 140), new Color(1f, 0.2f, 1f, 1), 75, new Vector2(340, 100));
+        Button questsBtn = CreateMainMenuButton(panelRootGO.transform, "DESAFIOS", new Vector2(420, 140), new Color(1f, 0.2f, 1f, 1), 75, new Vector2(340, 100));
         if (questsBtn != null)
         {
             questsBtn.onClick.AddListener(() =>
@@ -170,7 +200,7 @@ public class UIBuilder : MonoBehaviour
 
         // Linha 2: CONFIG | SAIR (2 botões horizontais)
         // CONFIGURAÇÕES (Amarelo)
-        Button settingsBtn = CreateMainMenuButton(canvasGO.transform, "CONFIG", new Vector2(-210, 0), new Color(1f, 1f, 0.2f, 1), 75, new Vector2(380, 100));
+        Button settingsBtn = CreateMainMenuButton(panelRootGO.transform, "CONFIG", new Vector2(-210, 0), new Color(1f, 1f, 0.2f, 1), 75, new Vector2(380, 100));
         if (settingsBtn != null)
         {
             settingsBtn.onClick.AddListener(() =>
@@ -185,7 +215,7 @@ public class UIBuilder : MonoBehaviour
         }
 
         // SAIR (Vermelho)
-        Button quitBtn = CreateMainMenuButton(canvasGO.transform, "SAIR", new Vector2(210, 0), new Color(1f, 0.3f, 0.3f, 1), 75, new Vector2(380, 100));
+        Button quitBtn = CreateMainMenuButton(panelRootGO.transform, "SAIR", new Vector2(210, 0), new Color(1f, 0.3f, 0.3f, 1), 75, new Vector2(380, 100));
         if (quitBtn != null)
         {
             quitBtn.onClick.AddListener(() =>
@@ -200,7 +230,7 @@ public class UIBuilder : MonoBehaviour
 
         // Melhor Score (em baixo)
         GameObject bestScoreGO = new GameObject("BestScore");
-        bestScoreGO.transform.SetParent(canvasGO.transform);
+        bestScoreGO.transform.SetParent(panelRootGO.transform);
         TextMeshProUGUI bestScoreTM = bestScoreGO.AddComponent<TextMeshProUGUI>();
         bestScoreTM.text = "MELHOR: 0";
         bestScoreTM.fontSize = 40;
