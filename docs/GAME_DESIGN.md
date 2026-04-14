@@ -12,11 +12,12 @@
 Ghost Beam é um **survival arcade 2D** onde você controla **Luna**, uma garota armada com uma lanterna energética. Sua missão: iluminar e derrotar fantasmas que invadem a floresta, gerenciar sua bateria, e sobreviver o máximo possível para acumular moedas e fazer upgrades.
 
 ### 1.2 Público-Alvo
-- **Plataforma Principal:** Mobile (iOS/Android)
-- **Plataforma Secundária:** PC (Windows/Linux/Mac)
+- **Plataforma:** Mobile (iOS/Android) - LANDSCAPE ONLY
+- **Resolução:** 1920x1080 (16:9 landscape)
 - **Gênero:** Arcade, Casual, Action
 - **Público:** 8+ anos (gameplay simples mas envolvente)
 - **Duração Média por Sessão:** 40-60 segundos
+- **Input:** Touch native (sem mouse/keyboard)
 
 ---
 
@@ -27,19 +28,18 @@ Ghost Beam é um **survival arcade 2D** onde você controla **Luna**, uma garota
 1. MENU PRINCIPAL
    ├─ [JOGAR] → Inicia gameplay
    ├─ [LOJA] → Compra upgrades com moedas
-   ├─ [RANKING] → Vê top 10 + posição
    ├─ [DESAFIOS] → Missions diárias
    ├─ [CONFIG] → Audio, vibração, overlay
    └─ [SAIR] → Fecha jogo
 
-2. GAMEPLAY (durante sessão)
-   ├─ MOVIMENTO: Luna se move pelo joystick/setas
-   ├─ MIRA: Lanterna acompanha movimento/mouse
+2. GAMEPLAY (durante sessão - LANDSCAPE)
+   ├─ MOVIMENTO: Joystick virtual ESQUERDA (6 pontos)
+   ├─ MIRA: Joystick virtual DIREITA (rotação contínua)
    ├─ COMBATE: Inimigos morrem com iluminação sustentada
    ├─ BATERIA: Drena enquanto ilumina, recarrega com pickups
    ├─ SCORE: +5 pts/seg + 15 pts/inimigo
    ├─ MOEDAS: 100% de drop ao matar inimigo
-   ├─ PAUSAR: ESC/P → Pause Menu
+   ├─ PAUSAR: Botão UI (toque) → Pause Menu
    └─ GAME OVER: Vida = 0 OU bateria apaga 3s
 
 3. GAME OVER
@@ -55,18 +55,20 @@ Ghost Beam é um **survival arcade 2D** onde você controla **Luna**, uma garota
 
 ### 2.2 Mecânicas Essenciais
 
-#### Movimento (Luna)
-- **Input:** Joystick esquerdo (mobile) / Setas (PC)
+#### Movimento (Luna) - TOUCH MOBILE
+- **Input:** Joystick virtual esquerdo (touch + drag)
 - **Velocidade:** 8 unidades/seg
 - **Direção:** 8-directional (N, NE, E, SE, S, SW, W, NW)
 - **Limites:** Dentro dos bounds da cena (10×15)
+- **Responsive:** Touch latência <50ms
 
-#### Lanterna (Flashlight)
+#### Lanterna (Flashlight) - TOUCH MIRA
 - **Tipo de Luz:** Light 2D Spot (não Point, não Directional)
 - **Raio de Iluminação:** 15 unidades
 - **Ângulo de Abertura:** 70 graus
-- **Acompanhamento:** Rotaciona em direção ao movimento/mouse
+- **Acompanhamento:** Rotaciona em direção ao joystick virtual DIREITO
 - **Velocidade de Rotação:** 10 multiplicador
+- **Platform-Specific:** Safe area aware (notches, home indicator)
 
 #### Iluminação de Inimigos
 **Fórmula de Detecção:**

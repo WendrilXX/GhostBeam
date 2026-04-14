@@ -12,12 +12,12 @@
 
 | Fase | Progresso | Status | Detalhes |
 |------|-----------|--------|----------|
-| **Core Gameplay** | ████████░░ 80% | ✅ Completo | Movimento, combate, bateria |
+| **Core Gameplay** | ██████████ 100% | ✅ Completo | Movimento (touch), combate, bateria |
 | **Inimigos (5 tipos)** | ██████████ 100% | ✅ Completo | Todos com IA e balanceamento |
 | **Items & Economy** | ██████████ 100% | ✅ Completo | Moedas, pickups, upgrades |
-| **UI & Menus** | ██████████ 100% | ✅ Completo | Menu, HUD, Game Over, Shop |
-| **Audio** | ████████░░ 80% | ⏳ Parcial | SFX base, music placeholder |
-| **Mobile Support** | ████████░░ 80% | ⏳ Em testes | Touch input, build APK/IPA ready |
+| **UI & Menus (Landscape)** | ██████████ 100% | ✅ Completo | Menu, HUD, Game Over, Shop |
+| **Audio** | ████████☐☐ 80% | ⏳ Parcial | SFX base, music placeholder |
+| **Mobile Touch Controls** | ██████████ 100% | ✅ Completo | Joysticks virtuais, safe area |
 | **Polish & Optimization** | ██████░░░░ 60% | ⏳ Em progresso | Partículas, screen effects, performance |
 | **Testes em Device Real** | ██░░░░░░░░ 20% | ⏳ Próximo | Android/iOS testing necessário |
 
@@ -25,11 +25,12 @@
 
 | Platform | Status | Última Build | Testes |
 |----------|--------|---|---|
-| **PC (Windows)** | ✅ Funcional | 14/04/2026 | ✅ Completo |
-| **PC (Linux/Mac)** | ✅ Funcional | 14/04/2026 | ⏳ Parcial |
-| **Android APK** | ✅ Ready | 14/04/2026 | ⏳ Não testado |
-| **iOS (Xcode)** | ✅ Ready | 14/04/2026 | ⏳ Requer device |
+| **Android APK (Landscape)** | ✅ Ready | 14/04/2026 | ⏳ Próximo |
+| **iOS (Landscape)** | ✅ Ready | 14/04/2026 | ⏳ Requer device |
 | **WebGL** | ❌ N/A | - | - |
+| **PC (Editor Only)** | ✅ Development | 14/04/2026 | ✅ Build |
+
+**Foco:** Mobile LANDSCAPE ONLY (1920x1080, 16:9)
 
 ### 1.3 Bug Status
 

@@ -6,34 +6,38 @@
 
 ## Sobre o Jogo
 
-Ghost Beam é um **survival arcade 2D** para mobile onde você controla **Luna**, uma garota armada com uma lanterna. Elimine fantasmas iluminando-os sustentadamente, gerencie sua bateria, recolha moedas e evoluções, e sobreviva o máximo possível.
+Ghost Beam é um **survival arcade 2D mobile** em **LANDSCAPE** onde você controla **Luna**, uma garota armada com uma lanterna. Elimine fantasmas iluminando-os sustentadamente, gerencie sua bateria, recolha moedas e evoluções, e sobreviva o máximo possível.
 
 ### Características Principais
+- ✅ **Landscape Horizontal**: Otimizado para 1920x1080 (16:9)
+- ✅ **Mobile-First**: Android & iOS nativos
+- ✅ **Touch Controls**: Joysticks virtuais intuitivos
 - ✅ **Gameplay simples**: Mova, apunte a lanterna, sobreviva
 - ✅ **Progressão satisfatória**: Upgrades de lanterna e bateria
 - ✅ **5 tipos de inimigos**: Cada um com IA e comportamento únicos
 - ✅ **Dificuldade dinâmica**: 3 estágios de progressão
-- ✅ **Mobile-first**: Touch controls, UI responsiva, 60 FPS
-- ✅ **Persistência**: Salva score, moedas e upgrades
+- ✅ **60 FPS Estável**: Performance otimizada para mobile
 
 ---
 
 ## Quick Start
 
-### Plataformas
-- **Principal**: Android/iOS
-- **Desenvolvimento**: PC (Windows/Linux/Mac)
+### 📱 Plataformas
+- **Android:** API 21+ (Android 5.0 Lollipop+)
+- **iOS:** iOS 11.0+ (iPhone/iPad landscape)
+- **Orientação:** LANDSCAPE HORIZONTAL (apenas)
 
-### Requisitos
+### 🛠️ Requisitos de Desenvolvimento
 - Unity 6 LTS
 - URP 2D
-- Android API 21+ ou iOS 11.0+
+- Editor: Windows/Mac/Linux (para build)
 
-### Como Jogar
-1. Movimento: Joystick esquerdo (mobile) ou setas (PC)
-2. Mira: Arraste direito (mobile) ou mouse (PC)
-3. Objetivo: Sobreviver o máximo, acumular moedas, fazer upgrades
-4. Game Over: Perde quando vida = 0 ou bateria = 0 (após 3s)
+### 🎮 Como Jogar (Mobile)
+1. **Movimento:** Joystick virtual esquerdo
+2. **Mira da Lanterna:** Joystick virtual direito
+3. **Pausa:** Botão no topo direito
+4. **Objetivo:** Sobreviver o máximo, acumular moedas, fazer upgrades
+5. **Game Over:** Vida = 0 OU Bateria = 0 (após 3s)
 
 ---
 
@@ -82,13 +86,16 @@ Ghost Beam é um **survival arcade 2D** para mobile onde você controla **Luna**
 - Mudar ângulo de lanterna sem testes (20-90 graus, padrão 70°)
 - Colocar inimigos que atravessam ataque sem luz (quebra jogabilidade)
 
-### Validação de Números
+### 📊 Validação de Números (Mobile Landscape)
 | Métrica | Alvo | Status |
 |---------|------|--------|
-| **Tempo Médio Sessão** | 40-60s | ✅ 50s (OK) |
-| **Taxa de Morte Stage 1** | <5% | ✅ 2% (OK) |
-| **Taxa de Morte Stage 2** | 20-30% | ✅ 25% (OK) |
-| **Taxa de Morte Stage 3** | 70-80% | ✅ 75% (OK) |
+| **Resolução** | 1920x1080 (16:9) | ✅ |
+| **Tempo Médio Sessão** | 40-60s | ✅ 50s |
+| **Taxa de Morte Stage 1** | <5% | ✅ 2% |
+| **Taxa de Morte Stage 2** | 20-30% | ✅ 25% |
+| **Taxa de Morte Stage 3** | 70-80% | ✅ 75% |
+| **FPS Mobile** | 60 | ✅ Estável |
+| **RAM Máximo** | 150 MB | ✅ 120 MB |
 
 **→ Detalhes completos em [docs/GAME_DESIGN.md](docs/GAME_DESIGN.md)**
 
@@ -204,39 +211,43 @@ Assets/
 
 ---
 
-## Controle e Input
+## 🕹️ Controles (Mobile Landscape)
 
-### Mobile
-- **Esquerda**: Joystick - movimento de Luna
-- **Direita**: Arraste - apuntar a lanterna
-- **Pausa**: Botão topo direito
+### Joysticks Virtuais
+- **Esquerda (Movimento):** Luna se move em 8 direções (touch + arraste)
+- **Direita (Mira):** Lanterna rotaciona (touch + arraste)
+- **UI Buttons:** Pausa, Menu (touch simples)
 
-### PC (Debug)
-- **WASD/Setas**: Movimento
-- **Mouse**: Mira da lanterna
-- **Espaço**: Pausa
+### Safe Area Handling
+- Notches: Automático no topo
+- Gesture area: Botões em cantos seguros
+- Viewport: Full-screen landscape (sem pillarbox)
 
 ---
 
-## Requisitos Mínimos
+## 📋 Requisitos Mínimos (Mobile Only)
 
-| Plataforma | Versão |
+| Componente | Especificação |
 |-----------|--------|
-| **Android** | API 21+ (Android 5.0) |
-| **iOS** | iOS 11.0+ |
-| **PC** | Windows 7+ / Linux / Mac |
-| **RAM** | 1GB mínimo |
-| **Display** | 5.0"+ (mobile) |
+| **Android** | API 21+ (Android 5.0 Lollipop) |
+| **iOS** | iOS 11.0+ (iPhone 6S+, iPad) |
+| **Orientação** | LANDSCAPE (obrigatório) |
+| **RAM** | 1 GB mínimo |
+| **Display** | 4.5"+ (portrait) = 16:9 landscape |
+| **Performance** | 60 FPS mínimo 50 FPS aceitável |
 
 ---
 
-## Decisões de Design Importantes
+## 🎯 Decisões de Design Important (Mobile Landscape)
 
-- ✋ **Lanterna é recurso vital**: Bateria 0 = Game Over
+- 📱 **Mobile-First Landscape:** Apenas horizontal (1920x1080)
+- 🎮 **Touch Native:** Joysticks virtuais, sem mouse/keyboard
+- ✋ **Lanterna é recurso vital:** Bateria 0 = Game Over
 - 👻 **5 tipos de inimigo** com progressão clara
 - 💰 **100% drop** de moedas e bateria ao matar
-- 🎮 **Controle responsivo**: Touch direto, sem delays
-- 🔊 **Feedback audio/visual** claro em eventos
+- 🎯 **Controle responsivo:** Touch direto, latência <50ms
+- 🔊 **Feedback audio/visual:** Claro para mobile environments
+- 🛡️ **Safe Area Support:** Handles notches e home indicators
 
 ---
 

@@ -15,26 +15,31 @@
 | **Render Pipeline** | Universal Render Pipeline (URP) 2D | ✅ |
 | **Input System** | Input Manager (Clássico) | ✅ |
 | **UI Framework** | TextMesh Pro (TMP) | ✅ |
-| **Target Platform** | Android/iOS (Primary), PC (Debug) | ✅ |
+| **Target Platform** | Android/iOS (Mobile Landscape Only) | ✅ |
 
 ### 1.2 Requisitos Mínimos
 
 #### Android
 - **API Mínima:** 21 (Android 5.0 Lollipop)
+- **Orientação:** LANDSCAPE (obrigatório)
 - **RAM Mínima:** 1 GB
 - **Espaço em Disco:** 150 MB
 - **Processador:** ARM v7
+- **Tela:** 4.5" a 6.5"
 
 #### iOS
 - **Versão Mínima:** iOS 11.0
+- **Orientação:** LANDSCAPE (obrigatório)
 - **RAM Mínima:** 1 GB
-- **iPad:** Compatível (landscape)
+- **Tela:** iPhone 6S+, iPad (landscape)
 - **A-series:** A9 ou superior
+- **Safe Area:** Handles notches (iPhone X+) e home indicators
 
-#### PC (Desenvolvimento)
+#### Desenvolvimento (Editor Only)
 - **SO:** Windows 7+ / macOS 10.12+ / Linux
 - **RAM:** 4 GB
 - **GPU:** Dedicada +1GB VRAM
+- **Build:** Apenas para criar builds Android/iOS
 
 ---
 
@@ -345,58 +350,56 @@ private void Move()
 
 ---
 
-## 4. Input System (Clássico)
+### 4. Input System (Mobile Touch Native)
 
-### 4.1 Configuração
-**Edit > Project Settings > Input Manager**
+### 4.1 Configuração Mobile
+**Plataforma:** Android/iOS Landscape ONLY
 
 ```
-Axis "Horizontal"
-├─ Positive Button: D
-├─ Negative Button: A
-├─ Alt Positive Button: Right Arrow
-└─ Alt Negative Button: Left Arrow
+Virtual Joystick Esquerda (Movimento)
+├─ Posição: Bottom-Left (safe area aware)
+├─ Raio de Detecção: 100px
+├─ Output: Vector2 (-1 a +1, -1 a +1)
+└─ Latência: <50ms
 
-Axis "Vertical"
-├─ Positive Button: W
-├─ Negative Button: S
-├─ Alt Positive Button: Up Arrow
-└─ Alt Negative Button: Down Arrow
-
-Button "Fire1"
-├─ Positive Button: left ctrl
-└─ Alt Positive Button: mouse 0
-
-Button "Pause"
-├─ Positive Button: p
-└─ Alt Positive Button: escape
+Virtual Joystick Direita (Mira)
+├─ Posição: Bottom-Right (safe area aware)
+├─ Raio de Detecção: 100px
+├─ Output: Ângulo (0-360°)
+└─ Latência: <50ms
 ```
 
-### 4.2 Leitura do Input
+### 4.2 Leitura do Input (Touch Mobile)
 ```csharp
-// Movimento (8 direções)
-float horizontal = Input.GetAxis("Horizontal");
-float vertical = Input.GetAxis("Vertical");
-Vector2 moveInput = new Vector2(horizontal, vertical).normalized;
-
-// Mouse/Touch
-Vector3 mousePos = Input.mousePosition;
-Vector3 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
-
-// Pause
-if (Input.GetButtonDown("Pause"))
-    GameManager.Instance.TogglePause();
-```
-
-### 4.3 Mobile Touch Input
-```csharp
+// Movimento (Joystick esquerdo)
 if (Input.touchCount > 0)
 {
     Touch touch = Input.GetTouch(0);
-    Vector3 touchWorldPos = Camera.main.ScreenToWorldPoint(touch.position);
-    Vector2 moveDir = (touchWorldPos - playerPos).normalized;
-    // Usar moveDir para mover player
+    Vector2 screenPos = touch.position;
+    
+    // Detectar joystick esquerdo OU direito
+    if (screenPos.x < Screen.width / 2)  // Esquerda
+        moveInput = GetJoystickInput(screenPos);
+    else  // Direita
+        aimInput = GetAimInput(screenPos);
 }
+```
+
+### 4.3 Safe Area Handling (Landscape)
+```csharp
+RectTransform canvasRect = GetComponent<RectTransform>();
+Rect safeArea = Screen.safeArea;
+
+// Adjust joystick positions
+leftJoystick.anchoredPosition = new Vector2(
+    safeArea.xMin + padding,
+    safeArea.yMin + padding
+);
+
+rightJoystick.anchoredPosition = new Vector2(
+    -safeArea.xMax + padding,
+    safeArea.yMin + padding
+);
 ```
 
 ---
@@ -640,10 +643,14 @@ namespace GhostBeam.Enemies
 ## 9. Regras Críticas (Core Rules)
 
 ### 9.1 Input System
-✅ Usar Input Manager (clássico)  
-✅ Usar Input.GetAxis("Horizontal") e Input.GetAxis("Vertical")  
-❌ NUNCA usar Input System novo ou PlayerInput  
-
+✅ Usar Virtual Joysticks (native touch)
+✅ Joystick esquerdo: Movimento
+✅ Joystick direito: Mira/Rotação lanterna
+✅ Safe area aware (notches, home indicators)
+✅ Touch latência <50ms
+✅ MOBILE LANDSCAPE ONLY
+❌ NUNCA usar Input Manager clássico (WASD/mouse)
+❌ NUNCA adicionar suporte a teclado/mouse
 ### 9.2 Lanterna
 ✅ Usar Light 2D tipo Spot  
 ✅ Ranio máximo: 15 unidades  
