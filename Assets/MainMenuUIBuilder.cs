@@ -18,6 +18,7 @@ public class MainMenuUIBuilder : MonoBehaviour
     private Canvas mainMenuCanvas;
     private Canvas pauseMenuCanvas;
     private Canvas settingsCanvas;
+    private Canvas shopCanvas;
     private Canvas gameOverCanvas;
     private Canvas hudCanvas;
 
@@ -25,6 +26,7 @@ public class MainMenuUIBuilder : MonoBehaviour
     private Button playButton, settingsButton, shopButton, quitButton;
     private Button resumeButton, pauseSettingsButton, pauseQuitButton;
     private Button settingsBackButton, restartButton, menuButton;
+    private Button shopBackButton, buyUpgrade1, buyUpgrade2, buyUpgrade3;
 
     [Header("HUD References")]
     private TextMeshProUGUI healthText, scoreText, highscoreText, survivalTimeText, waveText, coinsText, batteryText;
@@ -83,10 +85,11 @@ public class MainMenuUIBuilder : MonoBehaviour
 
     private void CreateCompleteUI()
     {
-        // ===== CRIAR TODOS OS 5 CANVASES =====
+        // ===== CRIAR TODOS OS 6 CANVASES =====
         mainMenuCanvas = CreateCanvas("MainMenuCanvas", true).GetComponent<Canvas>();
         pauseMenuCanvas = CreateCanvas("PauseMenuCanvas", false).GetComponent<Canvas>();
         settingsCanvas = CreateCanvas("SettingsCanvas", false).GetComponent<Canvas>();
+        shopCanvas = CreateCanvas("ShopCanvas", false).GetComponent<Canvas>();
         gameOverCanvas = CreateCanvas("GameOverCanvas", false).GetComponent<Canvas>();
         hudCanvas = CreateCanvas("HUDCanvas", false).GetComponent<Canvas>();
 
@@ -98,6 +101,9 @@ public class MainMenuUIBuilder : MonoBehaviour
 
         // ===== SETTINGS =====
         CreateSettingsUI(settingsCanvas.gameObject);
+
+        // ===== SHOP =====
+        CreateShopUI(shopCanvas.gameObject);
 
         // ===== GAME OVER =====
         CreateGameOverUI(gameOverCanvas.gameObject);
@@ -155,7 +161,7 @@ public class MainMenuUIBuilder : MonoBehaviour
         CreateMenuButton(panelObj, "BtnPlay", "PLAY", new Color(0.2f, 0.8f, 0.3f, 1f), null);
         CreateMenuButton(panelObj, "BtnShop", "LOJA", new Color(0.8f, 0.6f, 0.2f, 1f), null);
         CreateMenuButton(panelObj, "BtnSettings", "CONFIGURAÇÃO", new Color(0.3f, 0.5f, 0.8f, 1f), null);
-        CreateMenuButton(panelObj, "BtnQuit", "QUIT", new Color(0.8f, 0.2f, 0.2f, 1f), null);
+        CreateMenuButton(panelObj, "BtnQuit", "SAIR", new Color(0.8f, 0.2f, 0.2f, 1f), null);
     }
 
     // ===== PAUSE MENU =====
@@ -193,7 +199,7 @@ public class MainMenuUIBuilder : MonoBehaviour
         GameObject panelObj = new GameObject("SettingsPanel");
         panelObj.transform.SetParent(canvasObj.transform, false);
         RectTransform panelRect = panelObj.AddComponent<RectTransform>();
-        panelRect.sizeDelta = new Vector2(600, 600);
+        panelRect.sizeDelta = new Vector2(700, 700);
 
         VerticalLayoutGroup layoutGroup = panelObj.AddComponent<VerticalLayoutGroup>();
         layoutGroup.spacing = 30;
@@ -202,40 +208,210 @@ public class MainMenuUIBuilder : MonoBehaviour
         layoutGroup.childForceExpandHeight = false;
 
         // Título
-        GameObject titleObj = CreateText(panelObj, "TxtSettingsTitle", "CONFIGURAÇÃO", 60);
+        GameObject titleObj = CreateText(panelObj, "TxtSettingsTitle", "CONFIGURAÇÃO", 70);
         LayoutElement titleLayout = titleObj.AddComponent<LayoutElement>();
         titleLayout.preferredHeight = 100;
 
-        // Volume Label
-        CreateText(panelObj, "TxtVolumeLabel", "VOLUME", 30);
+        // ===== VOLUME SECTION =====
+        CreateText(panelObj, "TxtVolumeLabel", "🔊 VOLUME", 35);
+
+        // Volume Slider Container
+        GameObject sliderContainerObj = new GameObject("VolumeSliderContainer");
+        sliderContainerObj.transform.SetParent(panelObj.transform, false);
+        HorizontalLayoutGroup sliderLayout = sliderContainerObj.AddComponent<HorizontalLayoutGroup>();
+        sliderLayout.spacing = 10;
+        sliderLayout.padding = new RectOffset(10, 10, 5, 5);
+        sliderLayout.childForceExpandWidth = true;
+        sliderLayout.childForceExpandHeight = false;
+
+        // Min Volume Label
+        CreateText(sliderContainerObj, "TxtMinVolume", "0%", 20);
 
         // Volume Slider
         GameObject sliderObj = new GameObject("SliderVolume");
-        sliderObj.transform.SetParent(panelObj.transform, false);
+        sliderObj.transform.SetParent(sliderContainerObj.transform, false);
         Slider volumeSlider = sliderObj.AddComponent<Slider>();
         volumeSlider.minValue = 0;
         volumeSlider.maxValue = 1;
         volumeSlider.value = AudioListener.volume;
+        volumeSlider.direction = Slider.Direction.LeftToRight;
+        
+        // Slider background
+        Image sliderBgImage = sliderObj.AddComponent<Image>();
+        sliderBgImage.color = new Color(0.3f, 0.3f, 0.3f, 1f);
+        
         RectTransform sliderRect = sliderObj.GetComponent<RectTransform>();
-        sliderRect.sizeDelta = new Vector2(500, 50);
-        LayoutElement sliderLayout = sliderObj.AddComponent<LayoutElement>();
-        sliderLayout.preferredHeight = 50;
+        sliderRect.sizeDelta = new Vector2(400, 50);
+        LayoutElement sliderLayoutElem = sliderObj.AddComponent<LayoutElement>();
+        sliderLayoutElem.preferredWidth = 400;
+        sliderLayoutElem.preferredHeight = 50;
 
-        // Vibration Label
-        CreateText(panelObj, "TxtVibrationLabel", "VIBRAÇÃO", 30);
+        // Max Volume Label
+        CreateText(sliderContainerObj, "TxtMaxVolume", "100%", 20);
+
+        LayoutElement sliderContainerLayout = sliderContainerObj.AddComponent<LayoutElement>();
+        sliderContainerLayout.preferredHeight = 70;
+
+        // Volume Value Display
+        GameObject volumeValueObj = CreateText(panelObj, "TxtVolumeValue", $"Volume: {(int)(AudioListener.volume * 100)}%", 25);
+        volumeValueObj.GetComponent<TextMeshProUGUI>().color = new Color(0.7f, 0.9f, 1f, 1f);
+        LayoutElement volumeValueLayout = volumeValueObj.AddComponent<LayoutElement>();
+        volumeValueLayout.preferredHeight = 40;
+
+        // Separador
+        GameObject separatorObj1 = new GameObject("Separator1");
+        separatorObj1.transform.SetParent(panelObj.transform, false);
+        Image separatorImage1 = separatorObj1.AddComponent<Image>();
+        separatorImage1.color = new Color(0.5f, 0.5f, 0.5f, 0.3f);
+        RectTransform separatorRect1 = separatorObj1.GetComponent<RectTransform>();
+        separatorRect1.sizeDelta = new Vector2(500, 1);
+        LayoutElement separatorLayout1 = separatorObj1.AddComponent<LayoutElement>();
+        separatorLayout1.preferredHeight = 15;
+
+        // ===== VIBRATION SECTION =====
+        CreateText(panelObj, "TxtVibrationLabel", "📳 VIBRAÇÃO", 35);
+
+        // Vibration Toggle Container
+        GameObject toggleContainerObj = new GameObject("VibrationToggleContainer");
+        toggleContainerObj.transform.SetParent(panelObj.transform, false);
+        HorizontalLayoutGroup toggleLayout = toggleContainerObj.AddComponent<HorizontalLayoutGroup>();
+        toggleLayout.spacing = 20;
+        toggleLayout.padding = new RectOffset(10, 10, 5, 5);
+        toggleLayout.childForceExpandWidth = false;
+        toggleLayout.childForceExpandHeight = false;
 
         // Vibration Toggle
         GameObject toggleObj = new GameObject("ToggleVibration");
-        toggleObj.transform.SetParent(panelObj.transform, false);
+        toggleObj.transform.SetParent(toggleContainerObj.transform, false);
         Toggle vibrationToggle = toggleObj.AddComponent<Toggle>();
         vibrationToggle.isOn = true;
+        Image toggleBgImage = toggleObj.AddComponent<Image>();
+        toggleBgImage.color = vibrationToggle.isOn ? new Color(0.2f, 0.8f, 0.3f, 1f) : new Color(0.5f, 0.5f, 0.5f, 1f);
         RectTransform toggleRect = toggleObj.GetComponent<RectTransform>();
-        toggleRect.sizeDelta = new Vector2(500, 60);
-        LayoutElement toggleLayout = toggleObj.AddComponent<LayoutElement>();
-        toggleLayout.preferredHeight = 60;
+        toggleRect.sizeDelta = new Vector2(80, 60);
+        LayoutElement toggleLayoutElem = toggleObj.AddComponent<LayoutElement>();
+        toggleLayoutElem.preferredWidth = 80;
+        toggleLayoutElem.preferredHeight = 60;
+
+        // Vibration Status Text
+        GameObject vibrationStatusObj = CreateText(toggleContainerObj, "TxtVibrationStatus", "ON", 28);
+        vibrationStatusObj.GetComponent<TextMeshProUGUI>().color = new Color(0.2f, 0.8f, 0.3f, 1f);
+
+        LayoutElement toggleContainerLayout = toggleContainerObj.AddComponent<LayoutElement>();
+        toggleContainerLayout.preferredHeight = 80;
+
+        // Separador
+        GameObject separatorObj2 = new GameObject("Separator2");
+        separatorObj2.transform.SetParent(panelObj.transform, false);
+        Image separatorImage2 = separatorObj2.AddComponent<Image>();
+        separatorImage2.color = new Color(0.5f, 0.5f, 0.5f, 0.3f);
+        RectTransform separatorRect2 = separatorObj2.GetComponent<RectTransform>();
+        separatorRect2.sizeDelta = new Vector2(500, 1);
+        LayoutElement separatorLayout2 = separatorObj2.AddComponent<LayoutElement>();
+        separatorLayout2.preferredHeight = 15;
+
+        // ===== ABOUT SECTION =====
+        CreateText(panelObj, "TxtAbout", "ℹ️ SOBRE", 25);
+        CreateText(panelObj, "TxtAboutDesc", "GHOSTBEAM v1.1\nPor Ghost Beam Dev Team", 18).GetComponent<TextMeshProUGUI>().color = new Color(0.7f, 0.7f, 0.7f, 1f);
 
         // Botão Voltar - callback adicionado em SetupEventListeners()
-        CreateMenuButton(panelObj, "BtnSettingsBack", "BACK", new Color(0.5f, 0.5f, 0.5f, 1f), null);
+        CreateMenuButton(panelObj, "BtnSettingsBack", "VOLTAR", new Color(0.5f, 0.5f, 0.5f, 1f), null);
+    }
+
+    // ===== SHOP MENU =====
+    private void CreateShopUI(GameObject canvasObj)
+    {
+        CreateBackground(canvasObj, new Color(0.1f, 0.1f, 0.15f, 1f));
+
+        GameObject panelObj = new GameObject("ShopPanel");
+        panelObj.transform.SetParent(canvasObj.transform, false);
+        RectTransform panelRect = panelObj.AddComponent<RectTransform>();
+        panelRect.sizeDelta = new Vector2(700, 800);
+
+        VerticalLayoutGroup layoutGroup = panelObj.AddComponent<VerticalLayoutGroup>();
+        layoutGroup.spacing = 25;
+        layoutGroup.padding = new RectOffset(60, 60, 60, 60);
+        layoutGroup.childForceExpandWidth = true;
+        layoutGroup.childForceExpandHeight = false;
+
+        // Título
+        GameObject titleObj = CreateText(panelObj, "TxtShopTitle", "LOJA", 70);
+        LayoutElement titleLayout = titleObj.AddComponent<LayoutElement>();
+        titleLayout.preferredHeight = 100;
+
+        // Coins Display
+        GameObject coinsDisplayObj = CreateText(panelObj, "TxtCoinsDisplay", "Moedas: 0", 35);
+        LayoutElement coinsLayout = coinsDisplayObj.AddComponent<LayoutElement>();
+        coinsLayout.preferredHeight = 50;
+
+        // Separador
+        GameObject separatorObj = new GameObject("Separator");
+        separatorObj.transform.SetParent(panelObj.transform, false);
+        Image separatorImage = separatorObj.AddComponent<Image>();
+        separatorImage.color = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+        RectTransform separatorRect = separatorObj.GetComponent<RectTransform>();
+        separatorRect.sizeDelta = new Vector2(500, 2);
+        LayoutElement separatorLayout = separatorObj.AddComponent<LayoutElement>();
+        separatorLayout.preferredHeight = 10;
+
+        // Upgrade 1: Lanterna Melhorada
+        CreateShopItem(panelObj, "Upgrade1", "LANTERNA MELHORADA", "Dano +10%\nCusto: 50 moedas", "BuyUpgrade1", 0.2f, 0.6f, 0.8f);
+
+        // Upgrade 2: Bateria Maior
+        CreateShopItem(panelObj, "Upgrade2", "BATERIA MAIOR", "Duração +30%\nCusto: 75 moedas", "BuyUpgrade2", 0.8f, 0.6f, 0.2f);
+
+        // Upgrade 3: Velocidade
+        CreateShopItem(panelObj, "Upgrade3", "VELOCIDADE", "Movimento +20%\nCusto: 60 moedas", "BuyUpgrade3", 0.2f, 0.8f, 0.3f);
+
+        // Botão Voltar
+        CreateMenuButton(panelObj, "BtnShopBack", "VOLTAR", new Color(0.5f, 0.5f, 0.5f, 1f), null);
+    }
+
+    // Função auxiliar para criar items da loja
+    private void CreateShopItem(GameObject parentObj, string itemName, string title, string description, string buttonName, float r, float g, float b)
+    {
+        GameObject itemObj = new GameObject(itemName);
+        itemObj.transform.SetParent(parentObj.transform, false);
+        RectTransform itemRect = itemObj.AddComponent<RectTransform>();
+        itemRect.sizeDelta = new Vector2(600, 120);
+
+        HorizontalLayoutGroup hLayout = itemObj.AddComponent<HorizontalLayoutGroup>();
+        hLayout.spacing = 15;
+        hLayout.padding = new RectOffset(15, 15, 10, 10);
+        hLayout.childForceExpandWidth = true;
+        hLayout.childForceExpandHeight = true;
+
+        // Descrição (esquerda)
+        GameObject descObj = new GameObject("Description");
+        descObj.transform.SetParent(itemObj.transform, false);
+        RectTransform descRect = descObj.AddComponent<RectTransform>();
+        
+        VerticalLayoutGroup vLayout = descObj.AddComponent<VerticalLayoutGroup>();
+        vLayout.spacing = 5;
+        vLayout.childForceExpandWidth = true;
+        vLayout.childForceExpandHeight = false;
+
+        TextMeshProUGUI titleText = CreateText(descObj, "Title", title, 28).GetComponent<TextMeshProUGUI>();
+        titleText.alignment = TextAlignmentOptions.Left;
+        
+        TextMeshProUGUI descText = CreateText(descObj, "Desc", description, 16).GetComponent<TextMeshProUGUI>();
+        descText.alignment = TextAlignmentOptions.Left;
+        descText.color = new Color(0.8f, 0.8f, 0.8f, 1f);
+
+        // Botão de compra (direita)
+        GameObject btnObj = new GameObject(buttonName);
+        btnObj.transform.SetParent(itemObj.transform, false);
+        Button buyBtn = btnObj.AddComponent<Button>();
+        Image btnImage = btnObj.AddComponent<Image>();
+        btnImage.color = new Color(r, g, b, 1f);
+        RectTransform btnRect = btnObj.GetComponent<RectTransform>();
+        btnRect.sizeDelta = new Vector2(150, 100);
+
+        TextMeshProUGUI btnText = CreateText(btnObj, "TextBuy", "COMPRAR", 24).GetComponent<TextMeshProUGUI>();
+        btnText.alignment = TextAlignmentOptions.Center;
+
+        LayoutElement itemLayout = itemObj.AddComponent<LayoutElement>();
+        itemLayout.preferredHeight = 130;
     }
 
     // ===== GAME OVER MENU =====
@@ -417,8 +593,8 @@ public class MainMenuUIBuilder : MonoBehaviour
 
         if (playButton != null) playButton.onClick.AddListener(OnPlayClick);
         if (settingsButton != null) settingsButton.onClick.AddListener(OnSettingsClick);
-        if (shopButton != null) shopButton.onClick.AddListener(() => Debug.Log("Shop não implementado"));
-        if (quitButton != null) quitButton.onClick.AddListener(() => Application.Quit());
+        if (shopButton != null) shopButton.onClick.AddListener(OnShopClick);
+        if (quitButton != null) quitButton.onClick.AddListener(OnQuitClick);
 
         // Pause Menu
         resumeButton = transform.Find("PauseMenuCanvas/PausePanel/BtnResume")?.GetComponent<Button>();
@@ -439,6 +615,17 @@ public class MainMenuUIBuilder : MonoBehaviour
             volumeSlider.onValueChanged.AddListener(SetVolume);
         }
         if (settingsBackButton != null) settingsBackButton.onClick.AddListener(OnSettingsBackClick);
+
+        // Shop
+        shopBackButton = transform.Find("ShopCanvas/ShopPanel/BtnShopBack")?.GetComponent<Button>();
+        buyUpgrade1 = transform.Find("ShopCanvas/ShopPanel/Upgrade1/BuyUpgrade1")?.GetComponent<Button>();
+        buyUpgrade2 = transform.Find("ShopCanvas/ShopPanel/Upgrade2/BuyUpgrade2")?.GetComponent<Button>();
+        buyUpgrade3 = transform.Find("ShopCanvas/ShopPanel/Upgrade3/BuyUpgrade3")?.GetComponent<Button>();
+
+        if (shopBackButton != null) shopBackButton.onClick.AddListener(OnShopBackClick);
+        if (buyUpgrade1 != null) buyUpgrade1.onClick.AddListener(() => OnBuyUpgrade(1, 50));
+        if (buyUpgrade2 != null) buyUpgrade2.onClick.AddListener(() => OnBuyUpgrade(2, 75));
+        if (buyUpgrade3 != null) buyUpgrade3.onClick.AddListener(() => OnBuyUpgrade(3, 60));
 
         // Game Over
         gameOverScoreText = transform.Find("GameOverCanvas/GameOverPanel/TxtGameOverScore")?.GetComponent<TextMeshProUGUI>();
@@ -469,6 +656,7 @@ public class MainMenuUIBuilder : MonoBehaviour
         mainMenuCanvas.gameObject.SetActive(true);
         pauseMenuCanvas.gameObject.SetActive(false);
         settingsCanvas.gameObject.SetActive(false);
+        shopCanvas.gameObject.SetActive(false);
         gameOverCanvas.gameObject.SetActive(false);
         hudCanvas.gameObject.SetActive(false);
         Time.timeScale = 1f;
@@ -482,6 +670,7 @@ public class MainMenuUIBuilder : MonoBehaviour
         mainMenuCanvas.gameObject.SetActive(false);
         pauseMenuCanvas.gameObject.SetActive(true);
         settingsCanvas.gameObject.SetActive(false);
+        shopCanvas.gameObject.SetActive(false);
         gameOverCanvas.gameObject.SetActive(false);
         hudCanvas.gameObject.SetActive(false);
         Time.timeScale = 0f;
@@ -493,6 +682,7 @@ public class MainMenuUIBuilder : MonoBehaviour
         mainMenuCanvas.gameObject.SetActive(false);
         pauseMenuCanvas.gameObject.SetActive(false);
         settingsCanvas.gameObject.SetActive(false);
+        shopCanvas.gameObject.SetActive(false);
         gameOverCanvas.gameObject.SetActive(false);
         hudCanvas.gameObject.SetActive(true);
         Time.timeScale = 1f;
@@ -506,6 +696,7 @@ public class MainMenuUIBuilder : MonoBehaviour
         mainMenuCanvas.gameObject.SetActive(false);
         pauseMenuCanvas.gameObject.SetActive(false);
         settingsCanvas.gameObject.SetActive(false);
+        shopCanvas.gameObject.SetActive(false);
         gameOverCanvas.gameObject.SetActive(true);
         hudCanvas.gameObject.SetActive(false);
         
@@ -525,6 +716,16 @@ public class MainMenuUIBuilder : MonoBehaviour
     public void HideSettings()
     {
         settingsCanvas.gameObject.SetActive(false);
+    }
+
+    public void ShowShop()
+    {
+        shopCanvas.gameObject.SetActive(true);
+    }
+
+    public void HideShop()
+    {
+        shopCanvas.gameObject.SetActive(false);
     }
 
     // ===== BUTTON CALLBACKS =====
@@ -551,12 +752,64 @@ public class MainMenuUIBuilder : MonoBehaviour
         ShowSettings();
     }
 
+    private void OnShopClick()
+    {
+        ShowShop();
+    }
+
+    private void OnQuitClick()
+    {
+        Debug.Log("[MainMenuUIBuilder] Encerrando aplicação...");
+        Time.timeScale = 1f; // Garantir que o tempo está normal
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #else
+            Application.Quit();
+        #endif
+    }
+
     private void OnSettingsBackClick()
     {
         HideSettings();
         if (isInGameplay && isPaused)
         {
             pauseMenuCanvas.gameObject.SetActive(true);
+        }
+    }
+
+    private void OnShopBackClick()
+    {
+        HideShop();
+    }
+
+    private void OnBuyUpgrade(int upgradeId, int cost)
+    {
+        if (ScoreManager.Instance != null)
+        {
+            bool success = ScoreManager.Instance.TrySpendCoins(cost);
+            if (success)
+            {
+                Debug.Log($"[Shop] Upgrade {upgradeId} comprado por {cost} moedas! Moedas restantes: {ScoreManager.Instance.Coins}");
+                
+                // TODO: Aplicar efeito do upgrade baseado no upgradeId
+                // Isso depende de como os upgrades serão implementados no jogo
+                switch (upgradeId)
+                {
+                    case 1: // Lanterna Melhorada
+                        Debug.Log("[Shop] +10% de dano na lanterna aplicado!");
+                        break;
+                    case 2: // Bateria Maior
+                        Debug.Log("[Shop] +30% de duração da bateria aplicado!");
+                        break;
+                    case 3: // Velocidade
+                        Debug.Log("[Shop] +20% de velocidade de movimento aplicado!");
+                        break;
+                }
+            }
+            else
+            {
+                Debug.Log($"[Shop] Moedas insuficientes! Precisa de {cost}, tem {ScoreManager.Instance.Coins}");
+            }
         }
     }
 
