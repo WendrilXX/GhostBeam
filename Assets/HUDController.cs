@@ -4,14 +4,14 @@ using System.Collections;
 
 public class HUDController : MonoBehaviour
 {
-    public TMP_Text healthText;
-    public TMP_Text scoreText;
-    public TMP_Text highscoreText;
-    public TMP_Text batteryText;
-    public TMP_Text coinsText;
-    public TMP_Text survivalTimeText;
-    public TMP_Text stageText;
-    public TMP_Text performanceText;
+    [HideInInspector] public TMP_Text healthText;
+    [HideInInspector] public TMP_Text scoreText;
+    [HideInInspector] public TMP_Text highscoreText;
+    [HideInInspector] public TMP_Text batteryText;
+    [HideInInspector] public TMP_Text coinsText;
+    [HideInInspector] public TMP_Text survivalTimeText;
+    [HideInInspector] public TMP_Text stageText;
+    [HideInInspector] public TMP_Text performanceText;
 
     private HealthSystem healthSystem;
     private ScoreManager scoreManager;
@@ -64,7 +64,15 @@ public class HUDController : MonoBehaviour
 
     private void Start()
     {
-        AutoAssignIfMissing();
+        // Tenta atribuição automática
+        if (healthText == null) healthText = FindTMPByName(HealthObjectName);
+        if (scoreText == null) scoreText = FindTMPByName(ScoreObjectName);
+        if (highscoreText == null) highscoreText = FindTMPByName(HighscoreObjectName);
+        if (batteryText == null) batteryText = FindTMPByName(BatteryObjectName);
+        if (coinsText == null) coinsText = FindTMPByName(CoinsObjectName);
+        if (survivalTimeText == null) survivalTimeText = FindTMPByName(SurvivalTimeObjectName);
+        if (stageText == null) stageText = FindTMPByName(StageObjectName);
+        if (performanceText == null) performanceText = FindTMPByName(PerformanceObjectName);
 
         if (healthText != null) healthText.text = "Vida: -";
         if (scoreText != null) scoreText.text = "Score: 0";

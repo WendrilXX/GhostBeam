@@ -3,6 +3,16 @@ using UnityEngine.SceneManagement;
 
 public partial class GameManager
 {
+    public void StartGameplay()
+    {
+        StartGameplayFromMenu();
+    }
+
+    public void ReturnToMenu()
+    {
+        ReturnToMainMenu();
+    }
+
     public void StartGameplayFromMenu()
     {
         if (!IsInMainMenu)

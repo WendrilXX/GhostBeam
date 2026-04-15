@@ -29,7 +29,7 @@ public class SpawnManager : MonoBehaviour
     public float minimumSpawnInterval = 0.75f;
     public float spawnAcceleration = 0.025f;
     public int maxEnemies = 20;
-    public float spawnMargin = 2f;
+    public float spawnMargin = 8f;  // Aumentado de 2f para mais distância (fantasmas não nascem perto de Luna)
     public int enemyPoolPrewarm = 24;
 
     [Header("Difficulty Stages")]
@@ -63,6 +63,8 @@ public class SpawnManager : MonoBehaviour
     private int performanceFrames;
     private readonly Dictionary<EnemyArchetype, ObjectPool> enemyPools = new Dictionary<EnemyArchetype, ObjectPool>();
     private DifficultyStage currentStage;
+
+    public DifficultyStage CurrentDifficultyStage => currentStage;
 
     private void OnValidate()
     {
@@ -386,18 +388,16 @@ public class SpawnManager : MonoBehaviour
         float halfW = camWidth * 0.5f + spawnMargin;
         float halfH = camHeight * 0.5f + spawnMargin;
 
-        int side = Random.Range(0, 4);
-        switch (side)
-        {
-            case 0:
-                return new Vector2(center.x - halfW, Random.Range(center.y - halfH, center.y + halfH));
-            case 1:
-                return new Vector2(center.x + halfW, Random.Range(center.y - halfH, center.y + halfH));
-            case 2:
-                return new Vector2(Random.Range(center.x - halfW, center.x + halfW), center.y + halfH);
-            default:
-                return new Vector2(Random.Range(center.x - halfW, center.x + halfW), center.y - halfH);
-        }
+        Vector2 topLeft = new Vector2(center.x - halfW, center.y + halfH);
+        Vector2 topRight = new Vector2(center.x + halfW, center.y + halfH);
+        Vector2 bottomLeft = new Vector2(center.x - halfW, center.y - halfH);
+        Vector2 bottomRight = new Vector2(center.x + halfW, center.y - halfH);
+
+        Vector2[] corners = { topLeft, topRight, bottomLeft, bottomRight };
+        Vector2 corner = corners[Random.Range(0, corners.Length)];
+
+        float jitter = Mathf.Max(0.6f, spawnMargin * 0.6f);
+        return corner + new Vector2(Random.Range(-jitter, jitter), Random.Range(-jitter, jitter));
     }
 
     private int CountEnemies()

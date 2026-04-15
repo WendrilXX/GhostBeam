@@ -1,17 +1,19 @@
 using UnityEngine;
 
-#if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-using UnityEngine.InputSystem;
-#endif
-
+/// <summary>
+/// Controlador principal de Luna.
+/// Gerencia movimento, rotação e game logic.
+/// </summary>
 public class LunaController : MonoBehaviour
 {
+    [Header("Movement")]
     public float speed = 5f;
     public bool useTouchMoveOnMobile = true;
     public float joystickRadiusPixels = 130f;
     [Range(0.3f, 0.7f)] public float movementZoneSplit = 0.5f;
     public bool showTouchMoveOverlay = true;
 
+    private Rigidbody2D rb2d;
     private int movementFingerId = -1;
     private Vector2 joystickStartScreen;
     private Vector2 joystickInput;
@@ -29,17 +31,6 @@ public class LunaController : MonoBehaviour
 
     private void Awake()
     {
-        // Garantir que Luna tem Rigidbody2D para colisões funcionarem
-        Rigidbody2D rb = GetComponent<Rigidbody2D>();
-        if (rb == null)
-        {
-            rb = gameObject.AddComponent<Rigidbody2D>();
-            rb.gravityScale = 0f;
-            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-            rb.bodyType = RigidbodyType2D.Kinematic;
-        }
-
-        // Garantir que Luna tem Collider2D para permitir colisões
         CircleCollider2D collider = GetComponent<CircleCollider2D>();
         if (collider == null)
         {
@@ -48,19 +39,52 @@ public class LunaController : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void Start()
     {
-        if (Application.isMobilePlatform && useTouchMoveOnMobile)
+        if (GameManager.Instance != null && GameManager.Instance.IsInMainMenu)
         {
-            HandleTouchJoystickMovement();
-            return;
+            GameManager.Instance.StartGameplayFromMenu();
         }
 
-        Vector2 moveInput = ReadMoveInput();
-        float moveX = moveInput.x;
-        float moveY = moveInput.y;
+        rb2d = GetComponent<Rigidbody2D>();
+        if (rb2d == null)
+        {
+            rb2d = gameObject.AddComponent<Rigidbody2D>();
+        }
+        
+        rb2d.bodyType = RigidbodyType2D.Dynamic;
+        rb2d.simulated = true;
+        rb2d.gravityScale = 0f;
+        rb2d.constraints = RigidbodyConstraints2D.FreezeRotation;
+        rb2d.linearVelocity = Vector2.zero;
+    }
 
-        transform.position += new Vector3(moveX, moveY, 0f) * speed * Time.deltaTime;
+    private void Update()
+    {
+        bool isRealMobile = Application.platform == RuntimePlatform.Android || 
+                           Application.platform == RuntimePlatform.IPhonePlayer;
+
+        if (isRealMobile && useTouchMoveOnMobile)
+        {
+            HandleTouchJoystickMovement();
+        }
+        else
+        {
+            Vector2 moveInput = ReadMoveInput();
+            
+            if (moveInput.sqrMagnitude > 0)
+            {
+                Vector2 movement = moveInput * speed;
+                rb2d.linearVelocity = movement;
+                Debug.Log($"🚀 LUNA MOVEU! Velocity: {movement}");
+            }
+            else
+            {
+                rb2d.linearVelocity = Vector2.zero;
+            }
+        }
+
+        RotateTowardFlashlight();
     }
 
     private void HandleTouchJoystickMovement()
@@ -70,13 +94,14 @@ public class LunaController : MonoBehaviour
         if (movementFingerId == -1)
         {
             joystickInput = Vector2.zero;
+            rb2d.linearVelocity = Vector2.zero;
             return;
         }
 
-        int touchCount = GetTouchCount();
+        int touchCount = Input.touchCount;
         for (int i = 0; i < touchCount; i++)
         {
-            TouchData touch = GetTouchAt(i);
+            Touch touch = Input.GetTouch(i);
             if (touch.fingerId != movementFingerId)
             {
                 continue;
@@ -86,6 +111,7 @@ public class LunaController : MonoBehaviour
             {
                 movementFingerId = -1;
                 joystickInput = Vector2.zero;
+                rb2d.linearVelocity = Vector2.zero;
                 return;
             }
 
@@ -93,13 +119,14 @@ public class LunaController : MonoBehaviour
             delta = Vector2.ClampMagnitude(delta, joystickRadiusPixels);
             joystickInput = delta / Mathf.Max(1f, joystickRadiusPixels);
 
-            Vector3 movement = new Vector3(joystickInput.x, joystickInput.y, 0f) * speed * Time.deltaTime;
-            transform.position += movement;
+            Vector2 movement = joystickInput * speed;
+            rb2d.linearVelocity = movement;
             return;
         }
 
         movementFingerId = -1;
         joystickInput = Vector2.zero;
+        rb2d.linearVelocity = Vector2.zero;
     }
 
     private void AcquireMovementFinger()
@@ -110,10 +137,10 @@ public class LunaController : MonoBehaviour
         }
 
         float movementZoneMaxX = Screen.width * movementZoneSplit;
-        int touchCount = GetTouchCount();
+        int touchCount = Input.touchCount;
         for (int i = 0; i < touchCount; i++)
         {
-            TouchData touch = GetTouchAt(i);
+            Touch touch = Input.GetTouch(i);
             if (touch.phase != TouchPhase.Began)
             {
                 continue;
@@ -133,122 +160,35 @@ public class LunaController : MonoBehaviour
 
     private Vector2 ReadMoveInput()
     {
-#if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
         Vector2 move = Vector2.zero;
 
-        Keyboard keyboard = Keyboard.current;
-        if (keyboard != null)
-        {
-            if (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed) move.x -= 1f;
-            if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed) move.x += 1f;
-            if (keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed) move.y -= 1f;
-            if (keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed) move.y += 1f;
-        }
-
-        Gamepad gamepad = Gamepad.current;
-        if (gamepad != null)
-        {
-            Vector2 stick = gamepad.leftStick.ReadValue();
-            if (stick.sqrMagnitude > move.sqrMagnitude)
-            {
-                move = stick;
-            }
-        }
+        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) move.y += 1f;
+        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) move.y -= 1f;
+        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) move.x -= 1f;
+        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) move.x += 1f;
 
         return Vector2.ClampMagnitude(move, 1f);
-#else
-        return new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-#endif
     }
 
-    private int GetTouchCount()
+    private void RotateTowardFlashlight()
     {
-#if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-        Touchscreen screen = Touchscreen.current;
-        if (screen == null)
+        Transform flashlight = transform.Find("Flashlight");
+        if (flashlight == null)
         {
-            return 0;
+            return;
         }
 
-        int count = 0;
-        ReadOnlyArray<TouchControl> touches = screen.touches;
-        for (int i = 0; i < touches.Count; i++)
+        Vector3 flashlightDir = flashlight.position - transform.position;
+        
+        if (flashlightDir.sqrMagnitude < 0.01f)
         {
-            TouchControl t = touches[i];
-            if (t.press.isPressed || t.phase.ReadValue() != UnityEngine.InputSystem.TouchPhase.None)
-            {
-                count++;
-            }
+            return;
         }
 
-        return count;
-#else
-        return Input.touchCount;
-#endif
+        float angle = Mathf.Atan2(flashlightDir.y, flashlightDir.x) * Mathf.Rad2Deg;
+        Quaternion targetRotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
     }
-
-    private TouchData GetTouchAt(int index)
-    {
-#if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-        Touchscreen screen = Touchscreen.current;
-        int current = 0;
-        if (screen != null)
-        {
-            ReadOnlyArray<TouchControl> touches = screen.touches;
-            for (int i = 0; i < touches.Count; i++)
-            {
-                TouchControl t = touches[i];
-                if (!(t.press.isPressed || t.phase.ReadValue() != UnityEngine.InputSystem.TouchPhase.None))
-                {
-                    continue;
-                }
-
-                if (current == index)
-                {
-                    return new TouchData
-                    {
-                        fingerId = (int)t.touchId.ReadValue(),
-                        position = t.position.ReadValue(),
-                        phase = ConvertTouchPhase(t.phase.ReadValue())
-                    };
-                }
-
-                current++;
-            }
-        }
-
-        return default;
-#else
-        Touch touch = Input.GetTouch(index);
-        return new TouchData
-        {
-            fingerId = touch.fingerId,
-            position = touch.position,
-            phase = touch.phase
-        };
-#endif
-    }
-
-#if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-    private static TouchPhase ConvertTouchPhase(UnityEngine.InputSystem.TouchPhase phase)
-    {
-        switch (phase)
-        {
-            case UnityEngine.InputSystem.TouchPhase.Began:
-                return TouchPhase.Began;
-            case UnityEngine.InputSystem.TouchPhase.Moved:
-                return TouchPhase.Moved;
-            case UnityEngine.InputSystem.TouchPhase.Stationary:
-                return TouchPhase.Stationary;
-            case UnityEngine.InputSystem.TouchPhase.Ended:
-                return TouchPhase.Ended;
-            case UnityEngine.InputSystem.TouchPhase.Canceled:
-                return TouchPhase.Canceled;
-            default:
-                return TouchPhase.Canceled;
-        }
-    }
-#endif
 
     private void OnGUI()
     {

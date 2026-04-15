@@ -42,7 +42,15 @@ public partial class GameManager : MonoBehaviour
 
         if (shouldStartInMenu)
         {
-            EnterMainMenuState();
+            // If this scene already has Luna, assume gameplay scene and start it.
+            if (FindAnyObjectByType<LunaController>() != null)
+            {
+                StartGameplayState();
+            }
+            else
+            {
+                EnterMainMenuState();
+            }
         }
         else
         {

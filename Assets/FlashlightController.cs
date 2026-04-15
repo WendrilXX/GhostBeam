@@ -1,11 +1,8 @@
 using UnityEngine;
 
-#if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-using UnityEngine.InputSystem;
-#endif
-
 public class FlashlightController : MonoBehaviour
 {
+    [Header("Touch Aiming Settings")]
     public bool useTouchAimOnMobile = true;
     [Range(0.3f, 0.7f)] public float aimZoneSplit = 0.5f;
     public float aimJoystickRadiusPixels = 130f;
@@ -55,7 +52,7 @@ public class FlashlightController : MonoBehaviour
         }
         else
         {
-            Vector2 screenAim = ReadPointerPosition();
+            Vector2 screenAim = Input.mousePosition;
             aimPoint = cam.ScreenToWorldPoint(screenAim);
         }
 
@@ -78,10 +75,10 @@ public class FlashlightController : MonoBehaviour
 
         if (aimFingerId != -1)
         {
-            int touchCount = GetTouchCount();
+            int touchCount = Input.touchCount;
             for (int i = 0; i < touchCount; i++)
             {
-                TouchData activeTouch = GetTouchAt(i);
+                Touch activeTouch = Input.GetTouch(i);
                 if (activeTouch.fingerId != aimFingerId)
                 {
                     continue;
@@ -111,10 +108,10 @@ public class FlashlightController : MonoBehaviour
             aimInput = Vector2.zero;
         }
 
-        int beginTouchCount = GetTouchCount();
+        int beginTouchCount = Input.touchCount;
         for (int i = 0; i < beginTouchCount; i++)
         {
-            TouchData touch = GetTouchAt(i);
+            Touch touch = Input.GetTouch(i);
             if (touch.phase != TouchPhase.Began)
             {
                 continue;
@@ -134,110 +131,6 @@ public class FlashlightController : MonoBehaviour
         aimInput = Vector2.zero;
         return false;
     }
-
-    private Vector2 ReadPointerPosition()
-    {
-#if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-        Pointer pointer = Pointer.current;
-        if (pointer != null)
-        {
-            return pointer.position.ReadValue();
-        }
-
-        return Vector2.zero;
-#else
-        return Input.mousePosition;
-#endif
-    }
-
-    private int GetTouchCount()
-    {
-#if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-        Touchscreen screen = Touchscreen.current;
-        if (screen == null)
-        {
-            return 0;
-        }
-
-        int count = 0;
-        ReadOnlyArray<TouchControl> touches = screen.touches;
-        for (int i = 0; i < touches.Count; i++)
-        {
-            TouchControl t = touches[i];
-            if (t.press.isPressed || t.phase.ReadValue() != UnityEngine.InputSystem.TouchPhase.None)
-            {
-                count++;
-            }
-        }
-
-        return count;
-#else
-        return Input.touchCount;
-#endif
-    }
-
-    private TouchData GetTouchAt(int index)
-    {
-#if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-        Touchscreen screen = Touchscreen.current;
-        int current = 0;
-        if (screen != null)
-        {
-            ReadOnlyArray<TouchControl> touches = screen.touches;
-            for (int i = 0; i < touches.Count; i++)
-            {
-                TouchControl t = touches[i];
-                if (!(t.press.isPressed || t.phase.ReadValue() != UnityEngine.InputSystem.TouchPhase.None))
-                {
-                    continue;
-                }
-
-                if (current == index)
-                {
-                    return new TouchData
-                    {
-                        fingerId = (int)t.touchId.ReadValue(),
-                        position = t.position.ReadValue(),
-                        phase = ConvertTouchPhase(t.phase.ReadValue())
-                    };
-                }
-
-                current++;
-            }
-        }
-
-        return default;
-#else
-        Touch touch = Input.GetTouch(index);
-        return new TouchData
-        {
-            fingerId = touch.fingerId,
-            position = touch.position,
-            phase = touch.phase
-        };
-#endif
-    }
-
-#if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
-    private static TouchPhase ConvertTouchPhase(UnityEngine.InputSystem.TouchPhase phase)
-    {
-        switch (phase)
-        {
-            case UnityEngine.InputSystem.TouchPhase.Began:
-                return TouchPhase.Began;
-            case UnityEngine.InputSystem.TouchPhase.Moved:
-                return TouchPhase.Moved;
-            case UnityEngine.InputSystem.TouchPhase.Stationary:
-                return TouchPhase.Stationary;
-            case UnityEngine.InputSystem.TouchPhase.Ended:
-                return TouchPhase.Ended;
-            case UnityEngine.InputSystem.TouchPhase.Canceled:
-                return TouchPhase.Canceled;
-            default:
-                return TouchPhase.Canceled;
-        }
-    }
-#endif
 
     private void OnGUI()
     {
