@@ -787,7 +787,7 @@ public class MainMenuController : MonoBehaviour
         if (masterVolumeLabel != null)
         {
             int percent = Mathf.RoundToInt(SettingsManager.Instance.MasterVolume * 100f);
-            masterVolumeLabel.text = "🔊 VOLUME MASTER: " + percent + "%";
+            masterVolumeLabel.text = "[VOLUME] MASTER: " + percent + "%";
             masterVolumeLabel.fontSize = 28;
         }
 
@@ -799,7 +799,7 @@ public class MainMenuController : MonoBehaviour
         if (vibrationButtonLabel != null)
         {
             string vibState = SettingsManager.Instance.VibrationEnabled ? "✓ ON" : "✗ OFF";
-            vibrationButtonLabel.text = $"📳 VIBRAÇÃO: {vibState}";
+            vibrationButtonLabel.text = $"[VIBRATION]: {vibState}";
             vibrationButtonLabel.fontSize = 26;
         }
 

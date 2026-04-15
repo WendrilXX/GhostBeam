@@ -110,7 +110,7 @@ public class BatterySystem : MonoBehaviour
 
         if (IsDisabled && CurrentBattery > 0f)
         {
-            Debug.Log("🔦 Flashlight ligando novamente!");
+            Debug.Log("Flashlight is back on!");
             IsDisabled = false;
             blackoutTimer = 0f;
             SetFlashlightEnabled(true);

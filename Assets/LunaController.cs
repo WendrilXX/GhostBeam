@@ -76,7 +76,7 @@ public class LunaController : MonoBehaviour
             {
                 Vector2 movement = moveInput * speed;
                 rb2d.linearVelocity = movement;
-                Debug.Log($"🚀 LUNA MOVEU! Velocity: {movement}");
+                Debug.Log($"LUNA MOVED! Velocity: {movement}");
             }
             else
             {

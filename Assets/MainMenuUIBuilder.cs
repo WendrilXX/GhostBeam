@@ -53,12 +53,12 @@ public class MainMenuUIBuilder : MonoBehaviour
             GameObject eventSystemObj = new GameObject("EventSystem");
             eventSystemObj.AddComponent<EventSystem>();
             eventSystemObj.AddComponent<StandaloneInputModule>();
-            Debug.Log("[MainMenuUIBuilder] ✅ EventSystem criado automaticamente");
+            Debug.Log("[MainMenuUIBuilder] EventSystem created automatically");
         }
 
         if (transform.Find("MainMenuCanvas") == null)
         {
-            Debug.Log("[MainMenuUIBuilder] 🎮 Criando UI completa...");
+            Debug.Log("[MainMenuUIBuilder] Creating complete UI...");
             CreateCompleteUI();
             SetupEventListeners();
             ShowMainMenu();
@@ -213,7 +213,7 @@ public class MainMenuUIBuilder : MonoBehaviour
         titleLayout.preferredHeight = 100;
 
         // ===== VOLUME SECTION =====
-        CreateText(panelObj, "TxtVolumeLabel", "🔊 VOLUME", 35);
+        CreateText(panelObj, "TxtVolumeLabel", "[VOLUME]", 35);
 
         // Volume Slider Container
         GameObject sliderContainerObj = new GameObject("VolumeSliderContainer");
@@ -269,7 +269,7 @@ public class MainMenuUIBuilder : MonoBehaviour
         separatorLayout1.preferredHeight = 15;
 
         // ===== VIBRATION SECTION =====
-        CreateText(panelObj, "TxtVibrationLabel", "📳 VIBRAÇÃO", 35);
+        CreateText(panelObj, "TxtVibrationLabel", "[VIBRATION]", 35);
 
         // Vibration Toggle Container
         GameObject toggleContainerObj = new GameObject("VibrationToggleContainer");
@@ -311,7 +311,7 @@ public class MainMenuUIBuilder : MonoBehaviour
         separatorLayout2.preferredHeight = 15;
 
         // ===== ABOUT SECTION =====
-        CreateText(panelObj, "TxtAbout", "ℹ️ SOBRE", 25);
+        CreateText(panelObj, "TxtAbout", "[INFO] ABOUT", 25);
         CreateText(panelObj, "TxtAboutDesc", "GHOSTBEAM v1.1\nPor Ghost Beam Dev Team", 18).GetComponent<TextMeshProUGUI>().color = new Color(0.7f, 0.7f, 0.7f, 1f);
 
         // Botão Voltar - callback adicionado em SetupEventListeners()
@@ -779,6 +779,10 @@ public class MainMenuUIBuilder : MonoBehaviour
         {
             pauseMenuCanvas.gameObject.SetActive(true);
         }
+        else if (!isInGameplay)
+        {
+            ShowMainMenu();
+        }
     }
 
     private void OnShopBackClick()
@@ -793,11 +797,37 @@ public class MainMenuUIBuilder : MonoBehaviour
             bool success = UpgradeManager.Instance.TryPurchaseShopUpgrade(upgradeId, cost);
             if (success)
             {
-                Debug.Log($"[MainMenuUIBuilder] ✅ Upgrade {upgradeId} comprado!");
+                Debug.Log($"[MainMenuUIBuilder] Upgrade {upgradeId} purchased!");
                 // Atualizar descrição do upgrade na UI
                 UpdateShopUI();
             }
+            else
+            {
+                // Show insufficient coins message
+                ShowInsufficientCoinsMessage(upgradeId, cost);
+            }
         }
+    }
+
+    /// <summary>
+    /// Shows insufficient coins notification
+    /// </summary>
+    private void ShowInsufficientCoinsMessage(int upgradeId, int cost)
+    {
+        string upgradeName = upgradeId switch
+        {
+            1 => "Flashlight Upgrade",
+            2 => "Battery Upgrade",
+            3 => "Speed Upgrade",
+            _ => "Unknown Upgrade"
+        };
+
+        int currentCoins = ScoreManager.Instance != null ? ScoreManager.Instance.Coins : 0;
+        string message = $"Insufficient coins to purchase {upgradeName}. Need: {cost}, Have: {currentCoins}";
+        Debug.LogWarning($"[Shop] {message}");
+
+        // Optional: Create a temporary UI notification (canvas overlay)
+        // For now, just logging to console
     }
 
     /// <summary>

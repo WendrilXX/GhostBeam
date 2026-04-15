@@ -201,7 +201,7 @@ public class UpgradeManager : MonoBehaviour
                 {
                     FlashlightDamageLevel++;
                     success = true;
-                    Debug.Log($"[UpgradeManager] ⚡ Dano da lanterna: +10% (Nível {FlashlightDamageLevel}/{maxShopUpgradePurchases})");
+                    Debug.Log($"[UpgradeManager] Flashlight Damage: +10% (Level {FlashlightDamageLevel}/{maxShopUpgradePurchases})");
                 }
                 break;
 
@@ -210,7 +210,7 @@ public class UpgradeManager : MonoBehaviour
                 {
                     BatteryCapacityLevel++;
                     success = true;
-                    Debug.Log($"[UpgradeManager] 🔋 Capacidade de bateria: +30% (Nível {BatteryCapacityLevel}/{maxShopUpgradePurchases})");
+                    Debug.Log($"[UpgradeManager] Battery Capacity: +30% (Level {BatteryCapacityLevel}/{maxShopUpgradePurchases})");
                 }
                 break;
 
@@ -219,7 +219,7 @@ public class UpgradeManager : MonoBehaviour
                 {
                     MovementSpeedLevel++;
                     success = true;
-                    Debug.Log($"[UpgradeManager] 💨 Velocidade: +20% (Nível {MovementSpeedLevel}/{maxShopUpgradePurchases})");
+                    Debug.Log($"[UpgradeManager] Movement Speed: +20% (Level {MovementSpeedLevel}/{maxShopUpgradePurchases})");
                 }
                 break;
         }
@@ -316,6 +316,6 @@ public class UpgradeManager : MonoBehaviour
         PlayerPrefs.SetInt(MovementSpeedKey, MovementSpeedLevel);
         
         PlayerPrefs.Save();
-        Debug.Log("[UpgradeManager] 💾 Upgrades salvos com sucesso");
+        Debug.Log("[UpgradeManager] Upgrades saved successfully");
     }
 }
