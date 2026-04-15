@@ -21,6 +21,7 @@ public class MainMenuUIBuilder : MonoBehaviour
     private Canvas shopCanvas;
     private Canvas gameOverCanvas;
     private Canvas hudCanvas;
+    private Canvas tutorialCanvas;
 
     [Header("Button References")]
     private Button playButton, settingsButton, shopButton, quitButton;
@@ -85,13 +86,14 @@ public class MainMenuUIBuilder : MonoBehaviour
 
     private void CreateCompleteUI()
     {
-        // ===== CRIAR TODOS OS 6 CANVASES =====
+        // ===== CRIAR TODOS OS 7 CANVASES =====
         mainMenuCanvas = CreateCanvas("MainMenuCanvas", true).GetComponent<Canvas>();
         pauseMenuCanvas = CreateCanvas("PauseMenuCanvas", false).GetComponent<Canvas>();
         settingsCanvas = CreateCanvas("SettingsCanvas", false).GetComponent<Canvas>();
         shopCanvas = CreateCanvas("ShopCanvas", false).GetComponent<Canvas>();
         gameOverCanvas = CreateCanvas("GameOverCanvas", false).GetComponent<Canvas>();
         hudCanvas = CreateCanvas("HUDCanvas", false).GetComponent<Canvas>();
+        tutorialCanvas = CreateCanvas("TutorialCanvas", false).GetComponent<Canvas>();
 
         // ===== MAIN MENU =====
         CreateMainMenuUI(mainMenuCanvas.gameObject);
@@ -104,6 +106,9 @@ public class MainMenuUIBuilder : MonoBehaviour
 
         // ===== SHOP =====
         CreateShopUI(shopCanvas.gameObject);
+
+        // ===== TUTORIAL =====
+        CreateTutorialUI(tutorialCanvas.gameObject);
 
         // ===== GAME OVER =====
         CreateGameOverUI(gameOverCanvas.gameObject);
@@ -160,6 +165,7 @@ public class MainMenuUIBuilder : MonoBehaviour
         // Botões - callbacks adicionados em SetupEventListeners()
         CreateMenuButton(panelObj, "BtnPlay", "PLAY", new Color(0.2f, 0.8f, 0.3f, 1f), null);
         CreateMenuButton(panelObj, "BtnShop", "LOJA", new Color(0.8f, 0.6f, 0.2f, 1f), null);
+        CreateMenuButton(panelObj, "BtnTutorial", "📚 TUTORIAL", new Color(0.5f, 0.6f, 0.8f, 1f), null);
         CreateMenuButton(panelObj, "BtnSettings", "CONFIGURAÇÃO", new Color(0.3f, 0.5f, 0.8f, 1f), null);
         CreateMenuButton(panelObj, "BtnQuit", "SAIR", new Color(0.8f, 0.2f, 0.2f, 1f), null);
     }
@@ -414,6 +420,170 @@ public class MainMenuUIBuilder : MonoBehaviour
         itemLayout.preferredHeight = 130;
     }
 
+    // ===== TUTORIAL =====
+    private void CreateTutorialUI(GameObject canvasObj)
+    {
+        CreateBackground(canvasObj, new Color(0, 0, 0, 0.9f));
+
+        GameObject panelObj = new GameObject("TutorialPanel");
+        panelObj.transform.SetParent(canvasObj.transform, false);
+        RectTransform panelRect = panelObj.AddComponent<RectTransform>();
+        panelRect.anchoredPosition = Vector2.zero;
+        panelRect.sizeDelta = new Vector2(1000, 900);
+
+        Image panelBg = panelObj.AddComponent<Image>();
+        panelBg.color = new Color(0.1f, 0.1f, 0.15f, 0.95f);
+
+        // Título
+        GameObject titleObj = CreateText(panelObj, "Title", "📚 GUIA DA LOJA 📚", 48);
+        RectTransform titleRect = titleObj.GetComponent<RectTransform>();
+        titleRect.anchoredPosition = new Vector2(0, 400);
+
+        // Conteúdo do Tutorial
+        ScrollRect scroll = panelObj.AddComponent<ScrollRect>();
+        scroll.vertical = true;
+        scroll.horizontal = false;
+
+        GameObject contentObj = new GameObject("Content");
+        contentObj.transform.SetParent(panelObj.transform, false);
+        RectTransform contentRect = contentObj.AddComponent<RectTransform>();
+        contentRect.sizeDelta = new Vector2(950, 1200);
+        contentRect.anchoredPosition = new Vector2(0, 50);
+
+        VerticalLayoutGroup layoutGroup = contentObj.AddComponent<VerticalLayoutGroup>();
+        layoutGroup.spacing = 20;
+        layoutGroup.childForceExpandHeight = false;
+
+        // Seção 1: Como Ganhar Moedas
+        CreateTutorialSection(contentObj, "🪙 COMO GANHAR MOEDAS", 
+            new string[] {
+                "• Derrote inimigos: Ganhe moedas",
+                "• Sobreviva mais tempo: Mais moedas",
+                "• Colete pickups de moeda: +50 moedas"
+            });
+
+        // Seção 2: Sobre Upgrades
+        CreateTutorialSection(contentObj, "⚡ O QUE SÃO UPGRADES?", 
+            new string[] {
+                "Upgrades aprimoram suas habilidades permanentemente",
+                "Cada upgrade pode ser comprado até 3 vezes",
+                "Os bônus se acumulam (3x = efeito máximo)",
+                "Seus upgrades são salvos entre sessões!"
+            });
+
+        // Seção 3: Upgrade 1
+        CreateTutorialUpgradeInfo(contentObj, 1, "⚡ LANTERNA MELHORADA", "+10% de dano por compra");
+
+        // Seção 4: Upgrade 2
+        CreateTutorialUpgradeInfo(contentObj, 2, "🔋 BATERIA MAIOR", "+30% de duração da bateria");
+
+        // Seção 5: Upgrade 3
+        CreateTutorialUpgradeInfo(contentObj, 3, "💨 VELOCIDADE", "+20% de movimento");
+
+        // Seção 6: Dicas
+        CreateTutorialSection(contentObj, "💡 DICAS PROFISSIONAIS", 
+            new string[] {
+                "• Priorize a velocidade para sobreviver mais",
+                "• Aumente o dano para derrotar inimigos rápido",
+                "• Bateria maior = mais tempo atacando",
+                "• Combine upgrades para máximo potencial!"
+            });
+
+        scroll.content = contentRect;
+
+        // Botão Voltar
+        CreateMenuButton(panelObj, "BackButton", "← VOLTAR", new Color(0.5f, 0.5f, 0.5f, 1f), null);
+        
+        // Encontrar o botão e adicionar o callback
+        Button backBtn = panelObj.transform.Find("BackButton")?.GetComponent<Button>();
+        if (backBtn != null) backBtn.onClick.AddListener(HideTutorial);
+    }
+
+    /// <summary>
+    /// Cria uma seção de tutorial com múltiplas linhas
+    /// </summary>
+    private void CreateTutorialSection(GameObject parent, string title, string[] lines)
+    {
+        GameObject sectionObj = new GameObject("Section");
+        sectionObj.transform.SetParent(parent.transform, false);
+        LayoutElement sectionLayout = sectionObj.AddComponent<LayoutElement>();
+        sectionLayout.preferredHeight = 50 + (lines.Length * 30);
+
+        VerticalLayoutGroup sectionGroup = sectionObj.AddComponent<VerticalLayoutGroup>();
+        sectionGroup.childForceExpandHeight = false;
+        sectionGroup.spacing = 5;
+
+        // Título da seção
+        TextMeshProUGUI titleText = CreateText(sectionObj, "SectionTitle", title, 32)
+            .GetComponent<TextMeshProUGUI>();
+        titleText.color = new Color(1f, 0.8f, 0.3f);
+        titleText.alignment = TextAlignmentOptions.BottomLeft;
+
+        // Conteúdo
+        foreach (string line in lines)
+        {
+            TextMeshProUGUI lineText = CreateText(sectionObj, "Line", line, 20)
+                .GetComponent<TextMeshProUGUI>();
+            lineText.color = new Color(0.9f, 0.9f, 0.9f);
+            lineText.alignment = TextAlignmentOptions.BottomLeft;
+            lineText.fontSize = 20;
+        }
+    }
+
+    /// <summary>
+    /// Cria informações sobre um upgrade específico no tutorial
+    /// </summary>
+    private void CreateTutorialUpgradeInfo(GameObject parent, int upgradeId, string title, string bonus)
+    {
+        GameObject upgradeObj = new GameObject("Upgrade" + upgradeId);
+        upgradeObj.transform.SetParent(parent.transform, false);
+        LayoutElement upgradeLayout = upgradeObj.AddComponent<LayoutElement>();
+        upgradeLayout.preferredHeight = 120;
+
+        Image upgradeBg = upgradeObj.AddComponent<Image>();
+        upgradeBg.color = new Color(0.15f, 0.15f, 0.25f);
+
+        VerticalLayoutGroup upgradeGroup = upgradeObj.AddComponent<VerticalLayoutGroup>();
+        upgradeGroup.childForceExpandHeight = false;
+        upgradeGroup.spacing = 5;
+        upgradeGroup.padding = new RectOffset(15, 15, 10, 10);
+
+        // Título
+        TextMeshProUGUI titleText = CreateText(upgradeObj, "Title", title, 28)
+            .GetComponent<TextMeshProUGUI>();
+        titleText.color = new Color(1f, 0.8f, 0.3f);
+
+        // Bonus
+        TextMeshProUGUI bonusText = CreateText(upgradeObj, "Bonus", bonus, 22)
+            .GetComponent<TextMeshProUGUI>();
+        bonusText.color = new Color(0.7f, 1f, 0.7f);
+
+        // Descrição completa
+        string desc = UpgradeManager.Instance != null 
+            ? UpgradeManager.Instance.GetShopUpgradeDescription(upgradeId)
+            : "Upgrade desconhecido";
+        
+        TextMeshProUGUI descText = CreateText(upgradeObj, "Desc", desc, 18)
+            .GetComponent<TextMeshProUGUI>();
+        descText.color = new Color(0.8f, 0.8f, 0.8f);
+    }
+
+    /// <summary>
+    /// Mostra o tutorial
+    /// </summary>
+    public void ShowTutorial()
+    {
+        tutorialCanvas.gameObject.SetActive(true);
+    }
+
+    /// <summary>
+    /// Esconde o tutorial
+    /// </summary>
+    public void HideTutorial()
+    {
+        tutorialCanvas.gameObject.SetActive(false);
+    }
+
     // ===== GAME OVER MENU =====
     private void CreateGameOverUI(GameObject canvasObj)
     {
@@ -590,10 +760,12 @@ public class MainMenuUIBuilder : MonoBehaviour
         settingsButton = transform.Find("MainMenuCanvas/PanelMenu/BtnSettings")?.GetComponent<Button>();
         shopButton = transform.Find("MainMenuCanvas/PanelMenu/BtnShop")?.GetComponent<Button>();
         quitButton = transform.Find("MainMenuCanvas/PanelMenu/BtnQuit")?.GetComponent<Button>();
+        Button tutorialButton = transform.Find("MainMenuCanvas/PanelMenu/BtnTutorial")?.GetComponent<Button>();
 
         if (playButton != null) playButton.onClick.AddListener(OnPlayClick);
         if (settingsButton != null) settingsButton.onClick.AddListener(OnSettingsClick);
         if (shopButton != null) shopButton.onClick.AddListener(OnShopClick);
+        if (tutorialButton != null) tutorialButton.onClick.AddListener(OnTutorialClick);
         if (quitButton != null) quitButton.onClick.AddListener(OnQuitClick);
 
         // Pause Menu
@@ -657,6 +829,7 @@ public class MainMenuUIBuilder : MonoBehaviour
         pauseMenuCanvas.gameObject.SetActive(false);
         settingsCanvas.gameObject.SetActive(false);
         shopCanvas.gameObject.SetActive(false);
+        tutorialCanvas.gameObject.SetActive(false);
         gameOverCanvas.gameObject.SetActive(false);
         hudCanvas.gameObject.SetActive(false);
         Time.timeScale = 1f;
@@ -671,6 +844,7 @@ public class MainMenuUIBuilder : MonoBehaviour
         pauseMenuCanvas.gameObject.SetActive(true);
         settingsCanvas.gameObject.SetActive(false);
         shopCanvas.gameObject.SetActive(false);
+        tutorialCanvas.gameObject.SetActive(false);
         gameOverCanvas.gameObject.SetActive(false);
         hudCanvas.gameObject.SetActive(false);
         Time.timeScale = 0f;
@@ -683,6 +857,7 @@ public class MainMenuUIBuilder : MonoBehaviour
         pauseMenuCanvas.gameObject.SetActive(false);
         settingsCanvas.gameObject.SetActive(false);
         shopCanvas.gameObject.SetActive(false);
+        tutorialCanvas.gameObject.SetActive(false);
         gameOverCanvas.gameObject.SetActive(false);
         hudCanvas.gameObject.SetActive(true);
         Time.timeScale = 1f;
@@ -697,6 +872,7 @@ public class MainMenuUIBuilder : MonoBehaviour
         pauseMenuCanvas.gameObject.SetActive(false);
         settingsCanvas.gameObject.SetActive(false);
         shopCanvas.gameObject.SetActive(false);
+        tutorialCanvas.gameObject.SetActive(false);
         gameOverCanvas.gameObject.SetActive(true);
         hudCanvas.gameObject.SetActive(false);
         
@@ -721,6 +897,7 @@ public class MainMenuUIBuilder : MonoBehaviour
     public void ShowShop()
     {
         shopCanvas.gameObject.SetActive(true);
+        UpdateShopUI();
     }
 
     public void HideShop()
@@ -757,6 +934,11 @@ public class MainMenuUIBuilder : MonoBehaviour
         ShowShop();
     }
 
+    private void OnTutorialClick()
+    {
+        ShowTutorial();
+    }
+
     private void OnQuitClick()
     {
         Debug.Log("[MainMenuUIBuilder] Encerrando aplicação...");
@@ -784,31 +966,39 @@ public class MainMenuUIBuilder : MonoBehaviour
 
     private void OnBuyUpgrade(int upgradeId, int cost)
     {
-        if (ScoreManager.Instance != null)
+        if (UpgradeManager.Instance != null)
         {
-            bool success = ScoreManager.Instance.TrySpendCoins(cost);
+            bool success = UpgradeManager.Instance.TryPurchaseShopUpgrade(upgradeId, cost);
             if (success)
             {
-                Debug.Log($"[Shop] Upgrade {upgradeId} comprado por {cost} moedas! Moedas restantes: {ScoreManager.Instance.Coins}");
-                
-                // TODO: Aplicar efeito do upgrade baseado no upgradeId
-                // Isso depende de como os upgrades serão implementados no jogo
-                switch (upgradeId)
-                {
-                    case 1: // Lanterna Melhorada
-                        Debug.Log("[Shop] +10% de dano na lanterna aplicado!");
-                        break;
-                    case 2: // Bateria Maior
-                        Debug.Log("[Shop] +30% de duração da bateria aplicado!");
-                        break;
-                    case 3: // Velocidade
-                        Debug.Log("[Shop] +20% de velocidade de movimento aplicado!");
-                        break;
-                }
+                Debug.Log($"[MainMenuUIBuilder] ✅ Upgrade {upgradeId} comprado!");
+                // Atualizar descrição do upgrade na UI
+                UpdateShopUI();
             }
-            else
+        }
+    }
+
+    /// <summary>
+    /// Atualiza descrições dos upgrades na Loja
+    /// </summary>
+    private void UpdateShopUI()
+    {
+        if (UpgradeManager.Instance == null) return;
+
+        // Atualizar descrição de cada upgrade
+        for (int i = 1; i <= 3; i++)
+        {
+            TextMeshProUGUI descText = transform.Find($"ShopCanvas/ShopPanel/Upgrade{i}/Description/Desc")?.GetComponent<TextMeshProUGUI>();
+            if (descText != null)
             {
-                Debug.Log($"[Shop] Moedas insuficientes! Precisa de {cost}, tem {ScoreManager.Instance.Coins}");
+                descText.text = UpgradeManager.Instance.GetShopUpgradeDescription(i);
+            }
+
+            // Desabilitar botão se máximo já foi atingido
+            Button buyBtn = transform.Find($"ShopCanvas/ShopPanel/Upgrade{i}/BuyUpgrade{i}")?.GetComponent<Button>();
+            if (buyBtn != null)
+            {
+                buyBtn.interactable = UpgradeManager.Instance.CanPurchaseShopUpgrade(i);
             }
         }
     }
