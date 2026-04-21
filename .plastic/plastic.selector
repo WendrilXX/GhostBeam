@@ -1,4 +1,0 @@
-repository "GhostBeam/GhostBeam@4673118872979@cloud"
-  path "/"
-    br "/main"
-    co "/main"
