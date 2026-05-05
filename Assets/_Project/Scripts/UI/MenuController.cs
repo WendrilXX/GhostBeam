@@ -153,6 +153,7 @@ namespace GhostBeam.UI
         
         private void Update()
         {
+#if UNITY_EDITOR
             // Test mouse input in realtime
             if (Input.GetMouseButtonDown(0))
             {
@@ -178,6 +179,7 @@ namespace GhostBeam.UI
                     Debug.Log($"[MenuController] Play button - interactable:{btnPlay.interactable}, active:{btnPlay.gameObject.activeSelf}");
                 }
             }
+#endif
         }
 
         private void OnPlayClick()
