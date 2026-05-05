@@ -6,15 +6,19 @@
 [Bb]uilds/
 [Ll]ogs/
 [Uu]ser[Ss]ettings/
+MemoryCaptures/
+Recordings/
 .vs/
 .vscode/
 *.csproj
 *.sln
 *.user
 *.VC.db
+*.pidb
+*.booproj
+*.svd
 
 # Package cache
-Packages/
 .gradle/
 .m2/
 
@@ -23,8 +27,18 @@ GhostBeam_BurstDebugInformation_DoNotShip/
 Temp/
 obj/
 bin/
-*.asset
 .utmp/
+*.apk
+*.aab
+*.unitypackage
+*.app
+*.ipa
+*.xcodeproj
+*.xcworkspace
+*.xcuserstate
+*.xcuserdata/
+*.gradle
+crashlytics-build.properties
 
 # OS specific
 .DS_Store
@@ -37,6 +51,8 @@ Thumbs.db
 
 # IDE
 .idea/
+*.suo
+*.userprefs
 *.swp
 *.swo
 *~
