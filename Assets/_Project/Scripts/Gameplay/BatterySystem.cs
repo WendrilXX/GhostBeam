@@ -6,8 +6,11 @@ namespace GhostBeam.Gameplay
 {
     public class BatterySystem : MonoBehaviour
     {
+        private const string BatteryUpgradeTierKey = "Upgrade_Battery_Tier";
+        private const int MaxBatteryTier = 3;
+
         [SerializeField] private float maxBattery = 150f;
-        [SerializeField] private float drainRate = 10f;
+        [SerializeField] private float drainRate = 2f;
 
         private float currentBattery;
         private bool isLighting = false;
@@ -21,6 +24,11 @@ namespace GhostBeam.Gameplay
 
         private void Awake()
         {
+            int batteryTier = Mathf.Clamp(PlayerPrefs.GetInt(BatteryUpgradeTierKey, 0), 0, 3);
+            float baseMaxBattery = maxBattery;
+            float tierFactor = batteryTier / (float)MaxBatteryTier;
+            maxBattery = baseMaxBattery * (1f + tierFactor);
+
             currentBattery = maxBattery;
         }
 
@@ -62,6 +70,7 @@ namespace GhostBeam.Gameplay
         {
             isLighting = false;
             onBatteryDepleted?.Invoke();
+            Managers.GameManager.TriggerGameOver();
         }
 
         public void UpgradeMaxBattery(float additionalCapacity)

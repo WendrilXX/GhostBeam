@@ -43,12 +43,16 @@ CHECKLIST DE VALIDAÇÃO - EXECUTE ANTES DE BUILD
    [ ] Clique SHOP - abre painel de shop
    [ ] Clique SETTINGS - abre painel de configurações
    [ ] Clique QUIT - fecha o jogo
+   [ ] Loja: botao VOLTAR visivel e clicavel
+   [ ] Loja: 4 cards visiveis (sem sobreposicao)
 
 5️⃣ TESTE DE CICLO COMPLETO:
    [ ] Menu → Clique PLAY
    [ ] Gameplay → WSAD move, mouse apunta, inimigos spawniam
    [ ] Game Over → Clique RETRY ou MENU
    [ ] Retorna ao Menu
+   [ ] Spawn continua apos 30s de gameplay
+   [ ] Sprites dos inimigos mudam por direcao
 
 6️⃣ TESTE DE PERFORMANCE:
    [ ] Abra Console (Ctrl+Shift+C)

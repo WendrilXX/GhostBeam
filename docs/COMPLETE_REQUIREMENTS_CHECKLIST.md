@@ -150,19 +150,19 @@
 ### Shop/Upgrade Panel
 - [ ] **Shop Controller**
   - [ ] **Upgrade 1: Lanterna Melhorada (Improved Flashlight)**
-    - [ ] Cost: 100 coins
-    - [ ] Effect: +10% range per level
-    - [ ] Max level: 5
+    - [ ] Cost: 750 / 1250 / 1850 coins
+    - [ ] Effect: 2x intensidade no tier 3
+    - [ ] Max level: 3
     - [ ] Display cost and current level
-  - [ ] **Upgrade 2: Bateria Extra (Extra Battery)**
-    - [ ] Cost: 100 coins
-    - [ ] Effect: +50 battery capacity per level
+  - [ ] **Upgrade 2: Bateria Melhorada (Improved Battery)**
+    - [ ] Cost: 1000 / 1600 / 2300 coins
+    - [ ] Effect: 2x capacidade no tier 3
     - [ ] Max level: 3
     - [ ] Display cost and current level
   - [ ] **Upgrade 3: Vida Extra (Extra Life)**
-    - [ ] Cost: 150 coins
-    - [ ] Effect: +1 health per level
-    - [ ] Max level: 2
+    - [ ] Cost: 150 / 150 / 150 coins
+    - [ ] Effect: +1 vida por tier (max 6)
+    - [ ] Max level: 3
     - [ ] Display cost and current level
   - [ ] Buy button for each upgrade
   - [ ] Coin balance display
@@ -239,8 +239,8 @@
 
 ### Battery System
 - [ ] **Battery System**
-  - [ ] Maximum capacity: 150 points
-  - [ ] Drain rate: 10 pts/sec when illuminating
+  - [ ] Maximum capacity: 2x no tier 3
+  - [ ] Drain rate: 2 pts/sec when illuminating
   - [ ] No drain when flashlight off
   - [ ] Event: onBatteryDepleted
   - [ ] Event: onBatteryChanged
@@ -306,7 +306,7 @@
   - [ ] Spawns pickups on death
   - [ ] Adds score on death
   - [ ] Collision damage: -1 HP to Luna on contact
-  - [ ] Sprite rotation toward Luna
+  - [ ] Sprite direcional por arquétipo
 
 - [ ] **Enemy Types (5 Total)**
   1. **PENADO (Basic)**

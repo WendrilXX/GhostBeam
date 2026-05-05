@@ -2,9 +2,17 @@
 ## Do Zero ao Jogo Funcional
 
 **Versão:** 1.1  
-**Data:** 15 de Abril de 2026  
+**Data:** 04 de Maio de 2026  
 **Tempo Estimado Total:** 8-12 horas (ou 2-3 dias de desenvolvimento)  
 **Plataforma:** Mobile (iOS/Android) com fallback Desktop
+
+## Atualizacoes Recentes (04/05/2026)
+
+- Loja: botao VOLTAR visivel + cards menores
+- Upgrades: Vida Extra (max 6), bateria 2x (tier 3), poder 2x (tier 3)
+- Spawn: continua depois de 30s (contador corrigido)
+- Inimigos: sprites por direcao e arquétipo + auto bind no editor
+- Mobile: joystick/touch separados (sem conflito)
 
 ---
 

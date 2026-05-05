@@ -1,6 +1,6 @@
 # 🎮 GhostBeam - Status de Reconstrução
-**Data:** 20 de Abril de 2026  
-**Status:** ✅ PRONTO PARA SETUP NO UNITY
+**Data:** 04 de Maio de 2026  
+**Status:** ✅ PRONTO PARA BUILD MOBILE
 
 ---
 
@@ -87,45 +87,13 @@ Assets/_Project/
 
 ## ⏳ FALTA FAZER (No Unity Editor)
 
-### 1. Scenes (30 min)
-- [ ] Create Gameplay.unity scene
-  - [ ] Main Camera (orthographic, size 7.5)
-  - [ ] Global Light 2D (intensity 0)
-  - [ ] Background sprite (blue)
-  - [ ] Luna with components
-  - [ ] Flashlight (Light2D Spot)
-  - [ ] Systems (GameManager, etc.)
-  - [ ] UI Canvas with HUD
+### 1. Sprites Inimigos (10 min)
+- [ ] Rodar: GhostBeam > Tools > Auto Bind Enemy Sprites
+- [ ] Verificar direcoes por arquétipo no Gameplay
 
-- [ ] Create MainMenu.unity scene
-  - [ ] Canvas with buttons
-  - [ ] Background
-  - [ ] SceneBootstrapper
-
-### 2. Prefabs (15 min)
-- [ ] Enemy.prefab (circle sprite, EnemyController)
-- [ ] BatteryPickup.prefab (yellow circle)
-- [ ] CoinPickup.prefab (orange circle)
-
-### 3. Assign References (15 min)
-- [ ] SpawnManager: Assign Enemy Prefab
-- [ ] BatteryPickupSpawner: Assign Prefab
-- [ ] CoinPickupSpawner: Assign Prefab
-- [ ] HUDController: Link all text fields
-- [ ] GameOverPanelController: Link buttons
-
-### 4. Configure Build (5 min)
-- [ ] File > Build Settings
-- [ ] Add Gameplay & MainMenu scenes
-- [ ] Set startup scene
-- [ ] Player Settings: 1920x1080, Landscape, Android API 21+
-
-### 5. Test & Validate (5 min)
-- [ ] Play Gameplay scene
-- [ ] Verify Luna moves
-- [ ] Verify inimigos spawn
-- [ ] Verify HUD updates
-- [ ] Check game over
+### 2. Build Mobile (10 min)
+- [ ] Build Settings: Android/iOS
+- [ ] Testar performance e input touch
 
 ---
 
@@ -159,9 +127,9 @@ Assets/_Project/
 | Scripts | ✅ | 100% |
 | Estrutura | ✅ | 100% |
 | Documentação | ✅ | 100% |
-| Scenes | ⏳ | 0% |
-| Prefabs | ⏳ | 0% |
-| **Total** | **50%** | **50%** |
+| Scenes | ✅ | 100% |
+| Prefabs | ✅ | 100% |
+| **Total** | **90%** | **90%** |
 
 ---
 

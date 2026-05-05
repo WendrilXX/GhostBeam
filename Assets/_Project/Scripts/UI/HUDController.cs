@@ -25,6 +25,10 @@ namespace GhostBeam.UI
                 healthSystem = FindAnyObjectByType<Gameplay.HealthSystem>();
             if (batterySystem == null)
                 batterySystem = FindAnyObjectByType<Gameplay.BatterySystem>();
+
+            // Fail-safe: guarantee a GameOver controller exists in gameplay scene.
+            if (FindAnyObjectByType<GameOverPanelController>() == null)
+                gameObject.AddComponent<GameOverPanelController>();
         }
 
         private void Start()

@@ -1,4 +1,8 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace GhostBeam.Managers
 {
@@ -7,8 +11,20 @@ namespace GhostBeam.Managers
     {
         public static AudioManager Instance { get; private set; }
 
+#if UNITY_EDITOR
+        private const string DefaultMenuClickSfxPath = "Assets/_Project/Audio/SFX/Edited/snd_base_boss_prehit.ogg";
+#endif
+
+        [Header("Music")]
+        [SerializeField] private AudioClip menuMusic;
+        [SerializeField] private AudioClip gameplayMusic;
+
+        [Header("SFX")]
+        [SerializeField] private AudioClip menuClickSfx;
+
         private AudioSource musicSource;
         private float masterVolume = 1f;
+        private string lastMusicSceneName;
 
         public float MasterVolume 
         { 
@@ -34,11 +50,34 @@ namespace GhostBeam.Managers
             
             musicSource = GetComponent<AudioSource>();
             LoadSettings();
+
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (menuClickSfx == null)
+            {
+                menuClickSfx = AssetDatabase.LoadAssetAtPath<AudioClip>(DefaultMenuClickSfxPath);
+            }
+        }
+#endif
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                SceneManager.sceneLoaded -= OnSceneLoaded;
+            }
         }
 
         public void PlayMusic(AudioClip clip, bool loop = true)
         {
             if (musicSource == null || clip == null)
+                return;
+
+            if (musicSource.isPlaying && musicSource.clip == clip)
                 return;
 
             musicSource.clip = clip;
@@ -74,6 +113,43 @@ namespace GhostBeam.Managers
             masterVolume = PlayerPrefs.GetFloat("MasterVolume", 1f);
             if (musicSource != null)
                 musicSource.volume = masterVolume;
+        }
+
+        public void PlayMenuMusic()
+        {
+            if (menuMusic != null)
+                PlayMusic(menuMusic, true);
+        }
+
+        public void PlayGameplayMusic()
+        {
+            if (gameplayMusic != null)
+                PlayMusic(gameplayMusic, true);
+        }
+
+        public void PlayMenuClick()
+        {
+            if (menuClickSfx != null)
+                PlaySFX(menuClickSfx, 1f);
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            if (scene.name == lastMusicSceneName)
+                return;
+
+            if (scene.name == "MainMenu")
+            {
+                PlayMenuMusic();
+                lastMusicSceneName = scene.name;
+                return;
+            }
+
+            if (scene.name == "Gameplay")
+            {
+                PlayGameplayMusic();
+                lastMusicSceneName = scene.name;
+            }
         }
 
         public void SaveSettings()

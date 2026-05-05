@@ -1,8 +1,17 @@
 # 📊 Ghost Beam - Project Status & Roadmap
 
-**Versão:** 1.1  
-**Data de Última Atualização:** 14 de Abril de 2026  
-**Status:** MVP Pronto (85% desenvolvimento)
+**Versão:** 1.2  
+**Data de Última Atualização:** 04 de Maio de 2026  
+**Status:** MVP Pronto (90% desenvolvimento)
+
+## 0. Atualizacoes Recentes (04/05/2026)
+
+- ✅ Loja: botao VOLTAR visivel e cards menores
+- ✅ Upgrades: Vida Extra (max 6 vidas), bateria 2x no tier 3, poder 2x no tier 3
+- ✅ Spawn: nao para apos 30s (contador sincronizado com destruicao)
+- ✅ Sprites inimigos: direcoes por arquétipo + auto bind no editor
+- ✅ Mobile: joystick/touch separados (sem conflito)
+- ✅ Audio: musica de menu/gameplay + SFX de clique no menu
 
 ---
 
@@ -16,7 +25,7 @@
 | **Inimigos (5 tipos)** | ██████████ 100% | ✅ Completo | Todos com IA e balanceamento |
 | **Items & Economy** | ██████████ 100% | ✅ Completo | Moedas, pickups, upgrades |
 | **UI & Menus (Landscape)** | ██████████ 100% | ✅ Completo | Menu, HUD, Game Over, Shop |
-| **Audio** | ████████☐☐ 80% | ⏳ Parcial | SFX base, music placeholder |
+| **Audio** | █████████☐ 90% | ⏳ Parcial | Musica menu/gameplay, SFX menu |
 | **Mobile Touch Controls** | ██████████ 100% | ✅ Completo | Joysticks virtuais, safe area |
 | **Polish & Optimization** | ██████░░░░ 60% | ⏳ Em progresso | Partículas, screen effects, performance |
 | **Testes em Device Real** | ██░░░░░░░░ 20% | ⏳ Próximo | Android/iOS testing necessário |
@@ -47,61 +56,48 @@
 
 ---
 
-## 2. Balanceamento v1.1 (14/04/2026)
+## 2. Balanceamento v1.2 (04/05/2026)
 
 ### 2.1 Mudanças Oficiais
 
 #### Recursos Vitais
 ```diff
 BATERIA
-- Capacidade: 100 → 150 pts (+50%)
-- Drenagem: 12 → 10 pts/seg (-17%)
-- Tempo máximo: ~8.3s → ~15s (+80%)
-
-SCORE
-- Ganho por segundo: 1 → 5 pts (+500%)
-- Ganho por kill: 15 pts (sem mudança)
-- Feedback: Muito melhor visualmente
+- Drenagem: 2 pts/seg (ajuste atual)
+- Upgrade: capacidade 2x no tier 3
 
 VIDA
-- Quantidade: 3 vidas (sem mudança)
-- Upgrade custo: 200 → 150 moedas (-25%)
+- Maximo: 6 vidas com Vida Extra (tier 3)
+
+LANTERNA
+- Poder: 2x intensidade no tier 3
 ```
 
 #### Economia
 ```diff
-UPGRADES
-- Lanterna: 150 → 100 moedas (-33%)
-- Bateria: 150 → 100 moedas (-33%)
-- Vida: 200 → 150 moedas (-25%)
-- Redução média: -30% mais acessível
-
-PICKUPS
-- Taxa de drop: 100% (normal)
-- Multiplicadores: Aumentados +20%
-  • Penado: 1.0x → 1.0x
-  • Ictericia: 1.1x → 1.1x
-  • Ectogangue: 1.0x → 1.0x
-  • Tita: 1.5x → 1.5x
-  • Espectro: 1.2x → 1.2x
+UPGRADES (3 tiers)
+- Aumento de Feixe: 500/900/1400
+- Poder da Lanterna: 750/1250/1850
+- Bateria Melhorada: 1000/1600/2300
+- Vida Extra: 150/150/150
 ```
 
 #### Spawn & Dificuldade
 ```diff
 STAGE 1 (0-35s)
-- Spawn interval: 2.0s-1.2s → 2.8s-1.6s (+40% mais suave)
-- Max simultâneos: 4 → 6
-- Tipos: Penado, Ictericia apenas
+- Spawn interval: 2.8s → 1.6s
+- Max simultâneos: 6
+- Tipos: Penado, Ictericia
 
 STAGE 2 (35-125s)
-- Spawn interval: 1.1s-0.9s → 1.4s-1.0s (+27% menos caótico)
-- Max simultâneos: 10 → 12
+- Spawn interval: 1.4s → 1.0s
+- Max simultâneos: 6
 - Todos tipos aparecem (distribuição balanceada)
 
 STAGE 3 (125s+)
-- Spawn interval: 0.95s-0.75s (sem mudança)
-- Max simultâneos: 16 → 18
-- Distribuição: Aleatória (pressão máxima)
+- Spawn interval: 0.95s → 0.3s (cap minimo)
+- Max simultâneos: 8
+- Distribuição: Aleatoria (pressao maxima)
 ```
 
 ### 2.2 Objetivo & Resultado

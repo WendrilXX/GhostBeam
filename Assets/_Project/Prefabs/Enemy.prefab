@@ -172,3 +172,40 @@ MonoBehaviour:
   speed: 3
   timeToKillWhileIlluminated: 3
   damageOnContact: 1
+  batteryRechargeOnKill: 12
+  archetype: 0
+  penadoSprites:
+    direita: {fileID: -2490695647511775751, guid: 610942f510bd3e94282eacf18fe15bfc, type: 3}
+    esquerda: {fileID: -3007154937834876543, guid: 7aa173cfa19816949a0c11f7a15165b8, type: 3}
+    cimaDireita: {fileID: -3616484152075505630, guid: 8be774274bb087b4c86c9d1e39493d6e, type: 3}
+    cimaEsquerda: {fileID: 7655361987576977700, guid: cb0ac4e93a3a7e340921933ddd2434fb, type: 3}
+    baixoDireita: {fileID: -7047161775085797380, guid: aaa535e70d4a50f4e9c1bece55bfd75b, type: 3}
+    baixoEsquerda: {fileID: -4493695644047582276, guid: 1c2ececabeeea2642992acfbd522a7cf, type: 3}
+  ictericiaSprites:
+    direita: {fileID: 5595709714242736619, guid: d317e4415929d124b8381a722886073d, type: 3}
+    esquerda: {fileID: -4559466257407100132, guid: 7f3c8601abe839342921d15720e84a9f, type: 3}
+    cimaDireita: {fileID: 3149254510256083862, guid: 2a33b19b9ab97ae4a944f2bdd5ba373b, type: 3}
+    cimaEsquerda: {fileID: -3970241393285547977, guid: 32d5da2c1080f0c4a8e246d98e3100c3, type: 3}
+    baixoDireita: {fileID: 4846688619194638335, guid: b75cb096155a71a408f8cc98f4d3bb91, type: 3}
+    baixoEsquerda: {fileID: -3067011597483687902, guid: c3562a34094c6b14fa91ab67c6fc1523, type: 3}
+  ectogangueSprites:
+    direita: {fileID: 7776048751968450993, guid: f1e5a4c84618bbb42890208e89ea0794, type: 3}
+    esquerda: {fileID: -2271076763061056920, guid: cb02da8cc46c3df41a69461844b3684f, type: 3}
+    cimaDireita: {fileID: 4575879792824083065, guid: a74ffe7368d92e041804352043612fe3, type: 3}
+    cimaEsquerda: {fileID: -373639838645434069, guid: fa11f46c900f8a443a71788a4ba4d6df, type: 3}
+    baixoDireita: {fileID: -6604625410221389225, guid: e5cf4bbad3c71f040baf435f85cf01c3, type: 3}
+    baixoEsquerda: {fileID: 4445988076773362269, guid: 509d140089b9e704d88cb19a4f45aeaa, type: 3}
+  titaSprites:
+    direita: {fileID: 1399811120332518255, guid: d94a8a2a5bd451b4baec4a1fcd7b87ea, type: 3}
+    esquerda: {fileID: 2429578641673446110, guid: 0372b00a0319bf2458e4f6960f21b314, type: 3}
+    cimaDireita: {fileID: -4468418413526826049, guid: 0a612d108e452164680be38639fd18de, type: 3}
+    cimaEsquerda: {fileID: 1915768333947709871, guid: dfdccf394118dfb4fbd6db5584e5cd44, type: 3}
+    baixoDireita: {fileID: 8977725924951515727, guid: aa9c561b6774fab4abfa3ea2fc9097d8, type: 3}
+    baixoEsquerda: {fileID: 696289654660454635, guid: bf1a35052f1ae854181f4b33e1e5490a, type: 3}
+  espectroSprites:
+    direita: {fileID: 691703715283093410, guid: e5ee680c1ba9dd649aa0621fa074f3ae, type: 3}
+    esquerda: {fileID: -593897489173547357, guid: b6214b0b6be17864c8cfafa449f017c7, type: 3}
+    cimaDireita: {fileID: 5440691801347772823, guid: 4f8ded23929cd804a91699b75e345c7e, type: 3}
+    cimaEsquerda: {fileID: 2555460807314914677, guid: 82c3105630dd0144f971d0ee0fd1d005, type: 3}
+    baixoDireita: {fileID: 7666167361457920167, guid: 15e0c249134d9514aa3c3bcd07fb468f, type: 3}
+    baixoEsquerda: {fileID: -6020501014602734400, guid: 51410e8d0451d5c47925db633c054e5d, type: 3}

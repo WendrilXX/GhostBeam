@@ -11,6 +11,9 @@ namespace GhostBeam.Player
         private Rigidbody2D rb;
         private Vector2 moveInput = Vector2.zero;
         private Vector2 screenBounds;
+        private int movementFingerId = -1;
+        private float screenHalfWidth;
+        private Vector2 movementCenter;
 
         public Vector2 MoveInput => moveInput;
 
@@ -20,6 +23,8 @@ namespace GhostBeam.Player
             
             // Calcular limites da tela
             screenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0));
+            screenHalfWidth = Screen.width * 0.5f;
+            movementCenter = new Vector2(Screen.width * 0.2f, Screen.height * 0.2f);
         }
 
         private void Update()
@@ -45,17 +50,66 @@ namespace GhostBeam.Player
             // Touch mobile
             if (Input.touchCount > 0)
             {
-                Touch touch = Input.GetTouch(0);
-                
-                // Joystick esquerdo (movimento) - bottom-left
-                if (touch.position.x < Screen.width * 0.5f)
+                Touch activeTouch = default;
+                bool found = false;
+
+                if (movementFingerId != -1)
                 {
-                    Vector2 joystickCenter = new Vector2(Screen.width * 0.2f, Screen.height * 0.2f);
-                    Vector2 joystickInput = (touch.position - joystickCenter).normalized;
-                    
+                    for (int i = 0; i < Input.touchCount; i++)
+                    {
+                        Touch touch = Input.GetTouch(i);
+                        if (touch.fingerId == movementFingerId)
+                        {
+                            if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+                            {
+                                movementFingerId = -1;
+                            }
+                            else
+                            {
+                                activeTouch = touch;
+                                found = true;
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                if (!found)
+                {
+                    for (int i = 0; i < Input.touchCount; i++)
+                    {
+                        Touch touch = Input.GetTouch(i);
+                        if (touch.position.x < screenHalfWidth && touch.phase == TouchPhase.Began)
+                        {
+                            movementFingerId = touch.fingerId;
+                            activeTouch = touch;
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!found)
+                {
+                    for (int i = 0; i < Input.touchCount; i++)
+                    {
+                        Touch touch = Input.GetTouch(i);
+                        if (touch.position.x < screenHalfWidth && touch.phase != TouchPhase.Ended && touch.phase != TouchPhase.Canceled)
+                        {
+                            movementFingerId = touch.fingerId;
+                            activeTouch = touch;
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (found && movementFingerId != -1)
+                {
+                    Vector2 joystickInput = (activeTouch.position - movementCenter);
                     if (joystickInput.magnitude > horizontalDeadzone)
                     {
-                        moveInput = joystickInput;
+                        moveInput = joystickInput.normalized;
                     }
                 }
             }

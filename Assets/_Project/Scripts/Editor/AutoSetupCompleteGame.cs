@@ -518,6 +518,8 @@ namespace GhostBeam.Editor
 
                 // HUD Controller
                 var hudController = canvasObj.AddComponent<UI.HUDController>();
+                canvasObj.AddComponent<UI.GameOverPanelController>();
+                canvasObj.AddComponent<UI.UIBootstrapper>();
 
                 // Create UI text elements - REORGANIZED FOR MOBILE WITH ANCHORS
                 // TOP LEFT
@@ -925,6 +927,7 @@ namespace GhostBeam.Editor
             CreateShopItem(contentObj, "Aumento de Feixe", "Amplie o alcance de detecção", 500);
             CreateShopItem(contentObj, "Poder da Lanterna", "Aumente a intensidade da luz", 750);
             CreateShopItem(contentObj, "Bateria Melhorada", "Aumente a capacidade de bateria", 1000);
+            CreateShopItem(contentObj, "Vida Extra", "Aumente a vida máxima", 150);
 
             // Feedback text
             GameObject feedbackObj = new GameObject("ShopFeedbackText");
@@ -950,9 +953,9 @@ namespace GhostBeam.Editor
             itemObj.transform.SetParent(parent.transform, false);
 
             var rect = itemObj.AddComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(620, 102);
+            rect.sizeDelta = new Vector2(620, 110);
             var le = itemObj.AddComponent<LayoutElement>();
-            le.preferredHeight = 102f;
+            le.preferredHeight = 110f;
             le.preferredWidth = 620f;
 
             var bgImage = itemObj.AddComponent<Image>();
@@ -970,7 +973,7 @@ namespace GhostBeam.Editor
             titleRect.anchorMin = new Vector2(0, 0.5f);
             titleRect.anchorMax = new Vector2(0, 0.5f);
             titleRect.pivot = new Vector2(0, 0.5f);
-            titleRect.anchoredPosition = new Vector2(18, 18);
+            titleRect.anchoredPosition = new Vector2(18, 20);
             titleRect.sizeDelta = new Vector2(340, 40);
             var titleTxt = titleObj.AddComponent<TMPro.TextMeshProUGUI>();
             titleTxt.text = title;
@@ -986,7 +989,7 @@ namespace GhostBeam.Editor
             descRect.anchorMin = new Vector2(0, 0.5f);
             descRect.anchorMax = new Vector2(0, 0.5f);
             descRect.pivot = new Vector2(0, 0.5f);
-            descRect.anchoredPosition = new Vector2(18, -18);
+            descRect.anchoredPosition = new Vector2(18, -20);
             descRect.sizeDelta = new Vector2(350, 25);
             var descTxt = descObj.AddComponent<TMPro.TextMeshProUGUI>();
             descTxt.text = description;
@@ -1001,7 +1004,7 @@ namespace GhostBeam.Editor
             priceRect.anchorMin = new Vector2(1f, 0.5f);
             priceRect.anchorMax = new Vector2(1f, 0.5f);
             priceRect.pivot = new Vector2(1f, 0.5f);
-            priceRect.anchoredPosition = new Vector2(-150, 0);
+            priceRect.anchoredPosition = new Vector2(-148, 0);
             priceRect.sizeDelta = new Vector2(130, 50);
             var priceTxt = priceObj.AddComponent<TMPro.TextMeshProUGUI>();
             priceTxt.text = price + " C";
@@ -1018,8 +1021,8 @@ namespace GhostBeam.Editor
             buyRect.anchorMin = new Vector2(1f, 0.5f);
             buyRect.anchorMax = new Vector2(1f, 0.5f);
             buyRect.pivot = new Vector2(1f, 0.5f);
-            buyRect.anchoredPosition = new Vector2(-50, 0);
-            buyRect.sizeDelta = new Vector2(100, 44);
+            buyRect.anchoredPosition = new Vector2(-18, 0);
+            buyRect.sizeDelta = new Vector2(118, 46);
 
             var buyImage = buyBtnObj.AddComponent<Image>();
             buyImage.color = new Color(0.3f, 0.65f, 1f, 1f);
@@ -1039,11 +1042,26 @@ namespace GhostBeam.Editor
             buyLabelRect.offsetMax = Vector2.zero;
             var buyLabel = buyLabelObj.AddComponent<TMPro.TextMeshProUGUI>();
             buyLabel.text = "COMPRAR";
-            buyLabel.fontSize = 13;
+            buyLabel.fontSize = 11;
             buyLabel.alignment = TMPro.TextAlignmentOptions.Center;
             buyLabel.color = Color.white;
             buyLabel.fontStyle = TMPro.FontStyles.Bold;
             buyLabel.raycastTarget = false;
+
+            GameObject tierObj = new GameObject("Tier");
+            tierObj.transform.SetParent(itemObj.transform, false);
+            var tierRect = tierObj.AddComponent<RectTransform>();
+            tierRect.anchorMin = new Vector2(1f, 1f);
+            tierRect.anchorMax = new Vector2(1f, 1f);
+            tierRect.pivot = new Vector2(1f, 1f);
+            tierRect.anchoredPosition = new Vector2(-12f, -8f);
+            tierRect.sizeDelta = new Vector2(180f, 22f);
+            var tierTxt = tierObj.AddComponent<TMPro.TextMeshProUGUI>();
+            tierTxt.text = "Tier 0/3";
+            tierTxt.fontSize = 15;
+            tierTxt.alignment = TMPro.TextAlignmentOptions.Right;
+            tierTxt.color = new Color(0.95f, 0.9f, 0.35f, 1f);
+            tierTxt.fontStyle = TMPro.FontStyles.Bold;
         }
 
         private static void CreateSettingsPanel(GameObject parent)
