@@ -810,20 +810,23 @@ namespace GhostBeam.Editor
             var containerRect = mainMenuContainer.AddComponent<RectTransform>();
             containerRect.anchorMin = new Vector2(0.5f, 0.5f);
             containerRect.anchorMax = new Vector2(0.5f, 0.5f);
-            containerRect.sizeDelta = new Vector2(600, 420);  // Reduced from 800x500 for mobile fit
-            containerRect.anchoredPosition = new Vector2(0, 20);  // Shifted down slightly
+            containerRect.pivot = new Vector2(0.5f, 0.5f);  // Center pivot for proper centering
+            containerRect.sizeDelta = new Vector2(780, 680);  // Larger container for mobile
+            containerRect.anchoredPosition = new Vector2(0, 0);  // Centered on screen
 
             // Container layout with responsive spacing
             var vlg = mainMenuContainer.AddComponent<VerticalLayoutGroup>();
-            vlg.childForceExpandHeight = false;
-            vlg.childForceExpandWidth = true;
-            vlg.spacing = 18f;  // Reduced from 25
-            vlg.padding = new RectOffset(20, 20, 20, 20);  // Added padding
+            vlg.childForceExpandHeight = false;  // Don't expand vertically
+            vlg.childForceExpandWidth = false;  // Don't force expand width - respect button size
+            vlg.childAlignment = TextAnchor.MiddleCenter;  // Center buttons horizontally AND vertically
+            vlg.spacing = 20f;  // Increased spacing between buttons
+            vlg.padding = new RectOffset(30, 30, 30, 30);  // Increased padding
 
             // Main menu buttons
             CreatePremiumMenuButton(mainMenuContainer, "BtnPlay", "JOGAR", new Color(0.2f, 0.8f, 0.3f, 1f));
             CreatePremiumMenuButton(mainMenuContainer, "BtnShop", "LOJA", new Color(1f, 0.8f, 0.2f, 1f));
             CreatePremiumMenuButton(mainMenuContainer, "BtnSettings", "CONFIGURAÇÕES", new Color(0.3f, 0.6f, 1f, 1f));
+            CreatePremiumMenuButton(mainMenuContainer, "BtnTutorial", "TUTORIAL", new Color(0.6f, 0.5f, 1f, 1f));
             CreatePremiumMenuButton(mainMenuContainer, "BtnQuit", "SAIR", new Color(1f, 0.3f, 0.3f, 1f));
 
             // Add MenuController script for button handling
@@ -834,6 +837,131 @@ namespace GhostBeam.Editor
 
             // Settings panel (hidden initially)
             CreateSettingsPanel(canvasObj);
+
+            // Tutorial panel (hidden initially)
+            CreateTutorialPanel(canvasObj);
+        }
+
+        private static void CreateTutorialPanel(GameObject parent)
+        {
+            GameObject tutorialPanel = new GameObject("TutorialPanel");
+            tutorialPanel.transform.SetParent(parent.transform, false);
+            tutorialPanel.SetActive(false); // Hidden initially
+
+            var rect = tutorialPanel.AddComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+
+            var image = tutorialPanel.AddComponent<Image>();
+            image.color = new Color(10f / 255f, 15f / 255f, 30f / 255f, 0.98f);
+
+            GameObject contentObj = new GameObject("Content");
+            contentObj.transform.SetParent(tutorialPanel.transform, false);
+            var contentRect = contentObj.AddComponent<RectTransform>();
+            contentRect.anchorMin = Vector2.zero;
+            contentRect.anchorMax = Vector2.one;
+            contentRect.offsetMin = new Vector2(20, 20);
+            contentRect.offsetMax = new Vector2(-20, -20);
+
+            var vlg = contentObj.AddComponent<VerticalLayoutGroup>();
+            vlg.childForceExpandHeight = false;
+            vlg.childForceExpandWidth = true;
+            vlg.childAlignment = TextAnchor.UpperCenter;
+            vlg.spacing = 25f;  // Increased spacing
+            vlg.padding = new RectOffset(30, 30, 40, 40);  // Increased padding
+
+            GameObject titleObj = new GameObject("Title");
+            titleObj.transform.SetParent(contentObj.transform, false);
+            var titleRect = titleObj.AddComponent<RectTransform>();
+            titleRect.sizeDelta = new Vector2(620, 80);
+            var titleLE = titleObj.AddComponent<LayoutElement>();
+            titleLE.preferredHeight = 80f;
+            titleLE.preferredWidth = 620f;
+            var titleTxt = titleObj.AddComponent<TMPro.TextMeshProUGUI>();
+            titleTxt.text = "COMO JOGAR";
+            titleTxt.alignment = TMPro.TextAlignmentOptions.Center;
+            titleTxt.fontSize = 60;  // Increased from 48
+            titleTxt.color = new Color(0.6f, 0.5f, 1f, 1f);
+            titleTxt.fontStyle = TMPro.FontStyles.Bold;
+
+            GameObject columnsObj = new GameObject("Columns");
+            columnsObj.transform.SetParent(contentObj.transform, false);
+            var columnsRect = columnsObj.AddComponent<RectTransform>();
+            columnsRect.sizeDelta = new Vector2(880, 420);  // Increased from 820x320
+
+            GameObject leftColumn = new GameObject("LeftColumn");
+            leftColumn.transform.SetParent(columnsObj.transform, false);
+            var leftRect = leftColumn.AddComponent<RectTransform>();
+            leftRect.anchorMin = new Vector2(0.5f, 0.5f);
+            leftRect.anchorMax = new Vector2(0.5f, 0.5f);
+            leftRect.pivot = new Vector2(0.5f, 0.5f);
+            leftRect.anchoredPosition = new Vector2(-230f, 0f);
+            leftRect.sizeDelta = new Vector2(380, 420);  // Increased height
+
+            GameObject rightColumn = new GameObject("RightColumn");
+            rightColumn.transform.SetParent(columnsObj.transform, false);
+            var rightRect = rightColumn.AddComponent<RectTransform>();
+            rightRect.anchorMin = new Vector2(0.5f, 0.5f);
+            rightRect.anchorMax = new Vector2(0.5f, 0.5f);
+            rightRect.pivot = new Vector2(0.5f, 0.5f);
+            rightRect.anchoredPosition = new Vector2(230f, 0f);
+            rightRect.sizeDelta = new Vector2(380, 420);  // Increased height
+
+            CreateTutorialText(leftColumn, "Movimento", "Use o joystick da esquerda para mover a Luna.", 110f);
+            CreateTutorialText(leftColumn, "Mira", "Arraste na direita para girar a lanterna e iluminar inimigos.", 30f);
+            CreateTutorialText(leftColumn, "Bateria", "A luz consome bateria. Sem bateria, a lanterna apaga.", -50f);
+            CreateTutorialText(rightColumn, "Moedas", "Inimigos derrubam moedas. Colete para comprar upgrades.", 110f);
+            CreateTutorialText(rightColumn, "Upgrades", "Melhore feixe, poder, bateria e vida na loja.", 30f);
+            CreateTutorialText(rightColumn, "Inimigos", "Tipos mais fortes aparecem com o tempo. Fique em movimento.", -50f);
+            CreateTutorialText(rightColumn, "Mobile", "Dois joysticks visiveis: esquerda move, direita mira.", -130f);
+
+            CreatePremiumMenuButton(contentObj, "BtnBack", "VOLTAR", new Color(0.5f, 0.5f, 0.5f, 1f));
+        }
+
+        private static void CreateTutorialText(GameObject parent, string title, string body, float y)
+        {
+            GameObject blockObj = new GameObject($"Block_{title}");
+            blockObj.transform.SetParent(parent.transform, false);
+
+            var rect = blockObj.AddComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.5f, 0.5f);
+            rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = new Vector2(0f, y);
+            rect.sizeDelta = new Vector2(380, 95);  // Increased from 360x60
+
+            GameObject titleObj = new GameObject("Title");
+            titleObj.transform.SetParent(blockObj.transform, false);
+            var titleRect = titleObj.AddComponent<RectTransform>();
+            titleRect.anchorMin = new Vector2(0f, 1f);
+            titleRect.anchorMax = new Vector2(1f, 1f);
+            titleRect.pivot = new Vector2(0.5f, 1f);
+            titleRect.anchoredPosition = new Vector2(0f, -4f);
+            titleRect.sizeDelta = new Vector2(0f, 32f);  // Increased from 22
+            var titleTxt = titleObj.AddComponent<TMPro.TextMeshProUGUI>();
+            titleTxt.text = title;
+            titleTxt.alignment = TMPro.TextAlignmentOptions.Left;
+            titleTxt.fontSize = 28;  // Increased from 22
+            titleTxt.color = new Color(0.85f, 0.9f, 1f, 1f);
+            titleTxt.fontStyle = TMPro.FontStyles.Bold;
+            titleTxt.enableWordWrapping = false;
+
+            GameObject bodyObj = new GameObject("Body");
+            bodyObj.transform.SetParent(blockObj.transform, false);
+            var bodyRect = bodyObj.AddComponent<RectTransform>();
+            bodyRect.anchorMin = new Vector2(0f, 0f);
+            bodyRect.anchorMax = new Vector2(1f, 0f);
+            bodyRect.pivot = new Vector2(0.5f, 0f);
+            bodyRect.anchoredPosition = new Vector2(0f, 4f);
+            bodyRect.sizeDelta = new Vector2(0f, 50f);  // Increased from 28
+            var bodyTxt = bodyObj.AddComponent<TMPro.TextMeshProUGUI>();
+            bodyTxt.text = body;
+            bodyTxt.alignment = TMPro.TextAlignmentOptions.Left;
+            bodyTxt.fontSize = 22;  // Increased from 16
+            bodyTxt.color = new Color(0.75f, 0.75f, 0.85f, 0.95f);
+            bodyTxt.enableWordWrapping = true;
         }
 
         private static void CreatePremiumMenuButton(GameObject parent, string name, string label, Color buttonColor)
@@ -842,11 +970,11 @@ namespace GhostBeam.Editor
             btnObj.transform.parent = parent.transform;
 
             var rect = btnObj.AddComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(600, 75);  // Reduced from 800x90 - more proportional for mobile
+            rect.sizeDelta = new Vector2(340, 75);  // Large button for mobile
 
             var layoutElement = btnObj.AddComponent<LayoutElement>();
             layoutElement.preferredHeight = 75f;  // Match height
-            layoutElement.preferredWidth = -1f;   // Use layout
+            layoutElement.preferredWidth = 340f;   // Fixed width
 
             // Button background with gradient effect
             var image = btnObj.AddComponent<Image>();
@@ -884,7 +1012,7 @@ namespace GhostBeam.Editor
             var textComponent = textObj.AddComponent<TMPro.TextMeshProUGUI>();
             textComponent.text = label;
             textComponent.alignment = TMPro.TextAlignmentOptions.Center;
-            textComponent.fontSize = 32;  // Reduced from 48 - better proportion
+            textComponent.fontSize = 32;  // Large font for mobile readability
             textComponent.color = Color.white;
             textComponent.fontStyle = TMPro.FontStyles.Bold;
             textComponent.raycastTarget = false;

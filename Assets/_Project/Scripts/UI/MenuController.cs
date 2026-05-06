@@ -28,9 +28,11 @@ namespace GhostBeam.UI
 
         private GameObject shopPanel;
         private GameObject settingsPanel;
+        private GameObject tutorialPanel;
         private Button btnPlay;
         private Button btnShop;
         private Button btnSettings;
+        private Button btnTutorial;
         private Button btnQuit;
         private GameObject mainMenuContainer;
         private Slider volumeSlider;
@@ -57,11 +59,13 @@ namespace GhostBeam.UI
             // Find all UI elements from this menu canvas, including inactive objects
             shopPanel = FindChildByName(transform, "ShopPanel")?.gameObject;
             settingsPanel = FindChildByName(transform, "SettingsPanel")?.gameObject;
+            tutorialPanel = FindChildByName(transform, "TutorialPanel")?.gameObject;
             mainMenuContainer = FindChildByName(transform, "MainMenuContainer")?.gameObject;
 
             btnPlay = FindChildByName(transform, "BtnPlay")?.GetComponent<Button>();
             btnShop = FindChildByName(transform, "BtnShop")?.GetComponent<Button>();
             btnSettings = FindChildByName(transform, "BtnSettings")?.GetComponent<Button>();
+            btnTutorial = FindChildByName(transform, "BtnTutorial")?.GetComponent<Button>();
             btnQuit = FindChildByName(transform, "BtnQuit")?.GetComponent<Button>();
 
             Debug.Log($"[MenuController] Found buttons - Play:{btnPlay != null}, Shop:{btnShop != null}, Settings:{btnSettings != null}, Quit:{btnQuit != null}");
@@ -87,6 +91,13 @@ namespace GhostBeam.UI
                 btnSettings.onClick.AddListener(OnSettingsClick);
                 Debug.Log("[MenuController] Settings button listener registered");
             }
+
+            if (btnTutorial != null)
+            {
+                btnTutorial.onClick.RemoveAllListeners();
+                btnTutorial.onClick.AddListener(OnTutorialClick);
+                Debug.Log("[MenuController] Tutorial button listener registered");
+            }
             
             if (btnQuit != null)
             {
@@ -99,6 +110,7 @@ namespace GhostBeam.UI
             if (mainMenuContainer != null) mainMenuContainer.SetActive(true);
             if (shopPanel != null) shopPanel.SetActive(false);
             if (settingsPanel != null) settingsPanel.SetActive(false);
+            if (tutorialPanel != null) tutorialPanel.SetActive(false);
             
             // Add back button listeners from panels
             Button backBtnShop = EnsureShopBackButton();
@@ -115,6 +127,14 @@ namespace GhostBeam.UI
                 backBtnSettings.onClick.RemoveAllListeners();
                 backBtnSettings.onClick.AddListener(OnBackClick);
                 Debug.Log("[MenuController] Settings back button listener registered");
+            }
+
+            Button backBtnTutorial = FindBackButtonInPanel("TutorialPanel");
+            if (backBtnTutorial != null)
+            {
+                backBtnTutorial.onClick.RemoveAllListeners();
+                backBtnTutorial.onClick.AddListener(OnBackClick);
+                Debug.Log("[MenuController] Tutorial back button listener registered");
             }
 
             SetupShopInteractions();
@@ -222,12 +242,31 @@ namespace GhostBeam.UI
             {
                 settingsPanel.SetActive(true);
                 if (shopPanel != null) shopPanel.SetActive(false);
+                if (tutorialPanel != null) tutorialPanel.SetActive(false);
                 if (mainMenuContainer != null) mainMenuContainer.SetActive(false);
                 Debug.Log("[MenuController] Settings panel shown");
             }
             else
             {
                 Debug.LogWarning("[MenuController] SettingsPanel not found");
+            }
+        }
+
+        private void OnTutorialClick()
+        {
+            Debug.Log("[MenuController] *** TUTORIAL BUTTON CLICKED ***");
+            PlayMenuClickSfx();
+            if (tutorialPanel != null)
+            {
+                tutorialPanel.SetActive(true);
+                if (shopPanel != null) shopPanel.SetActive(false);
+                if (settingsPanel != null) settingsPanel.SetActive(false);
+                if (mainMenuContainer != null) mainMenuContainer.SetActive(false);
+                Debug.Log("[MenuController] Tutorial panel shown");
+            }
+            else
+            {
+                Debug.LogWarning("[MenuController] TutorialPanel not found");
             }
         }
 
@@ -250,6 +289,7 @@ namespace GhostBeam.UI
             PlayMenuClickSfx();
             if (shopPanel != null) shopPanel.SetActive(false);
             if (settingsPanel != null) settingsPanel.SetActive(false);
+            if (tutorialPanel != null) tutorialPanel.SetActive(false);
             if (mainMenuContainer != null) mainMenuContainer.SetActive(true);
             Debug.Log("[MenuController] Returned to main menu");
         }

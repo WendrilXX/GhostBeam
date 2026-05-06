@@ -14,12 +14,32 @@ namespace GhostBeam.UI
         [SerializeField] private float knobAlpha = 0.35f;
         [SerializeField] private int sortingOrder = 2;
 
+        private Canvas canvas;
+        private RectTransform canvasRect;
+        private RectTransform leftBase;
+        private RectTransform rightBase;
+        private RectTransform leftKnob;
+        private RectTransform rightKnob;
+        private Vector2 leftDefaultPos;
+        private Vector2 rightDefaultPos;
+        private int leftFingerId = -1;
+        private int rightFingerId = -1;
+
         private void Awake()
         {
             if (!ShouldShow())
                 return;
 
             EnsureOverlay();
+            CacheDefaults();
+        }
+
+        private void Update()
+        {
+            if (!ShouldShow() || !Application.isMobilePlatform)
+                return;
+
+            HandleTouches();
         }
 
         private bool ShouldShow()
@@ -39,17 +59,20 @@ namespace GhostBeam.UI
             }
 
             ConfigureCanvas(mobileUIObj);
-            EnsureJoystick(mobileUIObj.transform, "JoystickLeft", new Vector2(0f, 0f), leftPosition);
-            EnsureJoystick(mobileUIObj.transform, "JoystickRight", new Vector2(1f, 0f), rightPosition);
+            leftBase = EnsureJoystick(mobileUIObj.transform, "JoystickLeft");
+            rightBase = EnsureJoystick(mobileUIObj.transform, "JoystickRight");
+            leftKnob = leftBase != null ? leftBase.Find("Knob")?.GetComponent<RectTransform>() : null;
+            rightKnob = rightBase != null ? rightBase.Find("Knob")?.GetComponent<RectTransform>() : null;
         }
 
         private void ConfigureCanvas(GameObject mobileUIObj)
         {
-            var canvas = mobileUIObj.GetComponent<Canvas>();
+            canvas = mobileUIObj.GetComponent<Canvas>();
             if (canvas == null)
                 canvas = mobileUIObj.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = sortingOrder;
+            canvasRect = canvas.GetComponent<RectTransform>();
 
             var scaler = mobileUIObj.GetComponent<CanvasScaler>();
             if (scaler == null)
@@ -64,7 +87,7 @@ namespace GhostBeam.UI
             group.blocksRaycasts = false;
         }
 
-        private void EnsureJoystick(Transform parent, string name, Vector2 anchor, Vector2 anchoredPosition)
+        private RectTransform EnsureJoystick(Transform parent, string name)
         {
             Transform existing = parent.Find(name);
             GameObject joystickObj = existing != null ? existing.gameObject : new GameObject(name);
@@ -73,9 +96,9 @@ namespace GhostBeam.UI
             var rect = joystickObj.GetComponent<RectTransform>();
             if (rect == null)
                 rect = joystickObj.AddComponent<RectTransform>();
-            rect.anchorMin = anchor;
-            rect.anchorMax = anchor;
-            rect.anchoredPosition = anchoredPosition;
+            rect.anchorMin = new Vector2(0.5f, 0.5f);
+            rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = Vector2.zero;
             rect.sizeDelta = joystickSize;
 
             var image = joystickObj.GetComponent<Image>();
@@ -85,6 +108,7 @@ namespace GhostBeam.UI
             image.raycastTarget = false;
 
             EnsureKnob(joystickObj.transform, "Knob");
+            return rect;
         }
 
         private void EnsureKnob(Transform parent, string name)
@@ -106,6 +130,106 @@ namespace GhostBeam.UI
                 image = knobObj.AddComponent<Image>();
             image.color = new Color(1f, 1f, 1f, knobAlpha);
             image.raycastTarget = false;
+        }
+
+        private void CacheDefaults()
+        {
+            if (canvasRect == null)
+                return;
+
+            leftDefaultPos = GetCornerPosition(leftPosition, false);
+            rightDefaultPos = GetCornerPosition(rightPosition, true);
+
+            if (leftBase != null)
+                leftBase.anchoredPosition = leftDefaultPos;
+            if (rightBase != null)
+                rightBase.anchoredPosition = rightDefaultPos;
+        }
+
+        private Vector2 GetCornerPosition(Vector2 offset, bool right)
+        {
+            float halfWidth = canvasRect.rect.width * 0.5f;
+            float halfHeight = canvasRect.rect.height * 0.5f;
+            float x = right ? halfWidth + offset.x : -halfWidth + offset.x;
+            float y = -halfHeight + offset.y;
+            return new Vector2(x, y);
+        }
+
+        private void HandleTouches()
+        {
+            bool leftActive = false;
+            bool rightActive = false;
+            float screenHalf = Screen.width * 0.5f;
+
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                Touch touch = Input.GetTouch(i);
+
+                if (touch.position.x < screenHalf)
+                {
+                    leftActive = true;
+                    UpdateJoystick(ref leftFingerId, touch, leftBase, leftKnob, leftDefaultPos);
+                }
+                else
+                {
+                    rightActive = true;
+                    UpdateJoystick(ref rightFingerId, touch, rightBase, rightKnob, rightDefaultPos);
+                }
+            }
+
+            if (!leftActive)
+                ResetJoystick(ref leftFingerId, leftBase, leftKnob, leftDefaultPos);
+            if (!rightActive)
+                ResetJoystick(ref rightFingerId, rightBase, rightKnob, rightDefaultPos);
+        }
+
+        private void UpdateJoystick(ref int fingerId, Touch touch, RectTransform baseRect, RectTransform knobRect, Vector2 fallbackPos)
+        {
+            if (baseRect == null || knobRect == null || canvasRect == null)
+                return;
+
+            if (touch.phase == TouchPhase.Began)
+            {
+                fingerId = touch.fingerId;
+                SetBasePosition(baseRect, touch.position);
+                knobRect.anchoredPosition = Vector2.zero;
+                return;
+            }
+
+            if (fingerId != touch.fingerId)
+                return;
+
+            if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+            {
+                ResetJoystick(ref fingerId, baseRect, knobRect, fallbackPos);
+                return;
+            }
+
+            Vector2 localPoint = GetLocalPoint(touch.position);
+            Vector2 delta = localPoint - baseRect.anchoredPosition;
+            float maxOffset = joystickSize.x * 0.35f;
+            knobRect.anchoredPosition = Vector2.ClampMagnitude(delta, maxOffset);
+        }
+
+        private void ResetJoystick(ref int fingerId, RectTransform baseRect, RectTransform knobRect, Vector2 fallbackPos)
+        {
+            fingerId = -1;
+            if (baseRect != null)
+                baseRect.anchoredPosition = fallbackPos;
+            if (knobRect != null)
+                knobRect.anchoredPosition = Vector2.zero;
+        }
+
+        private void SetBasePosition(RectTransform baseRect, Vector2 screenPosition)
+        {
+            Vector2 localPoint = GetLocalPoint(screenPosition);
+            baseRect.anchoredPosition = localPoint;
+        }
+
+        private Vector2 GetLocalPoint(Vector2 screenPosition)
+        {
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPosition, null, out Vector2 localPoint);
+            return localPoint;
         }
     }
 }

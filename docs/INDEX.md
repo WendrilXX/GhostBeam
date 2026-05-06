@@ -67,7 +67,7 @@ Cobre:
 **Público:** PMs, stakeholders, time
 
 Cobre:
-- Status de desenvolvimento (90% complete)
+- Status de desenvolvimento (88% complete)
 - Histórico de versions (v0-v1.1)
 - 8 sprints anteriores
 - Próximas 4 fases (testing, content, social, stores)

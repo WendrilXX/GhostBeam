@@ -29,9 +29,9 @@ namespace GhostBeam.Editor
             enemyObj.transform.position = new Vector3(5, 5, 0);
             enemyObj.transform.localScale = new Vector3(0.8f, 0.8f, 1f);
 
-            // Sprite Renderer - Green (Penado color)
+            // Sprite Renderer - White (no tint - sprites have correct colors)
             SpriteRenderer spriteRenderer = enemyObj.AddComponent<SpriteRenderer>();
-            spriteRenderer.color = new Color(100f / 255f, 1f, 100f / 255f, 1f); // Verde (100, 255, 100)
+            spriteRenderer.color = Color.white; // No tint - use sprite colors directly
             spriteRenderer.sortingOrder = 0;
 
             // Rigidbody 2D

@@ -44,8 +44,8 @@ namespace GhostBeam.Enemy
         }
 
         [SerializeField] private float speed = 3f;
-        [SerializeField] private float timeToKillWhileIlluminated = 3f;
-        [SerializeField] private int damageOnContact = 1;
+        [SerializeField] private float timeToKillWhileIlluminated = 2f;  // Increased damage - faster kill
+        [SerializeField] private int damageOnContact = 2;  // Increased from 1
         [SerializeField] private float batteryRechargeOnKill = 12f;
         [SerializeField] private EnemyArchetype archetype = EnemyArchetype.Penado;
         [SerializeField] private DirectionalSpriteSet penadoSprites;
@@ -62,15 +62,13 @@ namespace GhostBeam.Enemy
         private Sprite currentDirectionalSprite;
 
         private SpriteRenderer spriteRenderer;
-        private Color originalColor;
-
         public static event Action<Vector3, int> onEnemyKilled;
         public static event Action onEnemyRemoved;
 
         private void Awake()
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
-            originalColor = spriteRenderer.color;
+            spriteRenderer.color = Color.white;  // Always white - no tint
         }
 
         private void Start()
@@ -152,9 +150,10 @@ namespace GhostBeam.Enemy
             {
                 illuminationTimer += Time.deltaTime * GetIlluminationPowerMultiplier();
                 
-                // Feedback visual: lerp para branco
+                // Feedback visual: fade from white to reddish (burning effect)
                 float lerpValue = Mathf.Clamp01(illuminationTimer / timeToKillWhileIlluminated);
-                spriteRenderer.color = Color.Lerp(originalColor, Color.white, lerpValue * 0.5f);
+                Color burnColor = new Color(1f, 0.3f, 0.3f, 1f);  // Reddish color
+                spriteRenderer.color = Color.Lerp(Color.white, burnColor, lerpValue);
 
                 if (illuminationTimer >= timeToKillWhileIlluminated)
                 {
@@ -164,7 +163,7 @@ namespace GhostBeam.Enemy
             else
             {
                 illuminationTimer = 0f;
-                spriteRenderer.color = originalColor;
+                spriteRenderer.color = Color.white;  // Back to white - no damage
             }
         }
 
@@ -200,9 +199,6 @@ namespace GhostBeam.Enemy
 
             isDead = true;
 
-            // Feedback visual de morte
-            spriteRenderer.color = Color.red;
-            
             // Score
             if (Managers.ScoreManager.Instance != null)
             {
@@ -225,15 +221,46 @@ namespace GhostBeam.Enemy
                 Managers.SettingsManager.Instance.Vibrate();
             }
 
-            // Destruir
+            // Disable collider and movement
+            GetComponent<CircleCollider2D>().enabled = false;
+
+            // Fall and fade out animation
+            StartCoroutine(FallAndDisappear());
+        }
+
+        private IEnumerator FallAndDisappear()
+        {
+            float fallDuration = 0.6f;
+            float elapsedTime = 0f;
+            Vector3 startPosition = transform.position;
+            Vector3 endPosition = startPosition + Vector3.down * 1.5f;
+
+            while (elapsedTime < fallDuration)
+            {
+                elapsedTime += Time.deltaTime;
+                float progress = elapsedTime / fallDuration;
+
+                // Fall down
+                transform.position = Vector3.Lerp(startPosition, endPosition, progress);
+
+                // Fade out (reduce alpha)
+                Color currentColor = spriteRenderer.color;
+                currentColor.a = Mathf.Lerp(1f, 0f, progress);
+                spriteRenderer.color = currentColor;
+
+                yield return null;
+            }
+
+            // Remove from game
             var pooled = GetComponent<Utilities.PooledObject>();
             if (pooled != null)
             {
                 onEnemyRemoved?.Invoke();
                 pooled.ReleaseToPool();
-                return;
+                yield break;
             }
 
+            onEnemyRemoved?.Invoke();
             Destroy(gameObject);
         }
 
@@ -242,19 +269,24 @@ namespace GhostBeam.Enemy
             onEnemyRemoved?.Invoke();
         }
 
-        private void OnTriggerEnter2D(Collider2D collision)
+        private void OnCollisionEnter2D(Collision2D collision)
         {
-            if (collision.CompareTag("Player"))
+            if (collision.gameObject.name == "Luna" || collision.gameObject.CompareTag("Player"))
             {
-                var healthSystem = collision.GetComponent<Gameplay.HealthSystem>();
+                var healthSystem = collision.gameObject.GetComponent<Gameplay.HealthSystem>();
                 if (healthSystem != null && !isDead)
                 {
+                    Debug.Log($"[Enemy] HIT! Luna took {damageOnContact} damage");
                     healthSystem.TakeDamage(damageOnContact);
                     
                     if (Managers.SettingsManager.Instance != null)
                     {
                         Managers.SettingsManager.Instance.Vibrate();
                     }
+                }
+                else if (healthSystem == null)
+                {
+                    Debug.LogWarning($"[Enemy] {collision.gameObject.name} has no HealthSystem component!");
                 }
             }
         }
@@ -272,7 +304,17 @@ namespace GhostBeam.Enemy
         {
             isDead = false;
             illuminationTimer = 0f;
-            spriteRenderer.color = originalColor;
+            
+            // Reset color with full alpha
+            Color resetColor = Color.white;
+            resetColor.a = 1f;
+            spriteRenderer.color = resetColor;
+            
+            // Re-enable collider
+            var collider = GetComponent<CircleCollider2D>();
+            if (collider != null)
+                collider.enabled = true;
+            
             currentDirectionalSprite = null;
             ApplyDirectionalSprite(force: true);
         }

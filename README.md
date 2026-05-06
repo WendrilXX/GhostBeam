@@ -1,8 +1,8 @@
 # GHOSTBEAM - Survival Arcade 2D
 
-**Version:** 1.2  
+**Version:** 1.1  
 **Status:** Production Ready  
-**Last Updated:** May 4, 2026
+**Last Updated:** April 15, 2026
 
 ---
 
@@ -10,20 +10,11 @@
 
 GHOSTBEAM is a 2D mobile survival arcade game where players control Luna, a character equipped with a flashlight. Survive waves of ghosts, collect coins, manage battery resources, and progress through increasingly difficult stages. The game features a complete UI system with menus, HUD, pause functionality, and localization support.
 
-### Recent Updates (May 2026)
-
-- Shop: back button visible and cards compacted
-- Upgrades: battery 2x (tier 3), flashlight power 2x (tier 3), life up to 6
-- Spawn: continues after 30s (active count fixed)
-- Enemies: directional sprites per archetype
-- Mobile: separated touch for movement and flashlight
-- Audio: menu and gameplay music routing + menu click SFX
-
 ### Core Features
 
 | Feature | Status | Details |
 |---------|--------|---------|
-| Main Menu System | ✓ Complete | Play, Shop, Settings, Quit, Back in shop |
+| Main Menu System | ✓ Complete | Play, Shop, Settings, Quit |
 | Pause System | ✓ Complete | ESC key + UI pause menu |
 | Settings Menu | ✓ Complete | Volume control, vibration toggle |
 | Game Over Screen | ✓ Complete | Auto-detection, restart, return to menu |
@@ -214,9 +205,7 @@ HUD Update: MainMenuUIBuilder
 
 - **5 Enemy Types:** Progressive difficulty with unique behaviors
 - **Difficulty Scaling:** 3 stages with wave-based progression
-- **Battery System:** Resource management with drain mechanics (2 pts/sec)
-- **Upgrade Tiers:** 3 tiers for beam, power, battery, life
-- **Enemy Visuals:** Directional sprites per archetype
+- **Battery System:** Resource management with drain mechanics
 - **Coin Collection:** 100% drop on enemy defeat
 - **Pickup System:** Battery and coin pickups with floating text feedback
 - **Wave System:** Progressive enemy spawning with difficulty curve
@@ -259,25 +248,24 @@ Complete documentation is available in the `/docs/` folder. Start with the index
 
 ## Development Status
 
-### Current Release: v1.2 (Production Ready)
+### Current Release: v1.1 (Production Ready)
 
-**Completion Status:** 90%
+**Completion Status:** 88%
 
 | Component | Status | Last Update |
 |-----------|--------|-------------|
-| Core Gameplay | ✓ Complete | May 4, 2026 |
-| Menu System | ✓ Complete | May 4, 2026 |
-| HUD System | ✓ Complete | May 4, 2026 |
+| Core Gameplay | ✓ Complete | April 14, 2026 |
+| Menu System | ✓ Complete | April 15, 2026 |
+| HUD System | ✓ Complete | April 15, 2026 |
 | Pause System | ✓ Complete | April 15, 2026 |
-| Audio System | ✓ Complete | May 4, 2026 |
+| Audio System | ✓ Complete | April 14, 2026 |
 | Localization | ✓ Complete | April 15, 2026 |
-| Performance Optimization | ✓ Complete | May 4, 2026 |
+| Performance Optimization | ✓ Complete | April 14, 2026 |
 | Device Testing | In Progress | - |
 | Content Polish | Pending | - |
 
 ### Version History
 
-- **v1.2** (May 4, 2026) - Shop back button, compact cards, upgrades tiers, spawn fix
 - **v1.1** (April 14, 2026) - Menu consolidation, balance improvements
 - **v1.0** (April 1, 2026) - Initial release
 - **v0.x** (Previous sprints) - Development iterations

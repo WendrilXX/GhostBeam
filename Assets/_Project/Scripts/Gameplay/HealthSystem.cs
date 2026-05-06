@@ -1,6 +1,7 @@
 using UnityEngine;
 using GhostBeam.Managers;
 using System;
+using System.Collections;
 
 namespace GhostBeam.Gameplay
 {
@@ -10,8 +11,12 @@ namespace GhostBeam.Gameplay
 
         [SerializeField] private int maxHealth = 3;
         [SerializeField] private int maxHealthCap = 6;
+        [SerializeField] private float damageFlashDuration = 0.3f;  // Duration of red flash
 
         private int currentHealth;
+        private SpriteRenderer spriteRenderer;
+        private Color originalColor;
+        private Coroutine damageFlashCoroutine;
 
         public int CurrentHealth => currentHealth;
         public int MaxHealth => maxHealth;
@@ -21,6 +26,10 @@ namespace GhostBeam.Gameplay
 
         private void Awake()
         {
+            spriteRenderer = GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+                originalColor = spriteRenderer.color;
+
             int healthTier = Mathf.Clamp(PlayerPrefs.GetInt(HealthUpgradeTierKey, 0), 0, 3);
             int baseMaxHealth = maxHealth;
             maxHealth = Mathf.Min(maxHealthCap, baseMaxHealth + healthTier);
@@ -33,6 +42,14 @@ namespace GhostBeam.Gameplay
             if (currentHealth < 0)
                 currentHealth = 0;
 
+            // Visual feedback: flash red
+            if (spriteRenderer != null)
+            {
+                if (damageFlashCoroutine != null)
+                    StopCoroutine(damageFlashCoroutine);
+                damageFlashCoroutine = StartCoroutine(DamageFlash());
+            }
+
             onHealthChanged?.Invoke(currentHealth);
 
             if (currentHealth <= 0)
@@ -40,6 +57,13 @@ namespace GhostBeam.Gameplay
                 onHealthDepleted?.Invoke();
                 Managers.GameManager.TriggerGameOver();
             }
+        }
+
+        private IEnumerator DamageFlash()
+        {
+            spriteRenderer.color = Color.red;
+            yield return new WaitForSeconds(damageFlashDuration);
+            spriteRenderer.color = originalColor;
         }
 
         public void Heal(int amount = 1)

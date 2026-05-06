@@ -1,17 +1,19 @@
 # 📊 Ghost Beam - Project Status & Roadmap
 
-**Versão:** 1.2  
-**Data de Última Atualização:** 04 de Maio de 2026  
+**Versão:** 1.2.1  
+**Data de Última Atualização:** 06 de Maio de 2026  
 **Status:** MVP Pronto (90% desenvolvimento)
 
-## 0. Atualizacoes Recentes (04/05/2026)
+## 0. Atualizacoes Recentes (06/05/2026)
 
 - ✅ Loja: botao VOLTAR visivel e cards menores
 - ✅ Upgrades: Vida Extra (max 6 vidas), bateria 2x no tier 3, poder 2x no tier 3
 - ✅ Spawn: nao para apos 30s (contador sincronizado com destruicao)
 - ✅ Sprites inimigos: direcoes por arquétipo + auto bind no editor
 - ✅ Mobile: joystick/touch separados (sem conflito)
-- ✅ Audio: musica de menu/gameplay + SFX de clique no menu
+- ✅ Mobile: overlay visual com dois joysticks (movimento + mira)
+- ✅ Lanterna: base 1.5 com upgrades aplicados por tier
+- ✅ Audio: sliders separados para musica e SFX
 
 ---
 
@@ -25,8 +27,8 @@
 | **Inimigos (5 tipos)** | ██████████ 100% | ✅ Completo | Todos com IA e balanceamento |
 | **Items & Economy** | ██████████ 100% | ✅ Completo | Moedas, pickups, upgrades |
 | **UI & Menus (Landscape)** | ██████████ 100% | ✅ Completo | Menu, HUD, Game Over, Shop |
-| **Audio** | █████████☐ 90% | ⏳ Parcial | Musica menu/gameplay, SFX menu |
-| **Mobile Touch Controls** | ██████████ 100% | ✅ Completo | Joysticks virtuais, safe area |
+| **Audio** | ██████████ 100% | ✅ Completo | Musica/SFX com volumes separados |
+| **Mobile Touch Controls** | ██████████ 100% | ✅ Completo | Joysticks virtuais + overlay visual |
 | **Polish & Optimization** | ██████░░░░ 60% | ⏳ Em progresso | Partículas, screen effects, performance |
 | **Testes em Device Real** | ██░░░░░░░░ 20% | ⏳ Próximo | Android/iOS testing necessário |
 

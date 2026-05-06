@@ -13,7 +13,7 @@
 |------------|--------|--------|
 | **Engine** | Unity 6 LTS | ✅ |
 | **Render Pipeline** | Universal Render Pipeline (URP) 2D | ✅ |
-| **Input System** | Input Manager (Clássico) | ✅ |
+| **Input System** | Input System Package (UI Input Module) | ✅ |
 | **UI Framework** | TextMesh Pro (TMP) | ✅ |
 | **Target Platform** | Android/iOS (Mobile Landscape Only) | ✅ |
 
@@ -72,7 +72,7 @@
 │    │  ├─ LunaController.cs
 │    │  └─ Flashlight (Light 2D - Spot)
 │    │     ├─ Light Type: Spot
-│    │     ├─ Intensity: 1.0
+│    │     ├─ Intensity: 1.5
 │    │     ├─ Outer Radius: 15u
 │    │     ├─ Outer Angle: 70°
 │    │     ├─ Shadows: Enabled
@@ -109,6 +109,9 @@
         ├─ BatteryBar (slider visual)
         ├─ BtnPause (pause button)
         └─ PausePanel (inactive até pausar)
+      └─ MobileUI (overlay visual)
+          ├─ JoystickLeft
+          └─ JoystickRight
 ```
 
 ---

@@ -9,6 +9,7 @@
 ## 📋 Pré-Requisitos
 - Unity 6 LTS com URP 2D
 - TextMeshPro configurado (Window > TextMeshPro > Import TMP Essential Resources)
+- Input System Package habilitado (UI usa InputSystemUIInputModule)
 - Projeto aberto e compilado sem erros
 
 ---
@@ -124,7 +125,7 @@ Gameplay (Scene Root)
 2. **Propriedades:**
    - Position: (0, 0, 0)
    - Light Type: Spot
-   - Intensity: 1.0
+   - Intensity: 1.5
    - Outer Radius: 15
    - Inner Radius: 0
    - Outer Angle: 70
