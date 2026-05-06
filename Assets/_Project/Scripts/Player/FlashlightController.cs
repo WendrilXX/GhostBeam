@@ -8,6 +8,7 @@ namespace GhostBeam.Player
         private const string BeamUpgradeTierKey = "Upgrade_Beam_Tier";
         private const string PowerUpgradeTierKey = "Upgrade_Power_Tier";
         private const int MaxPowerTier = 3;
+        private const float DefaultBaseIntensity = 1.5f;
 
         [SerializeField] private Light2D flashlight;
         [SerializeField] private float rotationSpeed = 10f;
@@ -38,7 +39,8 @@ namespace GhostBeam.Player
             {
                 baseOuterAngle = flashlight.pointLightOuterAngle;
                 baseOuterRadius = flashlight.pointLightOuterRadius;
-                baseIntensity = flashlight.intensity;
+                baseIntensity = DefaultBaseIntensity;
+                flashlight.intensity = baseIntensity;
                 ApplySavedUpgrades();
             }
 

@@ -29,6 +29,9 @@ namespace GhostBeam.UI
             // Fail-safe: guarantee a GameOver controller exists in gameplay scene.
             if (FindAnyObjectByType<GameOverPanelController>() == null)
                 gameObject.AddComponent<GameOverPanelController>();
+
+            if (GetComponent<MobileControlsOverlay>() == null)
+                gameObject.AddComponent<MobileControlsOverlay>();
         }
 
         private void Start()

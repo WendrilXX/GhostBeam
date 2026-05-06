@@ -122,7 +122,7 @@ namespace GhostBeam.Editor
 
             Light2D flashlight = flashlightObj.AddComponent<Light2D>();
             flashlight.lightType = (Light2D.LightType)1; // Spot type
-            flashlight.intensity = 1f;
+            flashlight.intensity = 1.5f;
             flashlight.pointLightOuterRadius = 15f;
             flashlight.pointLightOuterAngle = 70f;
             flashlight.blendStyleIndex = 0;

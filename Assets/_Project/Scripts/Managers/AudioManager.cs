@@ -13,6 +13,8 @@ namespace GhostBeam.Managers
 
 #if UNITY_EDITOR
         private const string DefaultMenuClickSfxPath = "Assets/_Project/Audio/SFX/Edited/snd_base_boss_prehit.ogg";
+    private const string DefaultMenuMusicPath = "Assets/_Project/Audio/Music/korku.wav";
+    private const string DefaultGameplayMusicPath = "Assets/_Project/Audio/Music/565693__zhr__horror-background-2.mp3";
 #endif
 
         [Header("Music")]
@@ -24,6 +26,8 @@ namespace GhostBeam.Managers
 
         private AudioSource musicSource;
         private float masterVolume = 1f;
+        private float musicVolume = 1f;
+        private float sfxVolume = 1f;
         private string lastMusicSceneName;
 
         public float MasterVolume 
@@ -33,8 +37,25 @@ namespace GhostBeam.Managers
             { 
                 masterVolume = Mathf.Clamp01(value);
                 if (musicSource != null)
-                    musicSource.volume = masterVolume;
+                    musicSource.volume = masterVolume * musicVolume;
             }
+        }
+
+        public float MusicVolume
+        {
+            get => musicVolume;
+            set
+            {
+                musicVolume = Mathf.Clamp01(value);
+                if (musicSource != null)
+                    musicSource.volume = masterVolume * musicVolume;
+            }
+        }
+
+        public float SfxVolume
+        {
+            get => sfxVolume;
+            set => sfxVolume = Mathf.Clamp01(value);
         }
 
         private void Awake()
@@ -50,6 +71,7 @@ namespace GhostBeam.Managers
             
             musicSource = GetComponent<AudioSource>();
             LoadSettings();
+            EnsureAudioListener();
 
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
@@ -60,6 +82,16 @@ namespace GhostBeam.Managers
             if (menuClickSfx == null)
             {
                 menuClickSfx = AssetDatabase.LoadAssetAtPath<AudioClip>(DefaultMenuClickSfxPath);
+            }
+
+            if (menuMusic == null)
+            {
+                menuMusic = AssetDatabase.LoadAssetAtPath<AudioClip>(DefaultMenuMusicPath);
+            }
+
+            if (gameplayMusic == null)
+            {
+                gameplayMusic = AssetDatabase.LoadAssetAtPath<AudioClip>(DefaultGameplayMusicPath);
             }
         }
 #endif
@@ -82,7 +114,7 @@ namespace GhostBeam.Managers
 
             musicSource.clip = clip;
             musicSource.loop = loop;
-            musicSource.volume = masterVolume;
+            musicSource.volume = masterVolume * musicVolume;
             musicSource.Play();
         }
 
@@ -97,7 +129,7 @@ namespace GhostBeam.Managers
             if (clip == null)
                 return;
 
-            AudioSource.PlayClipAtPoint(clip, Vector3.zero, volume * masterVolume);
+            AudioSource.PlayClipAtPoint(clip, Vector3.zero, volume * masterVolume * sfxVolume);
         }
 
         public void PlaySFXAtPosition(AudioClip clip, Vector3 position, float volume = 1f)
@@ -105,26 +137,38 @@ namespace GhostBeam.Managers
             if (clip == null)
                 return;
 
-            AudioSource.PlayClipAtPoint(clip, position, volume * masterVolume);
+            AudioSource.PlayClipAtPoint(clip, position, volume * masterVolume * sfxVolume);
         }
 
         private void LoadSettings()
         {
             masterVolume = PlayerPrefs.GetFloat("MasterVolume", 1f);
+            musicVolume = PlayerPrefs.GetFloat("MusicVolume", 1f);
+            sfxVolume = PlayerPrefs.GetFloat("SfxVolume", 1f);
             if (musicSource != null)
-                musicSource.volume = masterVolume;
+                musicSource.volume = masterVolume * musicVolume;
         }
 
         public void PlayMenuMusic()
         {
             if (menuMusic != null)
+            {
                 PlayMusic(menuMusic, true);
+                return;
+            }
+
+            Debug.LogWarning("[AudioManager] Menu music clip is not assigned.");
         }
 
         public void PlayGameplayMusic()
         {
             if (gameplayMusic != null)
+            {
                 PlayMusic(gameplayMusic, true);
+                return;
+            }
+
+            Debug.LogWarning("[AudioManager] Gameplay music clip is not assigned.");
         }
 
         public void PlayMenuClick()
@@ -135,6 +179,8 @@ namespace GhostBeam.Managers
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
+            EnsureAudioListener();
+
             if (scene.name == lastMusicSceneName)
                 return;
 
@@ -152,9 +198,44 @@ namespace GhostBeam.Managers
             }
         }
 
+        private void EnsureAudioListener()
+        {
+            var listeners = FindObjectsByType<AudioListener>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+            if (listeners.Length == 0)
+            {
+                gameObject.AddComponent<AudioListener>();
+                return;
+            }
+
+            if (listeners.Length <= 1)
+                return;
+
+            AudioListener preferred = null;
+            foreach (var listener in listeners)
+            {
+                if (listener != null && listener.GetComponent<Camera>() != null)
+                {
+                    preferred = listener;
+                    break;
+                }
+            }
+
+            if (preferred == null)
+                preferred = listeners[0];
+
+            foreach (var listener in listeners)
+            {
+                if (listener != null && listener != preferred)
+                    listener.enabled = false;
+            }
+        }
+
         public void SaveSettings()
         {
             PlayerPrefs.SetFloat("MasterVolume", masterVolume);
+            PlayerPrefs.SetFloat("MusicVolume", musicVolume);
+            PlayerPrefs.SetFloat("SfxVolume", sfxVolume);
             PlayerPrefs.Save();
         }
     }

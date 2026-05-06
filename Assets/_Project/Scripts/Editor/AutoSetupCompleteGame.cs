@@ -281,7 +281,7 @@ namespace GhostBeam.Editor
 
             var light2d = flashlightObj.AddComponent<UnityEngine.Rendering.Universal.Light2D>();
             light2d.lightType = UnityEngine.Rendering.Universal.Light2D.LightType.Point;
-            light2d.intensity = 1.9f;
+            light2d.intensity = 1.5f;
             light2d.pointLightInnerRadius = 1.2f;
             light2d.pointLightOuterRadius = 14f;
             light2d.pointLightInnerAngle = 22f;
@@ -624,10 +624,15 @@ namespace GhostBeam.Editor
             GameObject mobileUIObj = new GameObject("MobileUI");
             var canvas = mobileUIObj.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 2;
 
             var canvasScaler = mobileUIObj.AddComponent<CanvasScaler>();
             canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             canvasScaler.referenceResolution = new Vector2(1920, 1080);
+
+            var canvasGroup = mobileUIObj.AddComponent<CanvasGroup>();
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
 
             // Joystick visualization (left side)
             GameObject joystickLeft = new GameObject("JoystickLeft");
@@ -640,6 +645,18 @@ namespace GhostBeam.Editor
 
             var jlImg = joystickLeft.AddComponent<Image>();
             jlImg.color = new Color(1, 1, 1, 0.2f);
+            jlImg.raycastTarget = false;
+
+            GameObject jlKnob = new GameObject("Knob");
+            jlKnob.transform.parent = joystickLeft.transform;
+            var jlKnobRect = jlKnob.AddComponent<RectTransform>();
+            jlKnobRect.anchorMin = new Vector2(0.5f, 0.5f);
+            jlKnobRect.anchorMax = new Vector2(0.5f, 0.5f);
+            jlKnobRect.anchoredPosition = Vector2.zero;
+            jlKnobRect.sizeDelta = new Vector2(120, 120);
+            var jlKnobImg = jlKnob.AddComponent<Image>();
+            jlKnobImg.color = new Color(1, 1, 1, 0.35f);
+            jlKnobImg.raycastTarget = false;
 
             // Joystick visualization (right side)
             GameObject joystickRight = new GameObject("JoystickRight");
@@ -652,6 +669,18 @@ namespace GhostBeam.Editor
 
             var jrImg = joystickRight.AddComponent<Image>();
             jrImg.color = new Color(1, 1, 1, 0.2f);
+            jrImg.raycastTarget = false;
+
+            GameObject jrKnob = new GameObject("Knob");
+            jrKnob.transform.parent = joystickRight.transform;
+            var jrKnobRect = jrKnob.AddComponent<RectTransform>();
+            jrKnobRect.anchorMin = new Vector2(0.5f, 0.5f);
+            jrKnobRect.anchorMax = new Vector2(0.5f, 0.5f);
+            jrKnobRect.anchoredPosition = Vector2.zero;
+            jrKnobRect.sizeDelta = new Vector2(120, 120);
+            var jrKnobImg = jrKnob.AddComponent<Image>();
+            jrKnobImg.color = new Color(1, 1, 1, 0.35f);
+            jrKnobImg.raycastTarget = false;
         }
 
         #endregion
@@ -883,7 +912,7 @@ namespace GhostBeam.Editor
             var contentRect = contentObj.AddComponent<RectTransform>();
             contentRect.anchorMin = new Vector2(0.5f, 0.5f);
             contentRect.anchorMax = new Vector2(0.5f, 0.5f);
-            contentRect.sizeDelta = new Vector2(700, 500);  // Reduced from 900x600
+            contentRect.sizeDelta = new Vector2(700, 620);  // Reduced from 900x600
             contentRect.anchoredPosition = Vector2.zero;
 
             var cvlg = contentObj.AddComponent<VerticalLayoutGroup>();
@@ -1109,8 +1138,10 @@ namespace GhostBeam.Editor
             titleTxt.color = new Color(0.3f, 0.6f, 1f, 1f);
             titleTxt.fontStyle = TMPro.FontStyles.Bold;
 
-            // Volume control
+            // Volume controls
             CreateSettingItem(contentObj, "MasterVolume", "Volume", "0%", "100%");
+            CreateSettingItem(contentObj, "MusicVolume", "Musica", "0%", "100%");
+            CreateSettingItem(contentObj, "SfxVolume", "SFX", "0%", "100%");
 
             // Vibration toggle
             CreateSettingToggle(contentObj, "Vibracao", "Vibração", "ON");

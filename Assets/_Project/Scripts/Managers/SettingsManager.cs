@@ -8,6 +8,8 @@ namespace GhostBeam.Managers
         public static SettingsManager Instance { get; private set; }
 
         private float masterVolume = 1f;
+        private float musicVolume = 1f;
+        private float sfxVolume = 1f;
         private bool vibrationEnabled = true;
         private bool performanceOverlayEnabled = false;
 
@@ -17,6 +19,26 @@ namespace GhostBeam.Managers
             set 
             { 
                 masterVolume = Mathf.Clamp01(value);
+                SaveSettings();
+            }
+        }
+
+        public float MusicVolume
+        {
+            get => musicVolume;
+            set
+            {
+                musicVolume = Mathf.Clamp01(value);
+                SaveSettings();
+            }
+        }
+
+        public float SfxVolume
+        {
+            get => sfxVolume;
+            set
+            {
+                sfxVolume = Mathf.Clamp01(value);
                 SaveSettings();
             }
         }
@@ -59,6 +81,8 @@ namespace GhostBeam.Managers
         private void LoadSettings()
         {
             masterVolume = PlayerPrefs.GetFloat("MasterVolume", 1f);
+            musicVolume = PlayerPrefs.GetFloat("MusicVolume", 1f);
+            sfxVolume = PlayerPrefs.GetFloat("SfxVolume", 1f);
             vibrationEnabled = PlayerPrefs.GetInt("VibrationEnabled", 1) == 1;
             performanceOverlayEnabled = PlayerPrefs.GetInt("PerformanceOverlay", 0) == 1;
         }
@@ -66,6 +90,8 @@ namespace GhostBeam.Managers
         private void SaveSettings()
         {
             PlayerPrefs.SetFloat("MasterVolume", masterVolume);
+            PlayerPrefs.SetFloat("MusicVolume", musicVolume);
+            PlayerPrefs.SetFloat("SfxVolume", sfxVolume);
             PlayerPrefs.SetInt("VibrationEnabled", vibrationEnabled ? 1 : 0);
             PlayerPrefs.SetInt("PerformanceOverlay", performanceOverlayEnabled ? 1 : 0);
             PlayerPrefs.Save();

@@ -35,6 +35,10 @@ namespace GhostBeam.UI
         private GameObject mainMenuContainer;
         private Slider volumeSlider;
         private TextMeshProUGUI volumeValueText;
+        private Slider musicVolumeSlider;
+        private TextMeshProUGUI musicVolumeValueText;
+        private Slider sfxVolumeSlider;
+        private TextMeshProUGUI sfxVolumeValueText;
         private Button vibrationToggleButton;
         private TextMeshProUGUI vibrationStateText;
         private Button fpsToggleButton;
@@ -47,14 +51,8 @@ namespace GhostBeam.UI
         {
             Debug.Log("[MenuController] Menu started...");
             
-            // Ensure EventSystem exists
-            if (UnityEngine.EventSystems.EventSystem.current == null)
-            {
-                Debug.Log("[MenuController] Creating EventSystem...");
-                GameObject eventSystemObj = new GameObject("EventSystem");
-                eventSystemObj.AddComponent<UnityEngine.EventSystems.EventSystem>();
-                eventSystemObj.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
-            }
+            // Ensure EventSystem exists and matches the active input system
+            EventSystemUtility.EnsureEventSystem();
             
             // Find all UI elements from this menu canvas, including inactive objects
             shopPanel = FindChildByName(transform, "ShopPanel")?.gameObject;
@@ -382,6 +380,12 @@ namespace GhostBeam.UI
             volumeSlider = FindChildByName(panel, "MasterVolumeSlider")?.GetComponent<Slider>();
             volumeValueText = FindChildByName(panel, "MasterVolumeValue")?.GetComponent<TextMeshProUGUI>();
 
+            musicVolumeSlider = FindChildByName(panel, "MusicVolumeSlider")?.GetComponent<Slider>();
+            musicVolumeValueText = FindChildByName(panel, "MusicVolumeValue")?.GetComponent<TextMeshProUGUI>();
+
+            sfxVolumeSlider = FindChildByName(panel, "SfxVolumeSlider")?.GetComponent<Slider>();
+            sfxVolumeValueText = FindChildByName(panel, "SfxVolumeValue")?.GetComponent<TextMeshProUGUI>();
+
             vibrationToggleButton = FindChildByName(panel, "Toggle_Vibracao")?.GetComponent<Button>();
             vibrationStateText = FindChildByName(panel, "VibracaoState")?.GetComponent<TextMeshProUGUI>();
 
@@ -395,6 +399,24 @@ namespace GhostBeam.UI
                 volumeSlider.SetValueWithoutNotify(currentVolume * 100f);
                 UpdateVolumeText(volumeSlider.value);
                 volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
+            }
+
+            if (musicVolumeSlider != null)
+            {
+                musicVolumeSlider.onValueChanged.RemoveAllListeners();
+                float currentMusic = SettingsManager.Instance != null ? SettingsManager.Instance.MusicVolume : 1f;
+                musicVolumeSlider.SetValueWithoutNotify(currentMusic * 100f);
+                UpdateMusicVolumeText(musicVolumeSlider.value);
+                musicVolumeSlider.onValueChanged.AddListener(OnMusicVolumeChanged);
+            }
+
+            if (sfxVolumeSlider != null)
+            {
+                sfxVolumeSlider.onValueChanged.RemoveAllListeners();
+                float currentSfx = SettingsManager.Instance != null ? SettingsManager.Instance.SfxVolume : 1f;
+                sfxVolumeSlider.SetValueWithoutNotify(currentSfx * 100f);
+                UpdateSfxVolumeText(sfxVolumeSlider.value);
+                sfxVolumeSlider.onValueChanged.AddListener(OnSfxVolumeChanged);
             }
 
             if (vibrationToggleButton != null)
@@ -428,6 +450,42 @@ namespace GhostBeam.UI
 
             UpdateVolumeText(value);
             Debug.Log($"[MenuController] Master volume set to {(int)value}%");
+        }
+
+        private void OnMusicVolumeChanged(float value)
+        {
+            float normalized = Mathf.Clamp01(value / 100f);
+            if (SettingsManager.Instance != null)
+            {
+                SettingsManager.Instance.MusicVolume = normalized;
+            }
+
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.MusicVolume = normalized;
+                AudioManager.Instance.SaveSettings();
+            }
+
+            UpdateMusicVolumeText(value);
+            Debug.Log($"[MenuController] Music volume set to {(int)value}%");
+        }
+
+        private void OnSfxVolumeChanged(float value)
+        {
+            float normalized = Mathf.Clamp01(value / 100f);
+            if (SettingsManager.Instance != null)
+            {
+                SettingsManager.Instance.SfxVolume = normalized;
+            }
+
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.SfxVolume = normalized;
+                AudioManager.Instance.SaveSettings();
+            }
+
+            UpdateSfxVolumeText(value);
+            Debug.Log($"[MenuController] SFX volume set to {(int)value}%");
         }
 
         private void ToggleVibration()
@@ -473,6 +531,22 @@ namespace GhostBeam.UI
             if (volumeValueText != null)
             {
                 volumeValueText.text = $"{Mathf.RoundToInt(sliderValue)}%";
+            }
+        }
+
+        private void UpdateMusicVolumeText(float sliderValue)
+        {
+            if (musicVolumeValueText != null)
+            {
+                musicVolumeValueText.text = $"{Mathf.RoundToInt(sliderValue)}%";
+            }
+        }
+
+        private void UpdateSfxVolumeText(float sliderValue)
+        {
+            if (sfxVolumeValueText != null)
+            {
+                sfxVolumeValueText.text = $"{Mathf.RoundToInt(sliderValue)}%";
             }
         }
 

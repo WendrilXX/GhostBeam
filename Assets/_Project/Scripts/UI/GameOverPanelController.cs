@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.EventSystems;
 
 namespace GhostBeam.UI
 {
@@ -74,12 +73,7 @@ namespace GhostBeam.UI
                 scaler.referenceResolution = new Vector2(1920, 1080);
             }
 
-            if (EventSystem.current == null)
-            {
-                var eventSystemObj = new GameObject("EventSystem");
-                eventSystemObj.AddComponent<EventSystem>();
-                eventSystemObj.AddComponent<StandaloneInputModule>();
-            }
+            EventSystemUtility.EnsureEventSystem();
 
             if (gameOverPanel == null)
             {
