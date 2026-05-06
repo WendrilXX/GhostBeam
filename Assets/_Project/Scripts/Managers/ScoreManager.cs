@@ -11,6 +11,7 @@ namespace GhostBeam.Managers
         private int highScore = 0;
         private int coins = 0;
         private float survivalSeconds = 0f;
+        private float scoreRemainder = 0f;
 
         public int CurrentScore => currentScore;
         public int HighScore => highScore;
@@ -41,16 +42,18 @@ namespace GhostBeam.Managers
 
         private void Update()
         {
-            if (Time.timeScale > 0)
+            if (Time.timeScale > 0 && !UI.MenuController.IsMenuActive)
             {
                 survivalSeconds += Time.deltaTime;
                 onSurvivalTimeChanged?.Invoke(survivalSeconds);
                 
                 // Score por tempo: +5 pontos por segundo
-                int newScore = currentScore + (int)(Time.deltaTime * 5);
-                if (newScore != currentScore)
+                scoreRemainder += Time.deltaTime * 5f;
+                int addScore = Mathf.FloorToInt(scoreRemainder);
+                if (addScore > 0)
                 {
-                    currentScore = newScore;
+                    currentScore += addScore;
+                    scoreRemainder -= addScore;
                     onScoreChanged?.Invoke(currentScore);
                 }
             }
@@ -108,6 +111,7 @@ namespace GhostBeam.Managers
         {
             currentScore = 0;
             survivalSeconds = 0f;
+            scoreRemainder = 0f;
             onScoreChanged?.Invoke(currentScore);
             onSurvivalTimeChanged?.Invoke(survivalSeconds);
         }

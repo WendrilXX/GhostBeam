@@ -193,7 +193,7 @@ namespace GhostBeam.UI
                 AudioManager.Instance.PlayGameplayMusic();
             }
             Debug.Log("[MenuController] Loading Gameplay scene...");
-            SceneManager.LoadScene("Assets/_Project/Scenes/Gameplay.unity", LoadSceneMode.Single);
+            SceneManager.LoadScene("Gameplay", LoadSceneMode.Single);
         }
 
         private void OnShopClick()
@@ -690,8 +690,24 @@ namespace GhostBeam.UI
                 int nextPrice = isMax ? 0 : GetPriceForNextTier(token, tier);
 
                 var itemRect = itemRoot.GetComponent<RectTransform>();
+                float itemWidth = 620f;
                 if (itemRect != null)
+                {
+                    itemRect.anchorMin = new Vector2(0.5f, 0.5f);
+                    itemRect.anchorMax = new Vector2(0.5f, 0.5f);
+                    itemRect.pivot = new Vector2(0.5f, 0.5f);
+                    itemRect.anchoredPosition = new Vector2(0f, itemRect.anchoredPosition.y);
                     itemRect.sizeDelta = new Vector2(620f, 90f);
+                    itemWidth = itemRect.sizeDelta.x > 0 ? itemRect.sizeDelta.x : itemWidth;
+                }
+
+                const float leftPadding = 18f;
+                const float rightPadding = 18f;
+                const float rightGap = 12f;
+                const float priceWidth = 120f;
+                const float buyWidth = 112f;
+                float rightColumnWidth = priceWidth + rightGap + buyWidth;
+                float textWidth = Mathf.Max(260f, itemWidth - leftPadding - rightPadding - rightColumnWidth);
 
                 var title = itemRoot.Find("Title")?.GetComponent<TextMeshProUGUI>();
                 if (title != null)
@@ -700,6 +716,7 @@ namespace GhostBeam.UI
                     title.enableWordWrapping = false;
                     title.overflowMode = TextOverflowModes.Ellipsis;
                     title.text = GetDisplayName(token);
+                    title.alignment = TextAlignmentOptions.Left;
 
                     var titleRect = title.GetComponent<RectTransform>();
                     if (titleRect != null)
@@ -708,7 +725,7 @@ namespace GhostBeam.UI
                         titleRect.anchorMax = new Vector2(0f, 0.5f);
                         titleRect.pivot = new Vector2(0f, 0.5f);
                         titleRect.anchoredPosition = new Vector2(18f, 16f);
-                        titleRect.sizeDelta = new Vector2(340f, 34f);
+                        titleRect.sizeDelta = new Vector2(textWidth, 34f);
                     }
                 }
 
@@ -718,6 +735,7 @@ namespace GhostBeam.UI
                     desc.fontSize = 14;
                     desc.enableWordWrapping = false;
                     desc.overflowMode = TextOverflowModes.Ellipsis;
+                    desc.alignment = TextAlignmentOptions.Left;
 
                     var descRect = desc.GetComponent<RectTransform>();
                     if (descRect != null)
@@ -726,7 +744,7 @@ namespace GhostBeam.UI
                         descRect.anchorMax = new Vector2(0f, 0.5f);
                         descRect.pivot = new Vector2(0f, 0.5f);
                         descRect.anchoredPosition = new Vector2(18f, -16f);
-                        descRect.sizeDelta = new Vector2(350f, 22f);
+                        descRect.sizeDelta = new Vector2(textWidth, 22f);
                     }
                 }
 
@@ -737,6 +755,7 @@ namespace GhostBeam.UI
                     price.enableWordWrapping = false;
                     price.overflowMode = TextOverflowModes.Overflow;
                     price.text = isMax ? "MAX" : $"{nextPrice} C";
+                    price.alignment = TextAlignmentOptions.Right;
 
                     var priceRect = price.GetComponent<RectTransform>();
                     if (priceRect != null)
@@ -744,8 +763,8 @@ namespace GhostBeam.UI
                         priceRect.anchorMin = new Vector2(1f, 0.5f);
                         priceRect.anchorMax = new Vector2(1f, 0.5f);
                         priceRect.pivot = new Vector2(1f, 0.5f);
-                        priceRect.anchoredPosition = new Vector2(-148f, 2f);
-                        priceRect.sizeDelta = new Vector2(130f, 50f);
+                        priceRect.anchoredPosition = new Vector2(-(rightPadding + buyWidth + rightGap), 0f);
+                        priceRect.sizeDelta = new Vector2(priceWidth, 50f);
                     }
                 }
 
@@ -756,8 +775,11 @@ namespace GhostBeam.UI
                     var buyRect = buyButton.GetComponent<RectTransform>();
                     if (buyRect != null)
                     {
-                        buyRect.sizeDelta = new Vector2(112f, 40f);
-                        buyRect.anchoredPosition = new Vector2(-18f, 2f);
+                        buyRect.sizeDelta = new Vector2(buyWidth, 40f);
+                        buyRect.anchorMin = new Vector2(1f, 0.5f);
+                        buyRect.anchorMax = new Vector2(1f, 0.5f);
+                        buyRect.pivot = new Vector2(1f, 0.5f);
+                        buyRect.anchoredPosition = new Vector2(-rightPadding, 0f);
                     }
 
                     var label = buyButton.GetComponentInChildren<TextMeshProUGUI>(true);
@@ -786,6 +808,10 @@ namespace GhostBeam.UI
 
         private void EnsureTierLabel(Transform itemRoot, int tier)
         {
+            const float rightPadding = 18f;
+            const float rightGap = 12f;
+            const float priceWidth = 120f;
+            const float buyWidth = 112f;
             Transform tierTransform = itemRoot.Find("Tier");
             TextMeshProUGUI tierText;
 
@@ -797,8 +823,8 @@ namespace GhostBeam.UI
                 rect.anchorMin = new Vector2(1f, 1f);
                 rect.anchorMax = new Vector2(1f, 1f);
                 rect.pivot = new Vector2(1f, 1f);
-                rect.anchoredPosition = new Vector2(-12f, -8f);
-                rect.sizeDelta = new Vector2(180f, 22f);
+                rect.anchoredPosition = new Vector2(-rightPadding, -6f);
+                rect.sizeDelta = new Vector2(priceWidth + rightGap + buyWidth, 22f);
 
                 tierText = tierObj.AddComponent<TextMeshProUGUI>();
                 tierText.alignment = TextAlignmentOptions.Right;
@@ -813,6 +839,7 @@ namespace GhostBeam.UI
 
             if (tierText != null)
             {
+                tierText.alignment = TextAlignmentOptions.Right;
                 tierText.text = $"Tier {tier}/{MaxUpgradeTier}";
             }
         }

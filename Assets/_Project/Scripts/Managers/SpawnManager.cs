@@ -55,7 +55,6 @@ namespace GhostBeam.Managers
                     if (obj != null)
                     {
                         obj.SetActive(false);
-                        currentEnemyCount--;
                     }
                 },
                 initialSize: poolSize
@@ -124,6 +123,12 @@ namespace GhostBeam.Managers
             GameObject enemy = enemyPool.Get();
             if (enemy != null)
             {
+                var pooled = enemy.GetComponent<Utilities.PooledObject>();
+                if (pooled == null)
+                    pooled = enemy.AddComponent<Utilities.PooledObject>();
+
+                pooled.Initialize(p => enemyPool.Release(p.gameObject));
+
                 enemy.transform.position = spawnPos;
                 // Ensure enemy is properly initialized
                 var controller = enemy.GetComponent<Enemy.EnemyController>();

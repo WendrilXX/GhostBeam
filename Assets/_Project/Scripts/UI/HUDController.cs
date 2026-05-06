@@ -69,6 +69,9 @@ namespace GhostBeam.UI
 
         private void UpdateBattery(float battery)
         {
+            if (batterySystem == null)
+                return;
+
             if (txtBattery != null)
             {
                 float percent = Mathf.Clamp01(battery / batterySystem.MaxBattery);

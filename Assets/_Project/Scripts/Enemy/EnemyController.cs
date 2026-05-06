@@ -226,6 +226,14 @@ namespace GhostBeam.Enemy
             }
 
             // Destruir
+            var pooled = GetComponent<Utilities.PooledObject>();
+            if (pooled != null)
+            {
+                onEnemyRemoved?.Invoke();
+                pooled.ReleaseToPool();
+                return;
+            }
+
             Destroy(gameObject);
         }
 
