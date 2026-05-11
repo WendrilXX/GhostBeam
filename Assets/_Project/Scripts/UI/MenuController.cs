@@ -6,6 +6,7 @@ using GhostBeam.Managers;
 using GhostBeam.Player;
 using GhostBeam.Enemy;
 using GhostBeam.Items;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace GhostBeam.UI
@@ -55,6 +56,9 @@ namespace GhostBeam.UI
             
             // Ensure EventSystem exists and matches the active input system
             EventSystemUtility.EnsureEventSystem();
+            
+            // Apply modern UI design enhancements
+            ApplyModernMenuDesign();
             
             // Find all UI elements from this menu canvas, including inactive objects
             shopPanel = FindChildByName(transform, "ShopPanel")?.gameObject;
@@ -143,6 +147,7 @@ namespace GhostBeam.UI
             ScoreManager.onCoinsChanged -= OnCoinsChanged;
             ScoreManager.onCoinsChanged += OnCoinsChanged;
             UpdateShopCoinsText(ScoreManager.Instance != null ? ScoreManager.Instance.Coins : 0);
+            StartCoroutine(RefreshShopCoinsAfterSingletonsReady());
             
             // PAUSE ALL GAMEPLAY MANAGERS
             PauseGameplay();
@@ -202,16 +207,90 @@ namespace GhostBeam.UI
 
         private void OnPlayClick()
         {
+            StopCoroutine(nameof(CoPlayWithFakeLoading));
+            StartCoroutine(CoPlayWithFakeLoading());
+        }
+
+        private IEnumerator CoPlayWithFakeLoading()
+        {
             Debug.Log("[MenuController] *** PLAY BUTTON CLICKED ***");
             PlayMenuClickSfx();
             isMenuActive = false;
-            ResumeGameplay();  // Re-enable all systems before loading
-            if (AudioManager.Instance != null)
+
+            SetMainMenuInteractable(false);
+
+            RectTransform canvasRt = GetComponent<RectTransform>();
+            GameObject overlayRoot = new GameObject("FakeLoadingOverlay", typeof(RectTransform));
+            RectTransform overlayRt = overlayRoot.GetComponent<RectTransform>();
+            overlayRt.SetParent(canvasRt, false);
+            overlayRt.SetAsLastSibling();
+            overlayRt.anchorMin = Vector2.zero;
+            overlayRt.anchorMax = Vector2.one;
+            overlayRt.offsetMin = Vector2.zero;
+            overlayRt.offsetMax = Vector2.zero;
+
+            Image dim = overlayRoot.AddComponent<Image>();
+            dim.color = new Color(0f, 0f, 0f, 0.9f);
+            dim.raycastTarget = true;
+
+            GameObject barArea = new GameObject("LoadingBarArea", typeof(RectTransform));
+            RectTransform barAreaRt = barArea.GetComponent<RectTransform>();
+            barAreaRt.SetParent(overlayRt, false);
+            barAreaRt.anchorMin = new Vector2(0.08f, 0.06f);
+            barAreaRt.anchorMax = new Vector2(0.92f, 0.12f);
+            barAreaRt.offsetMin = Vector2.zero;
+            barAreaRt.offsetMax = Vector2.zero;
+
+            Image barBg = barArea.AddComponent<Image>();
+            barBg.color = new Color(0.12f, 0.12f, 0.12f, 0.95f);
+            barBg.raycastTarget = false;
+
+            GameObject fillGo = new GameObject("Fill", typeof(RectTransform));
+            RectTransform fillRt = fillGo.GetComponent<RectTransform>();
+            fillRt.SetParent(barAreaRt, false);
+            fillRt.anchorMin = new Vector2(0f, 0.1f);
+            fillRt.anchorMax = new Vector2(0f, 0.9f);
+            fillRt.pivot = new Vector2(0f, 0.5f);
+            fillRt.anchoredPosition = Vector2.zero;
+            fillRt.sizeDelta = new Vector2(0f, 0f);
+
+            Image fillImg = fillGo.AddComponent<Image>();
+            fillImg.color = MenuVisualTheme.LoadingBarFill;
+            fillImg.raycastTarget = false;
+
+            Canvas.ForceUpdateCanvases();
+            float maxW = Mathf.Max(8f, barAreaRt.rect.width - 8f);
+            if (maxW < 16f)
+                maxW = Mathf.Max(16f, canvasRt.rect.width * 0.74f);
+
+            float duration = 0.55f;
+            float t = 0f;
+            while (t < duration)
             {
-                AudioManager.Instance.PlayGameplayMusic();
+                t += Time.unscaledDeltaTime;
+                float p = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / duration));
+                float w = Mathf.Lerp(8f, maxW, p);
+                fillRt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, w);
+                yield return null;
             }
+
+            fillRt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, maxW);
+
+            ResumeGameplay();
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlayGameplayMusic();
+
             Debug.Log("[MenuController] Loading Gameplay scene...");
             SceneManager.LoadScene("Gameplay", LoadSceneMode.Single);
+        }
+
+        private void SetMainMenuInteractable(bool value)
+        {
+            if (btnPlay != null) btnPlay.interactable = value;
+            if (btnShop != null) btnShop.interactable = value;
+            if (btnSettings != null) btnSettings.interactable = value;
+            if (btnTutorial != null) btnTutorial.interactable = value;
+            if (btnQuit != null) btnQuit.interactable = value;
         }
 
         private void OnShopClick()
@@ -406,6 +485,13 @@ namespace GhostBeam.UI
                 return;
 
             shopCoinsText.text = $"Moedas: {coins}";
+        }
+
+        private IEnumerator RefreshShopCoinsAfterSingletonsReady()
+        {
+            yield return null;
+            if (ScoreManager.Instance != null)
+                UpdateShopCoinsText(ScoreManager.Instance.Coins);
         }
 
         private void SetupSettingsInteractions()
@@ -1080,6 +1166,34 @@ namespace GhostBeam.UI
                 gameplayCanvas.SetActive(true);
                 Debug.Log("[MenuController] Gameplay HUD shown");
             }
+        }
+
+        private void ApplyModernMenuDesign()
+        {
+            MenuLayoutReorganizer layoutReorganizer = GetComponent<MenuLayoutReorganizer>();
+            if (layoutReorganizer == null)
+            {
+                layoutReorganizer = gameObject.AddComponent<MenuLayoutReorganizer>();
+                Debug.Log("[MenuController] MenuLayoutReorganizer added");
+            }
+
+            layoutReorganizer.ReorganizeLayout();
+
+            MenuBackgroundAnimator bgAnimator = GetComponent<MenuBackgroundAnimator>();
+            if (bgAnimator == null)
+            {
+                bgAnimator = gameObject.AddComponent<MenuBackgroundAnimator>();
+                Debug.Log("[MenuController] MenuBackgroundAnimator added");
+            }
+
+            MenuUIAnimator uiAnimator = GetComponent<MenuUIAnimator>();
+            if (uiAnimator == null)
+            {
+                uiAnimator = gameObject.AddComponent<MenuUIAnimator>();
+                Debug.Log("[MenuController] MenuUIAnimator added");
+            }
+
+            Debug.Log("[MenuController] Modern menu design applied!");
         }
 
         private void OnDestroy()

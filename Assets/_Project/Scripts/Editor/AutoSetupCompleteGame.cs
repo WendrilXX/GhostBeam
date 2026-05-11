@@ -191,7 +191,7 @@ namespace GhostBeam.Editor
             camera.orthographicSize = 7.5f;
             camera.nearClipPlane = 0.3f;
             camera.farClipPlane = 1000f;
-            camera.backgroundColor = Color.black;
+            camera.backgroundColor = new Color(0.008f, 0.01f, 0.018f, 1f);
 
             cameraObj.AddComponent<AudioListener>();
         }
@@ -201,10 +201,11 @@ namespace GhostBeam.Editor
             GameObject lightObj = new GameObject("Global Light 2D");
 
             var light = lightObj.AddComponent<UnityEngine.Rendering.Universal.Light2D>();
-            light.lightType = (UnityEngine.Rendering.Universal.Light2D.LightType)0; // Global
-            // Keep a tiny ambient fallback so scene never turns completely black if cone light fails.
-            light.intensity = 0.03f;
+            light.lightType = UnityEngine.Rendering.Universal.Light2D.LightType.Global;
+            light.intensity = 0.012f;
+            light.color = Color.white;
             light.blendStyleIndex = 0;
+            light.shadowsEnabled = false;
 
             // If URP is not active, Light2D will not render as expected.
             var rp = UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline;
@@ -240,7 +241,7 @@ namespace GhostBeam.Editor
             GameObject lunaObj = new GameObject("Luna");
             lunaObj.tag = "Player";
             lunaObj.transform.position = Vector3.zero;
-            lunaObj.transform.localScale = Vector3.one;
+            lunaObj.transform.localScale = new Vector3(0.66f, 0.66f, 1f);
 
             // Sprite
             var spriteRenderer = lunaObj.AddComponent<SpriteRenderer>();
@@ -266,7 +267,7 @@ namespace GhostBeam.Editor
             rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 
             var collider = lunaObj.AddComponent<CircleCollider2D>();
-            collider.radius = 0.5f;
+            collider.radius = 0.33f;
 
             // Scripts
             lunaObj.AddComponent<Player.LunaController>();
@@ -354,7 +355,7 @@ namespace GhostBeam.Editor
 
             GameObject enemyObj = new GameObject("Enemy");
             enemyObj.transform.position = new Vector3(5, 5, 0);
-            enemyObj.transform.localScale = new Vector3(0.8f, 0.8f, 1);
+            enemyObj.transform.localScale = new Vector3(0.55f, 0.55f, 1);
 
             var spriteRenderer = enemyObj.AddComponent<SpriteRenderer>();
             Sprite penadoSprite = AssetDatabase.LoadAssetAtPath<Sprite>(PENADO_SPRITE_PATH);
@@ -377,7 +378,7 @@ namespace GhostBeam.Editor
             rb.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             var collider = enemyObj.AddComponent<CircleCollider2D>();
-            collider.radius = 0.4f;
+            collider.radius = 0.28f;
 
             enemyObj.AddComponent<Enemy.EnemyController>();
 

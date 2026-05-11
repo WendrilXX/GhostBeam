@@ -37,6 +37,9 @@ namespace GhostBeam.Gameplay
             if (Managers.GameManager.Instance == null || Managers.GameManager.Instance.IsPaused)
                 return;
 
+            if (!Managers.GameplayIntroState.AllowGameplay)
+                return;
+
             if (isLighting)
             {
                 currentBattery -= drainRate * Time.deltaTime;

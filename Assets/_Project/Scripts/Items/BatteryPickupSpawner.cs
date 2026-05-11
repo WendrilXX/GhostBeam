@@ -1,4 +1,5 @@
 using UnityEngine;
+using GhostBeam.Utilities;
 
 namespace GhostBeam.Items
 {
@@ -8,39 +9,38 @@ namespace GhostBeam.Items
         [SerializeField] private int poolSize = 20;
         [SerializeField] private float spawnRadius = 2f;
 
-        private Utilities.ObjectPool<GameObject> batteryPool;
-        private Transform playerTransform;
+        private ObjectPool<GameObject> batteryPool;
 
         private void Start()
         {
-            playerTransform = FindAnyObjectByType<Player.LunaController>()?.transform;
-            
             InitializePool();
             Enemy.EnemyController.onEnemyKilled += OnEnemyKilled;
         }
 
         private void InitializePool()
         {
-            // Load prefab dynamically if not assigned
             if (batteryPickupPrefab == null)
-            {
                 batteryPickupPrefab = Resources.Load<GameObject>("Prefabs/BatteryPickup");
-            }
 
             if (batteryPickupPrefab == null)
             {
-                Debug.LogError("BatteryPickupSpawner: Prefab not found! Please assign it in the Inspector or ensure it's in Resources/Prefabs/ folder.");
+                Debug.LogError("BatteryPickupSpawner: Prefab not found! Assign in Inspector or Resources/Prefabs/BatteryPickup.");
                 return;
             }
 
-            batteryPool = new Utilities.ObjectPool<GameObject>(
-                create: () => Instantiate(batteryPickupPrefab, transform),
-                onGet: (obj) => 
+            batteryPool = new ObjectPool<GameObject>(
+                create: () =>
+                {
+                    var go = Instantiate(batteryPickupPrefab, transform);
+                    go.SetActive(false);
+                    return go;
+                },
+                onGet: obj =>
                 {
                     if (obj != null)
                         obj.SetActive(true);
                 },
-                onRelease: (obj) => 
+                onRelease: obj =>
                 {
                     if (obj != null)
                     {
@@ -56,7 +56,6 @@ namespace GhostBeam.Items
 
         private void OnEnemyKilled(Vector3 deathPosition, int enemyType)
         {
-            // Chance de dropar bateria (50%)
             if (Random.value > 0.5f)
                 return;
 
@@ -65,24 +64,23 @@ namespace GhostBeam.Items
 
         private void SpawnBattery(Vector3 position)
         {
-            Vector3 spawnPos = position + (Vector3)Random.insideUnitCircle * spawnRadius;
+            if (batteryPool == null)
+                return;
+
             GameObject battery = batteryPool.Get();
-            
-            if (battery != null)
-            {
-                battery.transform.position = spawnPos;
-                var batteryPickup = battery.GetComponent<BatteryPickup>();
-                if (batteryPickup != null)
-                {
-                    batteryPickup.Collect();
-                    Gameplay.BatterySystem batterySystem = FindAnyObjectByType<Gameplay.BatterySystem>();
-                    if (batterySystem != null)
-                    {
-                        batterySystem.Recharge(batteryPickup.RechargeAmount);
-                    }
-                    batteryPool.Release(battery);
-                }
-            }
+            if (battery == null)
+                return;
+
+            Vector3 spawnPos = position + (Vector3)Random.insideUnitCircle * spawnRadius;
+            battery.transform.position = spawnPos;
+
+            var pooled = battery.GetComponent<PooledObject>();
+            if (pooled == null)
+                pooled = battery.AddComponent<PooledObject>();
+            pooled.Initialize(p => batteryPool.Release(p.gameObject));
+
+            var batteryPickup = battery.GetComponent<BatteryPickup>();
+            batteryPickup?.Reset();
         }
 
         private void OnDestroy()

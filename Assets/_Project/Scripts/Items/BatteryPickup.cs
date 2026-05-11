@@ -1,5 +1,7 @@
 using UnityEngine;
 using System;
+using GhostBeam.Gameplay;
+using GhostBeam.Utilities;
 
 namespace GhostBeam.Items
 {
@@ -50,13 +52,20 @@ namespace GhostBeam.Items
                 return;
 
             isCollected = true;
-            gameObject.SetActive(false);
+            var batterySystem = FindAnyObjectByType<BatterySystem>();
+            if (batterySystem != null)
+                batterySystem.Recharge(rechargeAmount);
+
+            var pooled = GetComponent<PooledObject>();
+            if (pooled != null)
+                pooled.ReleaseToPool();
+            else
+                gameObject.SetActive(false);
         }
 
         public void Reset()
         {
             isCollected = false;
-            gameObject.SetActive(true);
         }
     }
 }

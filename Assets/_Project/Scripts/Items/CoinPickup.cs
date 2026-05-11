@@ -1,5 +1,7 @@
 using UnityEngine;
 using System;
+using GhostBeam.Managers;
+using GhostBeam.Utilities;
 
 namespace GhostBeam.Items
 {
@@ -13,6 +15,11 @@ namespace GhostBeam.Items
         private bool isCollected = false;
 
         public int CoinAmount => coinAmount;
+
+        public void SetCoinAmount(int amount)
+        {
+            coinAmount = Mathf.Max(1, amount);
+        }
 
         private void Start()
         {
@@ -50,13 +57,19 @@ namespace GhostBeam.Items
                 return;
 
             isCollected = true;
-            gameObject.SetActive(false);
+            if (ScoreManager.Instance != null)
+                ScoreManager.Instance.AddCoins(coinAmount);
+
+            var pooled = GetComponent<PooledObject>();
+            if (pooled != null)
+                pooled.ReleaseToPool();
+            else
+                gameObject.SetActive(false);
         }
 
         public void Reset()
         {
             isCollected = false;
-            gameObject.SetActive(true);
         }
     }
 }

@@ -44,8 +44,8 @@ namespace GhostBeam.Enemy
         }
 
         [SerializeField] private float speed = 3f;
-        [SerializeField] private float timeToKillWhileIlluminated = 2f;  // Increased damage - faster kill
-        [SerializeField] private int damageOnContact = 2;  // Increased from 1
+        [SerializeField] private float timeToKillWhileIlluminated = 2f;
+        [SerializeField] private int damageOnContact = 2;
         [SerializeField] private float batteryRechargeOnKill = 12f;
         [SerializeField] private EnemyArchetype archetype = EnemyArchetype.Penado;
         [SerializeField] private DirectionalSpriteSet penadoSprites;
@@ -64,6 +64,9 @@ namespace GhostBeam.Enemy
         private SpriteRenderer spriteRenderer;
         public static event Action<Vector3, int> onEnemyKilled;
         public static event Action onEnemyRemoved;
+
+        private const float MediumVisualScale = 0.55f;
+        private const float MediumColliderRadius = 0.28f;
 
         private void Awake()
         {
@@ -176,6 +179,9 @@ namespace GhostBeam.Enemy
             return Mathf.Clamp(flashlight.intensity / 1.9f, 0.75f, 2.5f);
         }
 
+        /// <summary>
+        /// Apenas o cone da lanterna (Light2D da Luna) conta para dano; luz global ou de proximidade não entram aqui.
+        /// </summary>
         private bool IsIlluminated()
         {
             if (flashlight == null || !flashlight.enabled)
@@ -322,8 +328,64 @@ namespace GhostBeam.Enemy
         public void InitializeArchetype(EnemyArchetype targetArchetype)
         {
             archetype = targetArchetype;
+            ApplyArchetypeStats();
             currentDirectionalSprite = null;
             ApplyDirectionalSprite(force: true);
+        }
+
+        /// <summary>
+        /// GDD: Penado lento/vida baixa; Icterícia mais rápida, mesma vida baixa; Ectogangue vida média, grupo no spawn;
+        /// Titã lento/vida alta; Espectro muito rápido/vida baixa. Valores moderados para não quebrar o pacing.
+        /// </summary>
+        private void ApplyArchetypeStats()
+        {
+            float visualMul = 1f;
+            switch (archetype)
+            {
+                case EnemyArchetype.Penado:
+                    speed = 2.05f;
+                    timeToKillWhileIlluminated = 1.75f;
+                    damageOnContact = 1;
+                    visualMul = 0.78f;
+                    break;
+                case EnemyArchetype.Ictericia:
+                    speed = 2.92f;
+                    timeToKillWhileIlluminated = 1.75f;
+                    damageOnContact = 2;
+                    visualMul = 1f;
+                    break;
+                case EnemyArchetype.Ectogangue:
+                    speed = 2.88f;
+                    timeToKillWhileIlluminated = 3f;
+                    damageOnContact = 2;
+                    visualMul = 1f;
+                    break;
+                case EnemyArchetype.Tita:
+                    speed = 1.72f;
+                    timeToKillWhileIlluminated = 5.25f;
+                    damageOnContact = 3;
+                    visualMul = 1.16f;
+                    break;
+                case EnemyArchetype.Espectro:
+                    speed = 3.95f;
+                    timeToKillWhileIlluminated = 1.55f;
+                    damageOnContact = 1;
+                    visualMul = 1f;
+                    break;
+                default:
+                    speed = 2.5f;
+                    timeToKillWhileIlluminated = 2f;
+                    damageOnContact = 2;
+                    visualMul = 1f;
+                    break;
+            }
+
+            float s = MediumVisualScale * visualMul;
+            transform.localScale = new Vector3(s, s, 1f);
+
+            var col = GetComponent<CircleCollider2D>();
+            if (col != null)
+                col.radius = MediumColliderRadius * visualMul;
         }
 
 #if UNITY_EDITOR
