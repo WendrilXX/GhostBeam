@@ -1,10 +1,23 @@
 # 📊 Ghost Beam - Project Status & Roadmap
 
 **Versão:** 1.2.1  
-**Data de Última Atualização:** 06 de Maio de 2026  
-**Status:** MVP Pronto (90% desenvolvimento)
+**Data de Última Atualização:** 11 de Maio de 2026  
+**Status:** MVP Pronto (92% desenvolvimento)
 
-## 0. Atualizacoes Recentes (06/05/2026)
+## 0. Atualizacoes Recentes (11/05/2026)
+
+- ✅ **Redesign do Menu Principal:** Layout grid 2x2 moderno com cores vibrantes
+- ✅ **MenuLayoutReorganizer.cs:** Reorganização automática de botões em grid responsivo
+- ✅ **MenuUIAnimator.cs:** Animações elegantes (fade-in, scale on hover)
+- ✅ **MenuBackgroundAnimator.cs:** Fundo dinâmico com suporte para Light2D
+- ✅ **GameplayIntroFade.cs:** Fade de intro do gameplay
+- ✅ **GameplayIntroState.cs:** Novo estado de intro de gameplay
+- ✅ **MobileControlsOverlay.cs:** Overlay melhorado de controles mobile
+- ✅ **Otimização de Spawners:** BatteryPickupSpawner, CoinPickupSpawner refatorados
+- ✅ **Responsividade:** Layout otimizado para touch (200×200px), safe areas
+- ✅ **Documentação:** MENU_REDESIGN.md adicionado
+
+### Atualizacoes Anteriores (06/05/2026)
 
 - ✅ Loja: botao VOLTAR visivel e cards menores
 - ✅ Upgrades: Vida Extra (max 6 vidas), bateria 2x no tier 3, poder 2x no tier 3
@@ -26,10 +39,10 @@
 | **Core Gameplay** | ██████████ 100% | ✅ Completo | Movimento (touch), combate, bateria |
 | **Inimigos (5 tipos)** | ██████████ 100% | ✅ Completo | Todos com IA e balanceamento |
 | **Items & Economy** | ██████████ 100% | ✅ Completo | Moedas, pickups, upgrades |
-| **UI & Menus (Landscape)** | ██████████ 100% | ✅ Completo | Menu, HUD, Game Over, Shop |
+| **UI & Menus (Landscape)** | ██████████ 100% | ✅ Completo | Menu grid 2x2, HUD, Game Over, Shop |
 | **Audio** | ██████████ 100% | ✅ Completo | Musica/SFX com volumes separados |
 | **Mobile Touch Controls** | ██████████ 100% | ✅ Completo | Joysticks virtuais + overlay visual |
-| **Polish & Optimization** | ██████░░░░ 60% | ⏳ Em progresso | Partículas, screen effects, performance |
+| **Polish & Optimization** | ██████░░░░ 70% | ⏳ Em progresso | Redesign menu (done), partículas, screen effects |
 | **Testes em Device Real** | ██░░░░░░░░ 20% | ⏳ Próximo | Android/iOS testing necessário |
 
 ### 1.2 Build Status

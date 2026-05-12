@@ -1,515 +1,587 @@
-# GHOSTBEAM - Survival Arcade 2D
+# GHOSTBEAM - Arcade de Sobrevivência 2D
 
-**Version:** 1.1  
-**Status:** Production Ready  
-**Last Updated:** April 15, 2026
-
----
-
-## Overview
-
-GHOSTBEAM is a 2D mobile survival arcade game where players control Luna, a character equipped with a flashlight. Survive waves of ghosts, collect coins, manage battery resources, and progress through increasingly difficult stages. The game features a complete UI system with menus, HUD, pause functionality, and localization support.
-
-### Core Features
-
-| Feature | Status | Details |
-|---------|--------|---------|
-| Main Menu System | ✓ Complete | Play, Shop, Settings, Quit |
-| Pause System | ✓ Complete | ESC key + UI pause menu |
-| Settings Menu | ✓ Complete | Volume control, vibration toggle |
-| Game Over Screen | ✓ Complete | Auto-detection, restart, return to menu |
-| In-Game HUD | ✓ Complete | Health bar, score, timer, wave, coins, battery |
-| Localization | ✓ Complete | Portuguese (PT-BR) |
-| Performance | ✓ Complete | 60 FPS stable, optimized for mobile |
-| Platform Support | ✓ Complete | Android, iOS, Windows Desktop |
-| Compilation | ✓ Complete | 0 errors, 0 warnings |
+**Versão:** 1.2  
+**Status:** Pronto para Produção  
+**Última Atualização:** 11 de Maio de 2026
 
 ---
 
-## Table of Contents
+## Visão Geral
 
-1. [Quick Start](#quick-start)
-2. [System Requirements](#system-requirements)
-3. [Installation](#installation)
-4. [Project Structure](#project-structure)
-5. [Architecture](#architecture)
-6. [Features](#features)
-7. [Documentation](#documentation)
-8. [Development Status](#development-status)
-9. [Build & Deployment](#build--deployment)
-10. [Support & Troubleshooting](#support--troubleshooting)
+GHOSTBEAM é um jogo arcade de sobrevivência 2D para celular onde o jogador controla Luna, uma personagem equipada com uma lanterna. Sobreviva a ondas de fantasmas, colete moedas, gerencie recursos de bateria e avance em fases cada vez mais difíceis. O jogo possui um sistema de UI completo com menus, HUD, pausa e suporte a localização.
 
----
+### Funcionalidades Principais
 
-## Quick Start
-
-### Setup in 5 Minutes
-
-1. **Open the Gameplay scene**
-2. **Create an empty GameObject** and name it "UIRoot"
-3. **Attach MainMenuUIBuilder.cs** script to UIRoot
-4. **Press Play** in the editor
-
-The script automatically creates:
-- Main Menu Canvas
-- Pause Menu Canvas
-- Settings Canvas
-- Game Over Canvas
-- In-Game HUD Canvas
-- EventSystem (for button interactions)
-
-**For detailed setup instructions, see [docs/SETUP_COMPLETO.md](docs/SETUP_COMPLETO.md)**
+| Funcionalidade | Status | Detalhes |
+|--------|--------|---------|
+| Sistema de Menu Principal | ✓ Completo | Jogar, Loja, Configurações, Sair |
+| Sistema de Pausa | ✓ Completo | Tecla ESC + menu de pausa na UI |
+| Menu de Configurações | ✓ Completo | Controle de volume, alternância de vibração |
+| Tela de Game Over | ✓ Completo | Detecção automática, reiniciar, retornar ao menu |
+| HUD do Jogo | ✓ Completo | Barra de saúde, pontuação, timer, onda, moedas, bateria |
+| Localização | ✓ Completo | Português (PT-BR) |
+| Desempenho | ✓ Completo | 60 FPS estável, otimizado para celular |
+| Suporte de Plataforma | ✓ Completo | Android, iOS, Windows Desktop |
+| Compilação | ✓ Completo | 0 erros, 0 avisos |
 
 ---
 
-## System Requirements
+## Índice
 
-### Runtime Requirements
+1. [Início Rápido](#início-rápido)
+2. [Requisitos do Sistema](#requisitos-do-sistema)
+3. [Instalação](#instalação)
+4. [Estrutura do Projeto](#estrutura-do-projeto)
+5. [Arquitetura](#arquitetura)
+6. [Funcionalidades](#funcionalidades)
+7. [Documentação](#documentação)
+8. [Status de Desenvolvimento](#status-de-desenvolvimento)
+9. [Build & Implantação](#build--implantação)
+10. [Suporte & Resolução de Problemas](#suporte--resolução-de-problemas)
 
-| Requirement | Minimum | Recommended |
-|-------------|---------|-------------|
+---
+
+## Início Rápido
+
+### Setup em 5 Minutos
+
+1. **Abra a cena de Gameplay**
+2. **Crie um GameObject vazio** e nomeie-o "UIRoot"
+3. **Anexe o script MainMenuUIBuilder.cs** ao UIRoot
+4. **Pressione Play** no editor
+
+O script cria automaticamente:
+- Canvas do Menu Principal
+- Canvas do Menu de Pausa
+- Canvas de Configurações
+- Canvas de Game Over
+- Canvas HUD do Jogo
+- EventSystem (para interações de botão)
+
+**Para instruções de setup detalhadas, veja [docs/SETUP_COMPLETO.md](docs/SETUP_COMPLETO.md)**
+
+---
+
+## Requisitos do Sistema
+
+### Requisitos de Execução
+
+| Requisito | Mínimo | Recomendado |
+|-------------|--------|-------------|
 | **Engine** | Unity 2023 LTS | Unity 6 LTS+ |
-| **Graphics** | URP 2D | URP 2D |
+| **Gráficos** | URP 2D | URP 2D |
 | **RAM (Android)** | 1 GB | 2 GB+ |
 | **RAM (iOS)** | 1 GB | 2 GB+ |
-| **Display** | 4.5" (landscape) | 5.5"+ (landscape) |
-| **Android API** | 21+ (Lollipop) | 28+ (Pie) |
+| **Display** | 4.5" (paisagem) | 5.5"+ (paisagem) |
+| **API Android** | 21+ (Lollipop) | 28+ (Pie) |
 | **iOS** | 11.0+ | 14.0+ |
-| **Performance** | 50 FPS | 60 FPS |
+| **Desempenho** | 50 FPS | 60 FPS |
 
-### Development Requirements
+### Requisitos de Desenvolvimento
 
-- **Unity Version:** 2023.2 LTS or higher
-- **TextMesh Pro:** Latest version (included in Unity)
-- **Input System:** Legacy Input Manager enabled
-- **Development OS:** Windows, macOS, or Linux
-- **Target Platforms:** Android 5.0+, iOS 11.0+, Windows Desktop
+- **Versão Unity:** 2023.2 LTS ou superior
+- **TextMesh Pro:** Última versão (incluído no Unity)
+- **Sistema de Entrada:** Legacy Input Manager ativado
+- **OS de Desenvolvimento:** Windows, macOS ou Linux
+- **Plataformas Alvo:** Android 5.0+, iOS 11.0+, Windows Desktop
 
 ---
 
-## Installation
+## Instalação
 
-### Clone the Repository
+### Clonar o Repositório
 
 ```bash
 git clone <repository-url>
 cd GhostBeam
 ```
 
-### Open in Unity
+### Abrir no Unity
 
-1. Open Unity Hub
-2. Select "Open Project"
-3. Navigate to the GhostBeam folder
-4. Unity will load the project (first load may take a few minutes)
+1. Abra Unity Hub
+2. Selecione "Abrir Projeto"
+3. Navegue até a pasta GhostBeam
+4. Unity carregará o projeto (primeira carga pode levar alguns minutos)
 
-### Verify Installation
+### Verificar Instalação
 
-Run the following in the console:
+Execute o seguinte no console:
 ```csharp
-// Test 1: Check GameManager
-Debug.Assert(GameManager.Instance != null, "GameManager not found");
+// Teste 1: Verificar GameManager
+Debug.Assert(GameManager.Instance != null, "GameManager não encontrado");
 
-// Test 2: Check required managers
-Debug.Assert(HealthSystem.Instance != null, "HealthSystem not found");
-Debug.Assert(ScoreManager.Instance != null, "ScoreManager not found");
+// Teste 2: Verificar gerenciadores necessários
+Debug.Assert(HealthSystem.Instance != null, "HealthSystem não encontrado");
+Debug.Assert(ScoreManager.Instance != null, "ScoreManager não encontrado");
 ```
 
 ---
 
-## Project Structure
+## Estrutura do Projeto
+
+### Organização de Diretórios
+
+```
+Assets/
+├── _Project/
+│   ├── Managers/          # GameManager, AudioManager, SettingsManager, UpgradeManager, SkinManager
+│   ├── Player/            # LunaController, FlashlightController, PlayerInput
+│   ├── Enemy/             # EnemyController, SpawnManager, EnemyArchetype
+│   ├── Items/             # BatterySystem, CoinPickup, BatteryPickup, Pickup
+│   ├── Gameplay/          # PauseSystem, GameOverPanelController, ScoreManager
+│   ├── UI/                # MainMenuController, UIBootstrapper, HUDController, SettingsManager
+│   └── Utilities/         # ObjectPool, PooledObject, SafeAreaFitter, PerformanceOverlay
+├── Resources/             # Assets localizáveis e prefabs
+├── Sav1.unity             # Cena principal de Gameplay
+└── [Configurações padrão do Unity]
+```
+
+### Namespaces e Estrutura de Scripts
+
+**24 scripts reconstruídos** com namespaces claros (Abr/2026):
+
+| Namespace | Scripts | Função |
+|-----------|---------|--------|
+| `GhostBeam.Managers` | GameManager, AudioManager, SettingsManager, UpgradeManager, SkinManager | Gerência de estado e configurações |
+| `GhostBeam.Player` | LunaController, FlashlightController | Controles do jogador |
+| `GhostBeam.Enemy` | EnemyController, SpawnManager, EnemyArchetype | Sistema de inimigos |
+| `GhostBeam.Items` | BatterySystem, CoinPickup, BatteryPickup, PickupFloatingText | Itens e pickups |
+| `GhostBeam.Gameplay` | PauseSystem, GameOverPanelController, ScoreManager, HealthSystem, GameplayIntroState | Lógica de gameplay |
+| `GhostBeam.UI` | MainMenuController, UIBootstrapper, HUDController, MenuLayoutReorganizer, MenuUIAnimator, MenuBackgroundAnimator, GameplayIntroFade, MobileControlsOverlay | Sistemas de UI |
+| `GhostBeam.Utilities` | ObjectPool, PooledObject, SafeAreaFitter, PerformanceOverlay, ProjectValidator | Ferramentas auxiliares |
+
+### Ferramentas de Desenvolvimento
+
+**ProjectValidator.cs** (Utilities)
+- Valida integridade do projeto ao iniciar
+- Verifica se Managers estão configurados
+- Detecta referências faltantes
+- Compatível com SafeAreaFitter para layout mobile
+
+**PerformanceOverlay.cs** (Utilities)
+- Exibe FPS, memória e carga adaptativa em tempo real
+- Configurável via SettingsManager (toggle persistente)
+- Facilita tuning de performance em device mobile
 
 ---
 
-## Architecture
+## Arquitetura
 
-### Core Systems
+### Sistemas Principais
 
-**GameManager (Singleton Pattern)**
-- Central game coordinator
-- Handles game state transitions (MainMenu → Gameplay → Pause → GameOver)
-- Event system for state changes
-- Time scale management for pause functionality
+**GameManager (Padrão Singleton)**
+- Coordenador central do jogo
+- Manipula transições de estado (MainMenu → Gameplay → Pause → GameOver)
+- Sistema de eventos para mudanças de estado
+- Gerenciamento de escala de tempo para pausa
 
 **MainMenuUIBuilder**
-- Creates and manages all UI canvases
-- Handles menu navigation
-- Updates HUD in real-time
-- Auto-creates EventSystem if missing
+- Cria e gerencia todos os canvas de UI
+- Manipula navegação de menu
+- Atualiza HUD em tempo real
+- Cria automaticamente EventSystem se estiver faltando
 
 **HealthSystem**
-- Player health tracking
-- Death detection
-- Health change events
-- Dynamic health bar coloring (green → yellow → red)
+- Rastreamento de saúde do jogador
+- Detecção de morte
+- Eventos de mudança de saúde
+- Coloração dinâmica da barra de saúde (verde → amarelo → vermelho)
 
 **ScoreManager**
-- Score and coin tracking
-- Highscore persistence
-- Coin collection callbacks
+- Rastreamento de pontuação e moedas
+- Persistência de recorde
+- Callbacks de coleta de moeda
 
 **BatterySystem**
-- Flashlight battery management
-- Battery drain mechanics
-- Pickup and recharge handling
+- Gerenciamento de bateria da lanterna
+- Mecânica de drenagem de bateria
+- Manipulação de pickup e recarga
 
 **SpawnManager**
-- Enemy wave spawning
-- Difficulty progression (3 stages)
-- Spawn distance configuration
-- Wave counter
+- Spawning de onda de inimigos
+- Progressão de dificuldade (3 estágios)
+- Configuração de distância de spawn
+- Contador de onda
 
-### Design Patterns
+### Padrões de Design
 
-- **Singleton:** GameManager, AudioManager, managers
-- **Observer:** Event-based communication between systems
-- **Object Pooling:** Enemy and projectile reuse
-- **State Machine:** Game state management
+- **Singleton:** GameManager, AudioManager, gerenciadores
+- **Observer:** Comunicação baseada em eventos entre sistemas
+- **Object Pooling:** Reutilização de inimigos e projéteis
+- **State Machine:** Gerenciamento de estado do jogo
 
-### Data Flow
+### Fluxo de Dados
 
 ```
-Player Input
+Entrada do Jogador
     ↓
 InputSystem → GameManager
     ↓
-Update: HealthSystem, ScoreManager, BatterySystem
+Atualizar: HealthSystem, ScoreManager, BatterySystem
     ↓
-Event: onHealthChanged, onScoreChanged, etc.
+Evento: onHealthChanged, onScoreChanged, etc.
     ↓
-HUD Update: MainMenuUIBuilder
+Atualizar HUD: MainMenuUIBuilder
 ---
 
-## Features
+## Funcionalidades
 
-### Menu System
+### Sistema de Menu
 
-| Feature | Implementation |
-|---------|-----------------|
-| **Main Menu** | Play, Shop (placeholder), Settings, Quit |
-| **Pause Menu** | Resume, Settings, Return to Menu (ESC key) |
-| **Settings** | Volume slider (0-1), Vibration toggle |
-| **Game Over** | Auto-detection, Score/Highscore display |
-| **Localization** | Portuguese (PT-BR) with dynamic text |
+| Funcionalidade | Implementação |
+|--------|-----------------|
+| **Menu Principal** | Jogar, Loja (placeholder), Configurações, Sair |
+| **Menu de Pausa** | Retomar, Configurações, Retornar ao Menu (tecla ESC) |
+| **Configurações** | Controle deslizante de volume (0-1), alternância de vibração |
+| **Game Over** | Detecção automática, exibição de Pontuação/Recorde |
+| **Localização** | Português (PT-BR) com texto dinâmico |
 
-### In-Game HUD
+### HUD do Jogo
 
-- **Health Bar:** Dynamic coloring (green 75%+ → yellow 25-75% → red <25%)
-- **Score Display:** Real-time score counter
-- **Timer:** Survival time in MM:SS format
-- **Wave Counter:** Current difficulty stage
-- **Coins:** Collected coins display
-- **Battery:** Current flashlight battery level
+- **Barra de Saúde:** Coloração dinâmica (verde 75%+ → amarelo 25-75% → vermelho <25%)
+- **Exibição de Pontuação:** Contador de pontuação em tempo real
+- **Timer:** Tempo de sobrevivência em formato MM:SS
+- **Contador de Onda:** Estágio de dificuldade atual
+- **Moedas:** Exibição de moedas coletadas
+- **Bateria:** Nível atual de bateria da lanterna
 
-### Gameplay Mechanics
+### Mecânicas de Gameplay
 
-- **5 Enemy Types:** Progressive difficulty with unique behaviors
-- **Difficulty Scaling:** 3 stages with wave-based progression
-- **Battery System:** Resource management with drain mechanics
-- **Coin Collection:** 100% drop on enemy defeat
-- **Pickup System:** Battery and coin pickups with floating text feedback
-- **Wave System:** Progressive enemy spawning with difficulty curve
+- **5 Tipos de Inimigo:** Dificuldade progressiva com comportamentos únicos
+- **Escalonamento de Dificuldade:** 3 estágios com progressão baseada em ondas
+- **Sistema de Bateria:** Gerenciamento de recursos com mecânica de drenagem
+- **Coleta de Moeda:** 100% de queda na derrota de inimigo
+- **Sistema de Pickup:** Pickups de bateria e moeda com feedback de texto flutuante
+- **Sistema de Onda:** Spawning progressivo de inimigos com curva de dificuldade
 
-### Platform Support
+### Suporte de Plataforma
 
-- **Android:** 5.0+ (API 21+) with landscape orientation
-- **iOS:** 11.0+ with safe area handling
-- **Windows:** Desktop build support
-- **Orientation:** Landscape-only (1920x1080)
+- **Android:** 5.0+ (API 21+) com orientação paisagem
+- **iOS:** 11.0+ com tratamento de área segura
+- **Windows:** Suporte a build desktop
+- **Orientação:** Apenas paisagem (1920x1080)
 
-### Quality Assurance
+### Redesign do Menu Principal (v1.2)
 
-- **Performance:** 60 FPS stable (50 FPS minimum acceptable)
-- **Compilation:** 0 errors, 0 warnings
-- **Memory:** Optimized for 1 GB+ devices
+**Layout Grid 2x2 Moderno:**
+- Botões reorganizados em grid responsivo
+- Cores vibrantes por função: Jogar (vermelho), Loja (amarelo), Config (roxo), Tutorial (cyan)
+- Tamanho otimizado para touch (200×200px)
+- Animações suaves: fade-in, scale on hover, transições
+
+**Scripts de UI:**
+- `MenuLayoutReorganizer.cs` - Reorganização automática do grid
+- `MenuUIAnimator.cs` - Animações elegantes
+- `MenuBackgroundAnimator.cs` - Fundo dinâmico
+- `GameplayIntroFade.cs` - Fade de intro do gameplay
+- `MobileControlsOverlay.cs` - Overlay de controles mobile
+
+**Veja:** [docs/MENU_REDESIGN.md](docs/MENU_REDESIGN.md)
+
+### Garantia de Qualidade
+
+- **Desempenho:** 60 FPS estável (50 FPS mínimo aceitável)
+- **Compilação:** 0 erros, 0 avisos
+- **Memória:** Otimizado para dispositivos 1 GB+
 ---
 
-## Documentation
+## Documentação
 
-Complete documentation is available in the `/docs/` folder. Start with the index:
+Documentação completa está disponível na pasta `/docs/`. Comece com o índice:
 
-### Primary Documents
+### Documentos Principais
 
-| Document | Purpose | Audience |
+| Documento | Propósito | Público |
 |----------|---------|----------|
-| [docs/INDEX.md](docs/INDEX.md) | Documentation roadmap | All |
-| [docs/SETUP_COMPLETO.md](docs/SETUP_COMPLETO.md) | Quick setup guide (5 min) | Developers |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Technical architecture | Programmers |
-| [docs/GAME_DESIGN.md](docs/GAME_DESIGN.md) | Game mechanics & balance | Designers, Balancers |
-| [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | Timeline & roadmap | PMs, Stakeholders |
-| [docs/GHOSTBEAM_COMPLETE_GUIDE.md](docs/GHOSTBEAM_COMPLETE_GUIDE.md) | Complete reference | All (comprehensive) |
+| [docs/INDEX.md](docs/INDEX.md) | Mapa de documentação | Todos |
+| [docs/SETUP_COMPLETO.md](docs/SETUP_COMPLETO.md) | Guia de setup rápido (5 min) | Desenvolvedores |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Arquitetura técnica | Programadores |
+| [docs/GAME_DESIGN.md](docs/GAME_DESIGN.md) | Mecânicas & balanceamento do jogo | Designers, Balanceadores |
+| [docs/MENU_REDESIGN.md](docs/MENU_REDESIGN.md) | Redesign do menu v1.2 | Designers, Desenvolvedores |
+| [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | Cronograma & roadmap | PMs, Stakeholders |
+| [docs/GHOSTBEAM_COMPLETE_GUIDE.md](docs/GHOSTBEAM_COMPLETE_GUIDE.md) | Referência completa | Todos (abrangente) |
 
-### Quick Links by Role
+### Links Rápidos por Função
 
-- **I want to set up the game:** → [SETUP_COMPLETO.md](docs/SETUP_COMPLETO.md)
-- **I want to understand the code:** → [ARCHITECTURE.md](docs/ARCHITECTURE.md)
-- **I want to modify game balance:** → [GAME_DESIGN.md](docs/GAME_DESIGN.md)
+- **Quero configurar o jogo:** → [SETUP_COMPLETO.md](docs/SETUP_COMPLETO.md)
+- **Quero entender o código:** → [ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- **Quero modificar o balanceamento do jogo:** → [GAME_DESIGN.md](docs/GAME_DESIGN.md)
 ---
 
-## Development Status
+## Status de Desenvolvimento
 
-### Current Release: v1.1 (Production Ready)
+### Versão Atual: v1.1 (Pronto para Produção)
 
-**Completion Status:** 88%
+**Status de Conclusão:** 88%
 
-| Component | Status | Last Update |
+| Componente | Status | Última Atualização |
 |-----------|--------|-------------|
-| Core Gameplay | ✓ Complete | April 14, 2026 |
-| Menu System | ✓ Complete | April 15, 2026 |
-| HUD System | ✓ Complete | April 15, 2026 |
-| Pause System | ✓ Complete | April 15, 2026 |
-| Audio System | ✓ Complete | April 14, 2026 |
-| Localization | ✓ Complete | April 15, 2026 |
-| Performance Optimization | ✓ Complete | April 14, 2026 |
-| Device Testing | In Progress | - |
-| Content Polish | Pending | - |
+| Gameplay Principal | ✓ Completo | 30 de Abril de 2026 |
+| Sistema de Menu | ✓ Completo | 30 de Abril de 2026 |
+| Sistema HUD | ✓ Completo | 30 de Abril de 2026 |
+| Sistema de Pausa | ✓ Completo | 30 de Abril de 2026 |
+| Sistema de Áudio | ✓ Completo | 30 de Abril de 2026 |
+| Localização | ✓ Completo | 30 de Abril de 2026 |
+| Otimização de Desempenho | ✓ Completo | 30 de Abril de 2026 |
+| Teste em Dispositivo | Em Progresso | - |
+| Polish de Conteúdo | Pendente | - |
 
-### Version History
+### Histórico de Versão
 
-- **v1.1** (April 14, 2026) - Menu consolidation, balance improvements
-- **v1.0** (April 1, 2026) - Initial release
-- **v0.x** (Previous sprints) - Development iterations
+- **v1.1** (14 de Abril de 2026) - Consolidação de menu, melhorias de balanceamento
+- **v1.0** (1º de Abril de 2026) - Lançamento inicial
+- **v0.x** (Sprints anteriores) - Iterações de desenvolvimento
 
-### Next Priorities
+### Próximas Prioridades
 
-1. **Real Device Testing** - Validate on 5+ Android/iOS devices
-2. **Performance Profiling** - Ensure stable 60 FPS across devices
-3. **Content Expansion** - Additional skins, cosmetics
+1. **Teste em Dispositivo Real** - Validar em 5+ dispositivos Android/iOS
+2. **Perfil de Desempenho** - Garantir 60 FPS estável em todos os dispositivos
+3. **Expansão de Conteúdo** - Skins adicionais, cosméticos
 ---
 
-## Build & Deployment
+## Build & Implantação
 
-### Building for Android
+### Build para Android
 
 ```bash
-# 1. Set target platform
+# 1. Defina a plataforma alvo
 Unity → File → Build Settings → Android
 
-# 2. Configure build settings
-- Orientation: Landscape
-- API Level: 21+ (minimum)
-- Architecture: ARMv7 + ARM64
+# 2. Configure as configurações de build
+- Orientação: Paisagem
+- Nível de API: 21+ (mínimo)
+- Arquitetura: ARMv7 + ARM64
 
 # 3. Build APK/AAB
-- Development build: For testing
-- Release build: For app store
+- Build de desenvolvimento: Para testes
+- Build de lançamento: Para app store
 ```
 
-### Building for iOS
+### Build para iOS
 
 ```bash
-# 1. Set target platform
+# 1. Defina a plataforma alvo
 Unity → File → Build Settings → iOS
 
-# 2. Configure build settings
-- Orientation: Landscape
-- Target iOS: 11.0+
-- Architecture: ARM64
+# 2. Configure as configurações de build
+- Orientação: Paisagem
+- iOS alvo: 11.0+
+- Arquitetura: ARM64
 
-# 3. Build and open in Xcode
-- Configure code signing
-- Select development/distribution team
-- Build and deploy
+# 3. Build e abra no Xcode
+- Configure a assinatura de código
+- Selecione a equipe de desenvolvimento/distribuição
+- Build e implante
 ```
 
-### Building for Windows
+### Build para Windows
 
 ```bash
-# 1. Set target platform
+# 1. Defina a plataforma alvo
 Unity → File → Build Settings → Windows
 
-# 2. Configure build settings
-- Resolution: 1920x1080
-- Standalone: Yes
+# 2. Configure as configurações de build
+- Resolução: 1920x1080
+- Standalone: Sim
 
-# 3. Build executable
+# 3. Build do executável
 ```
 
-### Environment Setup
+### Configuração de Ambiente
 
 ```bash
-# Install required build tools
-- Unity 2023 LTS or higher
-- Android SDK & NDK (for Android builds)
-- Xcode 12+ (for iOS builds)
+# Instale as ferramentas de build necessárias
+- Unity 2023 LTS ou superior
+- Android SDK & NDK (para builds Android)
+- Xcode 12+ (para builds iOS)
 ---
 
-## Support & Troubleshooting
+## Suporte & Resolução de Problemas
 
-### Common Issues
+### Problemas Comuns
 
-#### Buttons Not Clickable
+#### Botões Não Clicáveis
 
-**Problem:** UI buttons don't respond to clicks/touches  
-**Solution:**
-1. Check if EventSystem exists in Hierarchy
-2. MainMenuUIBuilder should auto-create it
-3. If missing, manually add: Right-click Hierarchy → UI → Event System
+**Problema:** Botões de UI não respondem a cliques/toques  
+**Solução:**
+1. Verifique se EventSystem existe na Hierarquia
+2. MainMenuUIBuilder deve criá-lo automaticamente
+3. Se estiver faltando, adicione manualmente: Clique direito Hierarquia → UI → Event System
 
-#### HUD Not Displaying Values
+#### HUD Não Exibindo Valores
 
-**Problem:** HUD shows default/empty values  
-**Solution:**
-1. Verify these exist in scene: GameManager, HealthSystem, ScoreManager, BatterySystem
-2. Check MainMenuUIBuilder is attached to UIRoot
-3. Console should show no errors - check Debug.Log output
+**Problema:** HUD mostra valores padrão/vazios  
+**Solução:**
+1. Verifique se existem na cena: GameManager, HealthSystem, ScoreManager, BatterySystem
+2. Verifique se MainMenuUIBuilder está anexado ao UIRoot
+3. Console não deve mostrar erros - verifique a saída Debug.Log
 
-#### Game Freezes on Startup
+#### Jogo Congela na Inicialização
 
-**Problem:** Game hangs during initialization  
-**Solution:**
-1. Check all Singletons initialize properly
-2. Verify no scripts have infinite loops in Start()
-3. Check for missing script references
+**Problema:** Jogo trava durante a inicialização  
+**Solução:**
+1. Verifique se todos os Singletons inicializam corretamente
+2. Verifique se nenhum script tem loops infinitos em Start()
+3. Verifique referências de script faltantes
 
-#### Performance Issues (Low FPS)
+#### Problemas de Desempenho (FPS Baixo)
 
-**Problem:** Game runs below 60 FPS  
-**Solution:**
+**Problema:** Jogo roda abaixo de 60 FPS  
+**Solução:**
 1. Use Profiler: Window → Analysis → Profiler
-2. Check for excessive garbage allocation
-3. Verify particle systems are optimized
-4. Reduce enemy count or rendering distance if needed
+2. Verifique alocação excessiva de lixo
+3. Verifique se sistemas de partículas estão otimizados
+4. Reduza a contagem de inimigos ou distância de renderização se necessário
 
-### Getting Help
+### Obtendo Ajuda
 
-1. **Check Documentation:** [docs/INDEX.md](docs/INDEX.md) for comprehensive guides
-2. **Review Architecture:** [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for system details
-3. **Console Errors:** Check Unity Console for error messages and stack traces
-4. **Known Issues:** See [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md)
+1. **Verifique a Documentação:** [docs/INDEX.md](docs/INDEX.md) para guias abrangentes
+2. **Revise a Arquitetura:** [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) para detalhes do sistema
+3. **Erros do Console:** Verifique o Console do Unity para mensagens de erro e rastreamentos de pilha
+4. **Problemas Conhecidos:** Veja [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md)
 
-### Reporting Issues
+### Reportar Problemas
 
-When reporting an issue, include:
-- Unity version used
-- Target platform (Android, iOS, Windows)
-- Steps to reproduce
-- Screenshots/video if applicable
+Ao reportar um problema, inclua:
+- Versão do Unity usada
+- Plataforma alvo (Android, iOS, Windows)
+- Passos para reproduzir
+- Screenshots/vídeo se aplicável
 ---
 
-## Contributing
+## Contribuindo
 
-We welcome contributions! Please follow these guidelines:
+Recebemos contribuições! Por favor, siga estas diretrizes:
 
-### Development Workflow
+### Fluxo de Trabalho de Desenvolvimento
 
-1. **Read the Documentation**
-   - Start with [SETUP_COMPLETO.md](docs/SETUP_COMPLETO.md)
-   - Review [ARCHITECTURE.md](docs/ARCHITECTURE.md)
+1. **Leia a Documentação**
+   - Comece com [SETUP_COMPLETO.md](docs/SETUP_COMPLETO.md)
+   - Revise [ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
-2. **Create a Feature Branch**
+2. **Crie uma Branch de Funcionalidade**
    ```bash
-   git checkout -b feature/your-feature-name
+   git checkout -b feature/seu-nome-da-funcionalidade
    ```
 
-3. **Follow Code Standards**
-   - C# coding conventions
-   - Consistent naming (PascalCase for classes, camelCase for variables)
-   - Comment public methods and complex logic
-   - No compiler warnings
+3. **Siga Padrões de Código**
+   - Convenções de codificação C#
+   - Nomenclatura consistente (PascalCase para classes, camelCase para variáveis)
+   - Comente métodos públicos e lógica complexa
+   - Sem avisos de compilador
 
-4. **Test Thoroughly**
-   - Test in editor
-   - Test on target platforms (Android/iOS)
-   - Verify performance (60 FPS)
-   - Check console for errors/warnings
+4. **Teste Completamente**
+   - Teste no editor
+   - Teste em plataformas alvo (Android/iOS)
+   - Verifique desempenho (60 FPS)
+   - Verifique console para erros/avisos
 
-5. **Submit Pull Request**
-   - Clear description of changes
-   - Link to relevant issues
-   - Screenshots/videos for UI changes
-   - Test results on all platforms
+5. **Envie Pull Request**
+   - Descrição clara das mudanças
+   - Link para problemas relevantes
+   - Screenshots/vídeos para mudanças de UI
+   - Resultados de teste em todas as plataformas
 
-### Code Standards
+### Padrões de Código
 
-- **Language:** C# (.NET)
-- **Unity Version:** 2023 LTS+
-- **Formatting:** Use .editorconfig if available
-- **Comments:** English documentation with clear intent
-- **Testing:** Unit tests for critical systems
+- **Linguagem:** C# (.NET)
+- **Versão Unity:** 2023 LTS+
+- **Formatação:** Use .editorconfig se disponível
+- **Comentários:** Documentação em inglês com intenção clara
+- **Testes:** Testes unitários para sistemas críticos
 
 ### Branches
 
-- `main` - Production-ready code
-- `develop` - Integration branch
-- `feature/*` - New features
-- `bugfix/*` - Bug fixes
+- `main` - Código pronto para produção
+- `develop` - Branch de integração
+- `feature/*` - Novas funcionalidades
+- `bugfix/*` - Correções de bugs
 
 ---
 
-## License
+## Licença
 
-GHOSTBEAM - All rights reserved (2026)
+GHOSTBEAM - Todos os direitos reservados (2026)
 
-**Proprietary Software**  
-Copyright © Ghost Beam Development Team. All rights reserved.
+**Software Proprietário**  
+Copyright © Ghost Beam Development Team. Todos os direitos reservados.
 
-Unauthorized copying, modification, or distribution of this software is prohibited.
+Cópia, modificação ou distribuição não autorizada deste software é proibida.
 
 ---
 
-## Project Information
+## Informações do Projeto
 
-**Project Name:** GHOSTBEAM  
-**Type:** Mobile 2D Survival Arcade Game  
+**Nome do Projeto:** GHOSTBEAM  
+**Tipo:** Jogo Arcade 2D de Sobrevivência para Celular  
 **Engine:** Unity 6 LTS  
-**Platforms:** Android, iOS, Windows  
-**Status:** Production Ready  
-**Version:** 1.1  
-**Last Updated:** April 15, 2026
+**Plataformas:** Android, iOS, Windows  
+**Status:** Pronto para Produção  
+**Versão:** 1.1  
+**Última Atualização:** 15 de Abril de 2026
 
-### Key Contacts
+### Contatos Importantes
 
-- **Project Lead:** [Team Contact]
-- **Technical Lead:** [Team Contact]  
-- **Design Lead:** [Team Contact]
+- **Líder de Projeto:** [Contato da Equipe]
+- **Líder Técnico:** [Contato da Equipe]  
+- **Líder de Design:** [Contato da Equipe]
 
-### Important Links
+### Links Importantes
 
-- **Documentation:** [docs/INDEX.md](docs/INDEX.md)
-- **Architecture:** [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
-- **Game Design:** [docs/GAME_DESIGN.md](docs/GAME_DESIGN.md)
-- **Timeline:** [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md)
+- **Documentação:** [docs/INDEX.md](docs/INDEX.md)
+- **Arquitetura:** [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- **Design do Jogo:** [docs/GAME_DESIGN.md](docs/GAME_DESIGN.md)
+- **Cronograma:** [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md)
 
 ---
 
 ## Changelog
 
-### v1.1 - April 15, 2026
+### v1.2 - 11 de Maio de 2026
 
-**New:**
-- Consolidated menu UI system (MainMenuUIBuilder.cs)
-- Professional documentation structure
-- Improved HUD with dynamic health coloring
+**Redesign do Menu Principal:**
+- ✅ Layout grid 2x2 moderno com cores vibrantes (vermelho, amarelo, roxo, cyan)
+- ✅ MenuLayoutReorganizer.cs - Reorganização automática de botões
+- ✅ MenuUIAnimator.cs - Animações elegantes (fade-in, scale, transições)
+- ✅ MenuBackgroundAnimator.cs - Fundo dinâmico com suporte para Light2D
+- ✅ GameplayIntroFade.cs - Fade de intro do gameplay
+- ✅ GameplayIntroState.cs - Novo estado de intro
+- ✅ MobileControlsOverlay.cs - Overlay de controles mobile
+- ✅ Otimização de spawner: BatteryPickupSpawner, CoinPickupSpawner refatorados
+- ✅ Documentação: MENU_REDESIGN.md adicionado
+- ✅ Responsivo para mobile landscape (1920×1080)
 
-**Fixed:**
-- EventSystem auto-creation
-- Enemy spawn distance optimization
-- Portuguese localization
+### v1.1 - 11 de Maio de 2026
 
-**Changed:**
-- Removed deprecated UI files
-- Reorganized documentation
-- Updated build process
+**Rebuild Completo (Abr/2026):**
+- ✅ 24 scripts reconstruídos com namespaces e organização clara
+- ✅ Estrutura Assets/_Project com 7 subpastas temáticas
+- ✅ Ferramentas de desenvolvimento: ProjectValidator, PerformanceOverlay
+- ✅ Input System migration completo: LunaController, FlashlightController, PauseController
+- ✅ Compilação limpa: 0 erros, 0 avisos críticos
+- ✅ Documentação atualizada: SETUP_RÁPIDO.md, STATUS_RECONSTRUÇÃO.md
+- ✅ Object pooling implementado (inimigos, pickups, UI)
+- ✅ Vibração integrada com SettingsManager
+- ✅ Spawn distance fix e adaptação por performance
 
-### v1.0 - April 1, 2026
+### v1.0 - 1º de Abril de 2026
 
-**Initial Release**
-- Core gameplay mechanics
-- Basic UI system
-- Audio management
-- Mobile optimization
+**Lançamento Inicial**
+- Mecânicas principais de gameplay
+- Sistema de UI básico
+- Gerenciamento de áudio
+- Otimização para celular
 
 ---
 
-## Acknowledgments
+## Reconhecimentos
 
-- Unity Technologies for the game engine
-- TextMesh Pro for text rendering
-- Community feedback and testing
+- Unity Technologies pelo game engine
+- TextMesh Pro para renderização de texto
+- Feedback e testes da comunidade
 
 ---
 
-**For questions or support, please refer to the documentation or contact the development team.**
+**Para perguntas ou suporte, consulte a documentação ou entre em contato com a equipe de desenvolvimento.**
 
-**GHOSTBEAM v1.1 - Production Ready | Last Updated: April 15, 2026**
+**GHOSTBEAM v1.2 - Pronto para Produção | Última Atualização: 11 de Maio de 2026 | Redesign de Menu**

@@ -62,13 +62,28 @@ Cobre:
 
 ---
 
-### 4. 📊 [PROJECT_STATUS.md](PROJECT_STATUS.md)
+### 4.1. 🎨 [MENU_REDESIGN.md](MENU_REDESIGN.md)
+**Tempo de leitura:** 5 min  
+**Público:** Designers, Desenvolvedores de UI
+
+Cobre:
+- Layout grid 2x2 moderno
+- Cores vibrantes por função
+- Scripts de UI: MenuLayoutReorganizer, MenuUIAnimator, MenuBackgroundAnimator
+- Animações e transições
+- Responsividade mobile
+
+**Use este se você:** Quer entender o redesign do menu v1.2
+
+---
+
+### 5. 📊 [PROJECT_STATUS.md](PROJECT_STATUS.md)
 **Tempo de leitura:** 10 min  
 **Público:** PMs, stakeholders, time
 
 Cobre:
 - Status de desenvolvimento (88% complete)
-- Histórico de versions (v0-v1.1)
+- Histórico de versions (v0-v1.2)
 - 8 sprints anteriores
 - Próximas 4 fases (testing, content, social, stores)
 - Timeline projetada (June 2026)
@@ -78,7 +93,7 @@ Cobre:
 
 ---
 
-### 5. 📚 [GHOSTBEAM_COMPLETE_GUIDE.md](GHOSTBEAM_COMPLETE_GUIDE.md)
+### 6. 📚 [GHOSTBEAM_COMPLETE_GUIDE.md](GHOSTBEAM_COMPLETE_GUIDE.md)
 **Tempo de leitura:** 60 min  
 **Público:** Desenvolvedores, referência completa
 
@@ -95,7 +110,7 @@ Cobre:
 
 ---
 
-### 6. 📋 [CHECKLIST_VALIDACAO_MOBILE_15MIN.md](CHECKLIST_VALIDACAO_MOBILE_15MIN.md)
+### 7. 📋 [CHECKLIST_VALIDACAO_MOBILE_15MIN.md](CHECKLIST_VALIDACAO_MOBILE_15MIN.md)
 **Tempo de leitura:** 5 min  
 **Público:** QA, testers
 
@@ -105,7 +120,7 @@ Checklist rápido para validar o jogo em 15 minutos
 
 ---
 
-### 7. 🇧🇷 [GUIA_IMPLEMENTACAO_UNITY.md](GUIA_IMPLEMENTACAO_UNITY.md)
+### 8. 🇧🇷 [GUIA_IMPLEMENTACAO_UNITY.md](GUIA_IMPLEMENTACAO_UNITY.md)
 **Público:** Desenvolvedores em português
 
 Guia de implementação em português
@@ -143,6 +158,7 @@ README.md (raiz)
 | Objetivo | Documento |
 |----------|-----------|
 | Colocar o menu em uma cena | SETUP_COMPLETO.md |
+| Entender o redesign do menu | MENU_REDESIGN.md |
 | Entender os inimigos | GAME_DESIGN.md |
 | Adicionar um novo inimigo | ARCHITECTURE.md + GAME_DESIGN.md |
 | Mudar balanceamento | GAME_DESIGN.md |
