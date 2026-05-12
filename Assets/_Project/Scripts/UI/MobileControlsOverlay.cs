@@ -5,6 +5,8 @@ namespace GhostBeam.UI
 {
     public class MobileControlsOverlay : MonoBehaviour
     {
+        private static Sprite _circleSprite;
+
         [SerializeField] private bool onlyOnMobile = true;
         [SerializeField] private bool showInEditor = false;
         [SerializeField] private Vector2 leftPosition = new Vector2(170f, 170f);
@@ -106,6 +108,7 @@ namespace GhostBeam.UI
                 image = joystickObj.AddComponent<Image>();
             image.color = new Color(1f, 1f, 1f, baseAlpha);
             image.raycastTarget = false;
+            ApplyCircularSprite(image);
 
             EnsureKnob(joystickObj.transform, "Knob");
             return rect;
@@ -130,6 +133,49 @@ namespace GhostBeam.UI
                 image = knobObj.AddComponent<Image>();
             image.color = new Color(1f, 1f, 1f, knobAlpha);
             image.raycastTarget = false;
+            ApplyCircularSprite(image);
+        }
+
+        private static void ApplyCircularSprite(Image image)
+        {
+            if (image == null)
+                return;
+
+            image.sprite = GetOrCreateCircleSprite();
+            image.type = Image.Type.Simple;
+            image.preserveAspect = true;
+        }
+
+        private static Sprite GetOrCreateCircleSprite()
+        {
+            if (_circleSprite != null)
+                return _circleSprite;
+
+            const int size = 128;
+            const float radius = size * 0.5f - 1f;
+            var tex = new Texture2D(size, size, TextureFormat.ARGB32, false);
+            tex.wrapMode = TextureWrapMode.Clamp;
+            tex.filterMode = FilterMode.Bilinear;
+            tex.hideFlags = HideFlags.HideAndDontSave;
+
+            float cx = size * 0.5f;
+            float cy = size * 0.5f;
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float dx = x + 0.5f - cx;
+                    float dy = y + 0.5f - cy;
+                    float d = Mathf.Sqrt(dx * dx + dy * dy);
+                    float a = Mathf.Clamp01((radius - d + 0.8f) / 1.6f);
+                    tex.SetPixel(x, y, new Color(1f, 1f, 1f, a));
+                }
+            }
+
+            tex.Apply(false, true);
+            _circleSprite = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            _circleSprite.hideFlags = HideFlags.HideAndDontSave;
+            return _circleSprite;
         }
 
         private void CacheDefaults()

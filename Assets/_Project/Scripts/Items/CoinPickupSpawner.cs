@@ -1,4 +1,5 @@
 using UnityEngine;
+using GhostBeam.Utilities;
 
 namespace GhostBeam.Items
 {
@@ -8,39 +9,38 @@ namespace GhostBeam.Items
         [SerializeField] private int poolSize = 30;
         [SerializeField] private float spawnRadius = 2f;
 
-        private Utilities.ObjectPool<GameObject> coinPool;
-        private Transform playerTransform;
+        private ObjectPool<GameObject> coinPool;
 
         private void Start()
         {
-            playerTransform = FindAnyObjectByType<Player.LunaController>()?.transform;
-            
             InitializePool();
             Enemy.EnemyController.onEnemyKilled += OnEnemyKilled;
         }
 
         private void InitializePool()
         {
-            // Load prefab dynamically if not assigned
             if (coinPickupPrefab == null)
-            {
                 coinPickupPrefab = Resources.Load<GameObject>("Prefabs/CoinPickup");
-            }
 
             if (coinPickupPrefab == null)
             {
-                Debug.LogError("CoinPickupSpawner: Prefab not found! Please assign it in the Inspector or ensure it's in Resources/Prefabs/ folder.");
+                Debug.LogError("CoinPickupSpawner: Prefab not found! Assign in Inspector or Resources/Prefabs/CoinPickup.");
                 return;
             }
 
-            coinPool = new Utilities.ObjectPool<GameObject>(
-                create: () => Instantiate(coinPickupPrefab, transform),
-                onGet: (obj) => 
+            coinPool = new ObjectPool<GameObject>(
+                create: () =>
+                {
+                    var go = Instantiate(coinPickupPrefab, transform);
+                    go.SetActive(false);
+                    return go;
+                },
+                onGet: obj =>
                 {
                     if (obj != null)
                         obj.SetActive(true);
                 },
-                onRelease: (obj) => 
+                onRelease: obj =>
                 {
                     if (obj != null)
                     {
@@ -56,28 +56,34 @@ namespace GhostBeam.Items
 
         private void OnEnemyKilled(Vector3 deathPosition, int enemyType)
         {
-            // 100% de drop de moeda
             int coinAmount = Mathf.Max(1, enemyType);
             SpawnCoins(deathPosition, coinAmount);
         }
 
         private void SpawnCoins(Vector3 position, int count)
         {
+            if (coinPool == null)
+                return;
+
             for (int i = 0; i < count; i++)
             {
-                Vector3 spawnPos = position + (Vector3)Random.insideUnitCircle * spawnRadius;
                 GameObject coin = coinPool.Get();
-                
-                if (coin != null)
+                if (coin == null)
+                    continue;
+
+                Vector3 spawnPos = position + (Vector3)Random.insideUnitCircle * spawnRadius;
+                coin.transform.position = spawnPos;
+
+                var pooled = coin.GetComponent<PooledObject>();
+                if (pooled == null)
+                    pooled = coin.AddComponent<PooledObject>();
+                pooled.Initialize(p => coinPool.Release(p.gameObject));
+
+                var coinPickup = coin.GetComponent<CoinPickup>();
+                if (coinPickup != null)
                 {
-                    coin.transform.position = spawnPos;
-                    var coinPickup = coin.GetComponent<CoinPickup>();
-                    if (coinPickup != null)
-                    {
-                        Managers.ScoreManager.Instance?.AddCoins(coinPickup.CoinAmount);
-                        coinPickup.Collect();
-                        coinPool.Release(coin);
-                    }
+                    coinPickup.SetCoinAmount(1);
+                    coinPickup.Reset();
                 }
             }
         }

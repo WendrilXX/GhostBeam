@@ -30,8 +30,9 @@ namespace GhostBeam.Managers
                 Destroy(gameObject);
                 return;
             }
-            
+
             Instance = this;
+            DontDestroyOnLoad(gameObject);
             LoadData();
         }
 
@@ -42,7 +43,7 @@ namespace GhostBeam.Managers
 
         private void Update()
         {
-            if (Time.timeScale > 0 && !UI.MenuController.IsMenuActive)
+            if (Time.timeScale > 0 && !UI.MenuController.IsMenuActive && GameplayIntroState.AllowGameplay)
             {
                 survivalSeconds += Time.deltaTime;
                 onSurvivalTimeChanged?.Invoke(survivalSeconds);
@@ -90,8 +91,9 @@ namespace GhostBeam.Managers
             {
                 highScore = currentScore;
                 onHighScoreChanged?.Invoke(highScore);
-                SaveData();
             }
+
+            SaveData();
         }
 
         private void SaveData()
@@ -118,10 +120,10 @@ namespace GhostBeam.Managers
 
         private void OnDestroy()
         {
-            if (GameManager.Instance != null)
-            {
-                GameManager.onGameOver -= OnGameOver;
-            }
+            if (Instance == this)
+                Instance = null;
+
+            GameManager.onGameOver -= OnGameOver;
         }
     }
 }

@@ -17,13 +17,15 @@ namespace GhostBeam.UI
         private void Awake()
         {
             EnsureUIReferences();
+            CacheComponentReferences();
+            ApplyVisualStyle();
             SetGameOverVisible(false);
         }
 
         private void Start()
         {
             Managers.GameManager.onGameOver += ShowGameOver;
-            
+
             if (btnRestart != null)
             {
                 btnRestart.onClick.RemoveAllListeners();
@@ -41,13 +43,16 @@ namespace GhostBeam.UI
         {
             SetGameOverVisible(true);
 
+            if (gameOverCanvas != null)
+                gameOverCanvas.sortingOrder = 80;
+
             var scoreManager = Managers.ScoreManager.Instance;
             if (scoreManager != null)
             {
                 if (txtScoreFinal != null)
-                    txtScoreFinal.text = $"Score Final: {scoreManager.CurrentScore}";
+                    txtScoreFinal.text = $"Pontuação: {scoreManager.CurrentScore}";
                 if (txtHighScoreFinal != null)
-                    txtHighScoreFinal.text = $"Best: {scoreManager.HighScore}";
+                    txtHighScoreFinal.text = $"Recorde: {scoreManager.HighScore}";
                 if (txtCoinsFinal != null)
                     txtCoinsFinal.text = $"Moedas: {scoreManager.Coins}";
             }
@@ -66,6 +71,7 @@ namespace GhostBeam.UI
                 var canvasObj = new GameObject("CanvasGameOver");
                 gameOverCanvas = canvasObj.AddComponent<Canvas>();
                 gameOverCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                gameOverCanvas.sortingOrder = 80;
                 canvasObj.AddComponent<GraphicRaycaster>();
 
                 var scaler = canvasObj.AddComponent<CanvasScaler>();
@@ -87,7 +93,10 @@ namespace GhostBeam.UI
                     gameOverPanel = CreateDefaultPanel(gameOverCanvas.transform);
                 }
             }
+        }
 
+        private void CacheComponentReferences()
+        {
             if (txtScoreFinal == null)
                 txtScoreFinal = FindTextInPanel("TxtScoreFinal");
             if (txtHighScoreFinal == null)
@@ -98,6 +107,87 @@ namespace GhostBeam.UI
                 btnRestart = FindButtonInPanel("BtnRestart");
             if (btnMenu == null)
                 btnMenu = FindButtonInPanel("BtnMenu");
+        }
+
+        private void ApplyVisualStyle()
+        {
+            if (gameOverPanel == null)
+                return;
+
+            var rootImg = gameOverPanel.GetComponent<Image>();
+            if (rootImg != null)
+            {
+                rootImg.color = new Color(
+                    MenuVisualTheme.PanelBackdrop.r,
+                    MenuVisualTheme.PanelBackdrop.g,
+                    MenuVisualTheme.PanelBackdrop.b,
+                    0.94f);
+            }
+
+            foreach (var tmp in gameOverPanel.GetComponentsInChildren<TextMeshProUGUI>(true))
+            {
+                if (tmp == null)
+                    continue;
+                tmp.color = tmp.name.Contains("Title") || tmp.name.Contains("GameOver")
+                    ? MenuVisualTheme.TextPrimary
+                    : MenuVisualTheme.TextMuted;
+                tmp.horizontalAlignment = HorizontalAlignmentOptions.Center;
+                tmp.verticalAlignment = VerticalAlignmentOptions.Middle;
+                if (tmp.name.Contains("Title") || tmp.name.Contains("TxtGameOver"))
+                {
+                    tmp.fontStyle = FontStyles.Bold;
+                    tmp.fontSize = Mathf.Max(tmp.fontSize, 52f);
+                    tmp.outlineWidth = 0.2f;
+                    tmp.outlineColor = MenuVisualTheme.TitleOutline;
+                    tmp.color = MenuVisualTheme.TextPrimary;
+                }
+            }
+
+            foreach (var button in gameOverPanel.GetComponentsInChildren<Button>(true))
+                StyleGameOverButton(button);
+        }
+
+        private static void StyleGameOverButton(Button button)
+        {
+            if (button == null)
+                return;
+
+            var image = button.GetComponent<Image>();
+            if (image != null)
+            {
+                image.color = MenuVisualTheme.ButtonFill;
+                image.type = Image.Type.Simple;
+            }
+
+            var shadow = button.GetComponent<Shadow>();
+            if (shadow == null)
+                shadow = button.gameObject.AddComponent<Shadow>();
+            shadow.effectColor = new Color(0f, 0f, 0f, 0.65f);
+            shadow.effectDistance = new Vector2(3f, -3f);
+
+            var outline = button.GetComponent<Outline>();
+            if (outline == null)
+                outline = button.gameObject.AddComponent<Outline>();
+            outline.useGraphicAlpha = true;
+            outline.effectColor = MenuVisualTheme.OutlineIdle;
+            outline.effectDistance = new Vector2(1f, -1f);
+
+            ColorBlock colors = button.colors;
+            colors.normalColor = Color.white;
+            colors.highlightedColor = new Color(1.05f, 1.06f, 1.08f, 1f);
+            colors.pressedColor = new Color(0.82f, 0.84f, 0.88f, 1f);
+            colors.selectedColor = Color.white;
+            button.colors = colors;
+            button.transition = Selectable.Transition.ColorTint;
+
+            var label = button.GetComponentInChildren<TextMeshProUGUI>(true);
+            if (label != null)
+            {
+                label.color = MenuVisualTheme.TextPrimary;
+                label.enableAutoSizing = true;
+                label.fontSizeMin = 18;
+                label.fontSizeMax = 30;
+            }
         }
 
         private void SetGameOverVisible(bool visible)
@@ -111,8 +201,17 @@ namespace GhostBeam.UI
             if (gameOverPanel == null)
                 return null;
 
-            Transform child = gameOverPanel.transform.Find(name);
-            return child != null ? child.GetComponent<TextMeshProUGUI>() : null;
+            Transform direct = gameOverPanel.transform.Find(name);
+            if (direct != null)
+                return direct.GetComponent<TextMeshProUGUI>();
+
+            foreach (Transform t in gameOverPanel.GetComponentsInChildren<Transform>(true))
+            {
+                if (t.name == name)
+                    return t.GetComponent<TextMeshProUGUI>();
+            }
+
+            return null;
         }
 
         private Button FindButtonInPanel(string name)
@@ -120,8 +219,17 @@ namespace GhostBeam.UI
             if (gameOverPanel == null)
                 return null;
 
-            Transform child = gameOverPanel.transform.Find(name);
-            return child != null ? child.GetComponent<Button>() : null;
+            Transform direct = gameOverPanel.transform.Find(name);
+            if (direct != null)
+                return direct.GetComponent<Button>();
+
+            foreach (Transform t in gameOverPanel.GetComponentsInChildren<Transform>(true))
+            {
+                if (t.name == name)
+                    return t.GetComponent<Button>();
+            }
+
+            return null;
         }
 
         private GameObject CreateDefaultPanel(Transform parent)
@@ -136,50 +244,103 @@ namespace GhostBeam.UI
             panelRect.offsetMax = Vector2.zero;
 
             var panelImage = panelObj.AddComponent<Image>();
-            panelImage.color = new Color(0f, 0f, 0f, 0.85f);
+            panelImage.color = new Color(
+                MenuVisualTheme.PanelBackdrop.r,
+                MenuVisualTheme.PanelBackdrop.g,
+                MenuVisualTheme.PanelBackdrop.b,
+                0.94f);
+            panelImage.raycastTarget = true;
 
-            CreateLabel(panelObj.transform, "TxtGameOverTitle", "GAME OVER", new Vector2(0f, 220f), 96);
-            CreateLabel(panelObj.transform, "TxtScoreFinal", "Score Final: 0", new Vector2(0f, 80f), 52);
-            CreateLabel(panelObj.transform, "TxtHighScoreFinal", "Best: 0", new Vector2(0f, 20f), 42);
-            CreateLabel(panelObj.transform, "TxtCoinsFinal", "Moedas: 0", new Vector2(0f, -35f), 42);
+            var card = new GameObject("ContentCard");
+            card.transform.SetParent(panelObj.transform, false);
+            var cardRt = card.AddComponent<RectTransform>();
+            cardRt.anchorMin = new Vector2(0.5f, 0.5f);
+            cardRt.anchorMax = new Vector2(0.5f, 0.5f);
+            cardRt.pivot = new Vector2(0.5f, 0.5f);
+            cardRt.sizeDelta = new Vector2(560f, 520f);
+            cardRt.anchoredPosition = Vector2.zero;
 
-            CreateButton(panelObj.transform, "BtnRestart", "Reiniciar", new Vector2(0f, -130f));
-            CreateButton(panelObj.transform, "BtnMenu", "Voltar ao Menu", new Vector2(0f, -220f));
+            var cardImg = card.AddComponent<Image>();
+            cardImg.color = new Color(0.04f, 0.06f, 0.1f, 0.92f);
+            cardImg.raycastTarget = false;
+
+            var cardOutline = card.AddComponent<Outline>();
+            cardOutline.effectColor = MenuVisualTheme.OutlineIdle;
+            cardOutline.effectDistance = new Vector2(1.5f, -1.5f);
+
+            var vlg = card.AddComponent<VerticalLayoutGroup>();
+            vlg.padding = new RectOffset(32, 32, 28, 28);
+            vlg.spacing = 12f;
+            vlg.childAlignment = TextAnchor.UpperCenter;
+            vlg.childControlHeight = true;
+            vlg.childControlWidth = true;
+            vlg.childForceExpandHeight = false;
+            vlg.childForceExpandWidth = true;
+
+            CreateLayoutTitle(card.transform, "TxtGameOverTitle", "Game Over", 56f);
+            CreateLayoutStat(card.transform, "TxtScoreFinal", "Pontuação: 0", 34f);
+            CreateLayoutStat(card.transform, "TxtHighScoreFinal", "Recorde: 0", 30f);
+            CreateLayoutStat(card.transform, "TxtCoinsFinal", "Moedas: 0", 30f);
+
+            var spacer = new GameObject("Spacer");
+            spacer.transform.SetParent(card.transform, false);
+            var spLe = spacer.AddComponent<LayoutElement>();
+            spLe.minHeight = 8f;
+            spLe.preferredHeight = 12f;
+
+            CreateLayoutButton(card.transform, "BtnRestart", "Jogar de novo");
+            CreateLayoutButton(card.transform, "BtnMenu", "Voltar ao menu");
 
             return panelObj;
         }
 
-        private void CreateLabel(Transform parent, string name, string content, Vector2 anchoredPosition, float fontSize)
+        private static void CreateLayoutTitle(Transform parent, string name, string content, float fontSize)
         {
-            var labelObj = new GameObject(name);
-            labelObj.transform.SetParent(parent, false);
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            var le = go.AddComponent<LayoutElement>();
+            le.minHeight = 64f;
+            le.preferredHeight = 72f;
 
-            var rect = labelObj.AddComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0.5f, 0.5f);
-            rect.anchorMax = new Vector2(0.5f, 0.5f);
-            rect.sizeDelta = new Vector2(900f, 90f);
-            rect.anchoredPosition = anchoredPosition;
-
-            var text = labelObj.AddComponent<TextMeshProUGUI>();
-            text.text = content;
-            text.fontSize = fontSize;
-            text.alignment = TextAlignmentOptions.Center;
-            text.color = Color.white;
+            var tmp = go.AddComponent<TextMeshProUGUI>();
+            tmp.text = content;
+            tmp.fontSize = fontSize;
+            tmp.fontStyle = FontStyles.Bold;
+            tmp.alignment = TextAlignmentOptions.Center;
+            tmp.color = MenuVisualTheme.TextPrimary;
+            tmp.outlineWidth = 0.22f;
+            tmp.outlineColor = MenuVisualTheme.TitleOutline;
         }
 
-        private void CreateButton(Transform parent, string name, string label, Vector2 anchoredPosition)
+        private static void CreateLayoutStat(Transform parent, string name, string content, float fontSize)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            var le = go.AddComponent<LayoutElement>();
+            le.minHeight = 36f;
+            le.preferredHeight = 40f;
+
+            var tmp = go.AddComponent<TextMeshProUGUI>();
+            tmp.text = content;
+            tmp.fontSize = fontSize;
+            tmp.alignment = TextAlignmentOptions.Center;
+            tmp.color = MenuVisualTheme.TextMuted;
+        }
+
+        private static void CreateLayoutButton(Transform parent, string name, string label)
         {
             var buttonObj = new GameObject(name);
             buttonObj.transform.SetParent(parent, false);
 
-            var rect = buttonObj.AddComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0.5f, 0.5f);
-            rect.anchorMax = new Vector2(0.5f, 0.5f);
-            rect.sizeDelta = new Vector2(420f, 70f);
-            rect.anchoredPosition = anchoredPosition;
+            var le = buttonObj.AddComponent<LayoutElement>();
+            le.minHeight = 52f;
+            le.preferredHeight = 54f;
+            le.minWidth = 320f;
+            le.preferredWidth = 480f;
 
             var image = buttonObj.AddComponent<Image>();
-            image.color = new Color(0.18f, 0.18f, 0.2f, 0.95f);
+            image.color = MenuVisualTheme.ButtonFill;
+            image.type = Image.Type.Simple;
 
             buttonObj.AddComponent<Button>();
 
@@ -194,9 +355,9 @@ namespace GhostBeam.UI
 
             var buttonText = textObj.AddComponent<TextMeshProUGUI>();
             buttonText.text = label;
-            buttonText.fontSize = 34;
+            buttonText.fontSize = 28;
             buttonText.alignment = TextAlignmentOptions.Center;
-            buttonText.color = Color.white;
+            buttonText.color = MenuVisualTheme.TextPrimary;
         }
 
         private void OnDestroy()

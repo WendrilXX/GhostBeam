@@ -1,4 +1,5 @@
 using UnityEngine;
+using GhostBeam.Managers;
 
 namespace GhostBeam.Player
 {
@@ -119,6 +120,9 @@ namespace GhostBeam.Player
 
         private void Move()
         {
+            if (!GameplayIntroState.AllowGameplay)
+                return;
+
             Vector2 newPosition = rb.position + moveInput * moveSpeed * Time.fixedDeltaTime;
             
             // Clamp dentro dos bounds

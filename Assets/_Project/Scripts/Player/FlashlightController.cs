@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using GhostBeam.Managers;
 
 namespace GhostBeam.Player
 {
@@ -16,6 +17,13 @@ namespace GhostBeam.Player
         [SerializeField] private float beamRangePerTier = 2.5f;
         [SerializeField] private float intensityPerTier = 0.35f;
 
+        [Header("Luz de visibilidade ao redor da Luna (sem dano nos inimigos)")]
+        [SerializeField] private float proximityIntensity = 0.1f;
+        [SerializeField] private float proximityInnerRadius = 0.32f;
+        [SerializeField] private float proximityOuterRadius = 3.1f;
+        [SerializeField] private Color proximityColor = new Color(0.52f, 0.58f, 0.7f, 1f);
+
+        private Light2D proximityVisibility;
         private float currentRotation = 0f;
         private Gameplay.BatterySystem batterySystem;
         private bool wantsFlashlightActive = true;
@@ -44,6 +52,8 @@ namespace GhostBeam.Player
                 ApplySavedUpgrades();
             }
 
+            EnsureProximityVisibilityLight();
+
             screenHalfWidth = Screen.width * 0.5f;
             aimCenter = new Vector2(Screen.width * 0.8f, Screen.height * 0.2f);
         }
@@ -62,6 +72,9 @@ namespace GhostBeam.Player
 
         private void Update()
         {
+            if (!GameplayIntroState.AllowGameplay)
+                return;
+
             HandleAim();
             SyncBatteryUsage();
         }
@@ -202,6 +215,34 @@ namespace GhostBeam.Player
             flashlight.pointLightOuterRadius = baseOuterRadius + (beamRangePerTier * beamTier);
             float powerMultiplier = Mathf.Lerp(1f, 2f, powerTier / (float)MaxPowerTier);
             flashlight.intensity = baseIntensity * powerMultiplier;
+        }
+
+        /// <summary>
+        /// Luz pontual centrada na Luna: escurece com a distância (só ver o ambiente).
+        /// O dano por luz nos inimigos continua a usar apenas o cone da lanterna (EnemyController).
+        /// </summary>
+        private void EnsureProximityVisibilityLight()
+        {
+            const string childName = "ProximityVisibility";
+            Transform t = transform.Find(childName);
+            GameObject go = t != null ? t.gameObject : new GameObject(childName);
+            go.transform.SetParent(transform, false);
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localRotation = Quaternion.identity;
+
+            proximityVisibility = go.GetComponent<Light2D>();
+            if (proximityVisibility == null)
+                proximityVisibility = go.AddComponent<Light2D>();
+
+            proximityVisibility.lightType = Light2D.LightType.Point;
+            proximityVisibility.intensity = proximityIntensity;
+            proximityVisibility.color = proximityColor;
+            proximityVisibility.pointLightInnerRadius = proximityInnerRadius;
+            proximityVisibility.pointLightOuterRadius = proximityOuterRadius;
+            proximityVisibility.blendStyleIndex = flashlight != null ? flashlight.blendStyleIndex : 0;
+            proximityVisibility.shadowsEnabled = false;
+            proximityVisibility.lightOrder = -5;
+            proximityVisibility.enabled = true;
         }
     }
 }

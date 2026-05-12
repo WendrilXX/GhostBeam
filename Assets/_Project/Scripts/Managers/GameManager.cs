@@ -61,6 +61,9 @@ namespace GhostBeam.Managers
                 if (Instance.isGameOver)
                     return;
 
+                if (!GameplayIntroState.AllowGameplay)
+                    return;
+
                 SetPause(!Instance.isPaused);
             }
         }
@@ -70,6 +73,9 @@ namespace GhostBeam.Managers
             if (Instance != null && Instance.isPaused != value)
             {
                 if (Instance.isGameOver)
+                    return;
+
+                if (value && !GameplayIntroState.AllowGameplay)
                     return;
 
                 Instance.isPaused = value;
