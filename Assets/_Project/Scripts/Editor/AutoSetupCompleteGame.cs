@@ -161,6 +161,9 @@ namespace GhostBeam.Editor
                 SetupGameplayBackground();
                 Debug.Log("  [4/7] Background setup");
 
+                SetupGameplayShadowOverlay();
+                Debug.Log("  [4.5/7] Shadow overlay setup");
+
                 SetupGameplayLuna();
                 Debug.Log("  [5/7] Luna player setup");
 
@@ -202,8 +205,8 @@ namespace GhostBeam.Editor
 
             var light = lightObj.AddComponent<UnityEngine.Rendering.Universal.Light2D>();
             light.lightType = UnityEngine.Rendering.Universal.Light2D.LightType.Global;
-            light.intensity = 0.012f;
-            light.color = Color.white;
+            light.intensity = 0.1f;  // Bem baixo - iluminação dinâmica pela lanterna
+            light.color = new Color(0.8f, 0.8f, 1f);  // Azul suave
             light.blendStyleIndex = 0;
             light.shadowsEnabled = false;
 
@@ -233,6 +236,25 @@ namespace GhostBeam.Editor
             else
             {
                 spriteRenderer.color = new Color(30f / 255f, 30f / 255f, 50f / 255f, 1f);
+            }
+        }
+
+        private static void SetupGameplayShadowOverlay()
+        {
+            GameObject shadowObj = new GameObject("ShadowOverlay");
+            shadowObj.transform.position = Vector3.zero;
+            shadowObj.transform.localScale = new Vector3(200, 200, 1);
+
+            var spriteRenderer = shadowObj.AddComponent<SpriteRenderer>();
+            spriteRenderer.sortingOrder = -5;  // Entre fundo (-10) e gameplay (0)
+            
+            // Cor preta bem escura (75% de opacidade) - mantém escuridão dinâmica
+            spriteRenderer.color = new Color(0f, 0f, 0f, 0.75f);
+            
+            Sprite whiteSquare = Resources.Load<Sprite>("Sprites/Square");
+            if (whiteSquare != null)
+            {
+                spriteRenderer.sprite = whiteSquare;
             }
         }
 

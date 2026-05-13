@@ -10,11 +10,14 @@ namespace GhostBeam.Utilities
     public class BackgroundConfigurator : MonoBehaviour
     {
         [SerializeField] private Sprite backgroundImage;
-        [SerializeField] private float globalLightIntensity = 1.3f;  // Aumentado para 1.3 (muito mais claro)
+        [SerializeField] private float globalLightIntensity = 0.1f;  // Muito baixo - iluminação vem da lanterna
+        [SerializeField] private Color globalLightColor = new Color(0.8f, 0.8f, 1f);  // Azul suave
+        [SerializeField] private float maxBackgroundScale = 2.5f;  // Permite mais escala para usar mais da tela
 
         private void Start()
         {
             ConfigureBackground();
+            ConfigureShadowOverlay();
             ConfigureGlobalLight();
         }
 
@@ -36,6 +39,7 @@ namespace GhostBeam.Utilities
                 if (backgroundImage != null)
                 {
                     spriteRenderer.sprite = backgroundImage;
+                    spriteRenderer.color = Color.white;  // Sem brilho extra, mantém cor original
                     
                     // Remove pixelação: configura filter para Bilinear
                     if (backgroundImage.texture != null)
@@ -60,6 +64,7 @@ namespace GhostBeam.Utilities
                         float scaleX = cameraWidth / spriteWidth;
                         float scaleY = cameraHeight / spriteHeight;
                         float scale = Mathf.Max(scaleX, scaleY);  // Usa o maior para garantir cobertura
+                        scale = Mathf.Clamp(scale, 1f, maxBackgroundScale);  // Limita entre 1x e máximo
                         
                         backgroundObj.transform.localScale = new Vector3(scale, scale, 1f);
                         Debug.Log($"[BackgroundConfigurator] Background scale: {scale:F2}x (camera {cameraWidth:F2}x{cameraHeight:F2}, sprite {spriteWidth:F2}x{spriteHeight:F2})");
@@ -83,6 +88,7 @@ namespace GhostBeam.Utilities
                 if (spriteRenderer != null && backgroundImage != null)
                 {
                     spriteRenderer.sprite = backgroundImage;
+                    spriteRenderer.color = Color.white;  // Sem brilho extra, mantém cor original
                     
                     // Remove pixelação: configura filter para Bilinear
                     if (backgroundImage.texture != null)
@@ -103,12 +109,51 @@ namespace GhostBeam.Utilities
                         
                         float scaleX = cameraWidth / spriteWidth;
                         float scaleY = cameraHeight / spriteHeight;
-                        float scale = Mathf.Max(scaleX, scaleY);
+                        float scale = Mathf.Max(scaleX, scaleY);  // Usa o maior para garantir cobertura
+                        scale = Mathf.Clamp(scale, 1f, maxBackgroundScale);  // Limita entre 1x e máximo
                         
                         backgroundTransform.localScale = new Vector3(scale, scale, 1f);
                     }
                     
                     Debug.Log($"[BackgroundConfigurator] Background sprite atualizado: {backgroundImage.name}");
+                }
+            }
+        }
+
+        private void ConfigureShadowOverlay()
+        {
+            // Procura Shadow Overlay existente
+            Transform shadowTransform = transform.parent?.Find("ShadowOverlay");
+            
+            if (shadowTransform == null)
+            {
+                // Cria novo shadow overlay
+                GameObject shadowObj = new GameObject("ShadowOverlay");
+                shadowObj.transform.SetParent(transform.parent);
+                shadowObj.transform.position = Vector3.zero;
+                
+                SpriteRenderer shadowRenderer = shadowObj.AddComponent<SpriteRenderer>();
+                shadowRenderer.sortingOrder = -5;  // Entre fundo (-10) e gameplay (0)
+                
+                // Cria um quad branco simples como sprite
+                Sprite whiteSquare = Resources.Load<Sprite>("Sprites/Square");
+                if (whiteSquare != null)
+                {
+                    shadowRenderer.sprite = whiteSquare;
+                }
+                
+                // Cor preta bem escura (75% de opacidade) para manter escuridão dinâmica
+                shadowRenderer.color = new Color(0f, 0f, 0f, 0.75f);
+                
+                // Escala para cobrir toda a tela
+                Camera mainCamera = Camera.main;
+                if (mainCamera != null && mainCamera.orthographic)
+                {
+                    float cameraHeight = mainCamera.orthographicSize * 2f;
+                    float cameraWidth = cameraHeight * mainCamera.aspect;
+                    
+                    shadowObj.transform.localScale = new Vector3(cameraWidth, cameraHeight, 1f);
+                    Debug.Log($"[BackgroundConfigurator] Shadow overlay criado com escala: {cameraWidth:F2}x{cameraHeight:F2}");
                 }
             }
         }
@@ -121,7 +166,8 @@ namespace GhostBeam.Utilities
             if (globalLight != null && globalLight.lightType == Light2D.LightType.Global)
             {
                 globalLight.intensity = globalLightIntensity;
-                Debug.Log($"[BackgroundConfigurator] Global Light 2D configurado com intensidade: {globalLightIntensity}");
+                globalLight.color = globalLightColor;
+                Debug.Log($"[BackgroundConfigurator] Global Light 2D configurado com intensidade: {globalLightIntensity} e cor branca");
             }
             else
             {
