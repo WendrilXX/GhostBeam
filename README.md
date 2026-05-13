@@ -4,6 +4,15 @@
 **Status:** Pronto para Produção  
 **Última Atualização:** 13 de Maio de 2026
 
+## Participantes do Projeto
+
+- Ingrid Ribeiro Silva
+- João Antônio Gomes Gonçalves Leal Neto
+- João Cruz de Farias Filho
+- Kévilla da Silva Aguiar
+- Luis Gabriel Salvador Barros
+- Wendril Gabriel Medeiros Holanda
+
 ---
 
 ## Visão Geral
