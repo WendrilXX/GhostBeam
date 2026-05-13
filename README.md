@@ -15,6 +15,27 @@
 
 ---
 
+## 📱 Downloads & Releases
+
+### ✅ Versão Pronta para Download
+
+| Plataforma | Versão | Status | Download |
+|-----------|--------|--------|----------|
+| **Android (APK)** | 1.2.3 | ✅ Pronto | [Baixar APK](https://github.com/WendrilXX/GhostBeam/releases/download/v1.2.3/ghostbeam-v1.2.3.apk) |
+| **Android (AAB)** | 1.2.3 | ✅ Disponível | Google Play Store (em breve) |
+| **iOS** | 1.2.3 | ⏳ Em Preparação | App Store (em breve) |
+| **Windows** | 1.2.3 | ✅ Pronto | [Executável](https://github.com/WendrilXX/GhostBeam/releases/download/v1.2.3/ghostbeam-v1.2.3.zip) |
+
+### 🚀 Como Instalar o APK
+
+1. **Baixar o arquivo APK**
+2. **Transferir para seu dispositivo Android**
+3. **Habilitar instalação de fontes desconhecidas** (Configurações → Segurança)
+4. **Tocar no arquivo APK para instalar**
+5. **Pronto! Começar a jogar**
+
+---
+
 ## Visão Geral
 
 GHOSTBEAM é um jogo arcade de sobrevivência 2D para celular onde o jogador controla Luna, uma personagem equipada com uma lanterna. Sobreviva a ondas de fantasmas, colete moedas, gerencie recursos de bateria e avance em fases cada vez mais difíceis. O jogo possui um sistema de UI completo com menus, HUD, pausa e suporte a localização.
@@ -382,27 +403,6 @@ Documentação completa está disponível na pasta `/docs/`. Comece com o índic
 
 ---
 
-## 📱 Downloads & Releases
-
-### ✅ Versão Pronta para Download
-
-| Plataforma | Versão | Status | Download |
-|-----------|--------|--------|----------|
-| **Android (APK)** | 1.2.3 | ✅ Pronto | [Baixar APK](https://github.com/WendrilXX/GhostBeam/releases/download/v1.2.3/ghostbeam-v1.2.3.apk) |
-| **Android (AAB)** | 1.2.3 | ✅ Disponível | Google Play Store (em breve) |
-| **iOS** | 1.2.3 | ⏳ Em Preparação | App Store (em breve) |
-| **Windows** | 1.2.3 | ✅ Pronto | [Executável](https://github.com/WendrilXX/GhostBeam/releases/download/v1.2.3/ghostbeam-v1.2.3.zip) |
-
-### 🚀 Como Instalar o APK
-
-1. **Baixar o arquivo APK**
-2. **Transferir para seu dispositivo Android**
-3. **Habilitar instalação de fontes desconhecidas** (Configurações → Segurança)
-4. **Tocar no arquivo APK para instalar**
-5. **Pronto! Começar a jogar**
-
----
-
 ## Padrões de Código
 
 - **Linguagem:** C# (.NET)
@@ -498,15 +498,6 @@ Documentação completa está disponível na pasta `/docs/`. Comece com o índic
 
 
 ## Reconhecimentos
-
-### Participantes do Projeto
-
-- Ingrid Ribeiro Silva
-- João Antônio Gomes Gonçalves Leal Neto
-- João Cruz de Farias Filho
-- Kévilla da Silva Aguiar
-- Luis Gabriel Salvador Barros
-- Wendril Gabriel Medeiros Holanda
 
 ### Créditos Técnicos
 
