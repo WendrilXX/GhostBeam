@@ -348,6 +348,7 @@ Documentação completa está disponível na pasta `/docs/`. Comece com o índic
 
 | Documento | Propósito | Público |
 |----------|---------|----------|
+| [GDD (1).pdf](GDD%20(1).pdf) | Game Design Document | Todos |
 | [docs/INDEX.md](docs/INDEX.md) | Mapa de documentação | Todos |
 | [docs/SETUP_COMPLETO.md](docs/SETUP_COMPLETO.md) | Guia de setup rápido (5 min) | Desenvolvedores |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Arquitetura técnica | Programadores |
@@ -653,6 +654,17 @@ Recebemos contribuições! Por favor, siga estas diretrizes:
 
 
 ## Reconhecimentos
+
+### Participantes do Projeto
+
+- Ingrid Ribeiro Silva
+- João Antônio Gomes Gonçalves Leal Neto
+- João Cruz de Farias Filho
+- Kévilla da Silva Aguiar
+- Luis Gabriel Salvador Barros
+- Wendril Gabriel Medeiros Holanda
+
+### Créditos Técnicos
 
 - Unity Technologies pelo game engine
 - TextMesh Pro para renderização de texto
