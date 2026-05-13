@@ -10,10 +10,12 @@ namespace GhostBeam.Gameplay
         private const int MaxBatteryTier = 3;
 
         [SerializeField] private float maxBattery = 150f;
-        [SerializeField] private float drainRate = 2f;
+        [SerializeField] private float minDrainPercentPerSecond = 2f;  // Mínimo 2% por segundo
+        [SerializeField] private float maxDrainPercentPerSecond = 7f;  // Máximo 7% por segundo
 
         private float currentBattery;
         private bool isLighting = false;
+        private bool hasDepletedOnce = false;  // Garantir que só dispara uma vez
 
         public float CurrentBattery => currentBattery;
         public float MaxBattery => maxBattery;
@@ -42,17 +44,19 @@ namespace GhostBeam.Gameplay
 
             if (isLighting)
             {
-                currentBattery -= drainRate * Time.deltaTime;
-                if (currentBattery <= 0)
-                {
-                    currentBattery = 0;
-                    OnBatteryDepleted();
-                }
+                // Drain between 2-7% per second randomly
+                float drainPercentPerSecond = UnityEngine.Random.Range(minDrainPercentPerSecond, maxDrainPercentPerSecond);
+                float drainAmount = (maxBattery * drainPercentPerSecond / 100f) * Time.deltaTime;
+                currentBattery -= drainAmount;
             }
-            else
+            // BATERIA SÓ RECARREGA AO MATAR INIMIGOS, não automaticamente
+
+            // SEMPRE verificar se bateria chegou a 0 (não só enquanto iluminando!)
+            if (currentBattery <= 0 && !hasDepletedOnce)
             {
-                // Recarrega lentamente quando não ilumina
-                currentBattery = Mathf.Min(currentBattery + (drainRate * 0.3f) * Time.deltaTime, maxBattery);
+                currentBattery = 0;
+                hasDepletedOnce = true;
+                OnBatteryDepleted();
             }
 
             onBatteryChanged?.Invoke(currentBattery);
@@ -73,6 +77,7 @@ namespace GhostBeam.Gameplay
         {
             isLighting = false;
             onBatteryDepleted?.Invoke();
+            Debug.Log("[BatterySystem] Battery depleted - triggering game over");
             Managers.GameManager.TriggerGameOver();
         }
 
@@ -87,6 +92,7 @@ namespace GhostBeam.Gameplay
         {
             currentBattery = maxBattery;
             isLighting = false;
+            hasDepletedOnce = false;  // Resetar flag para novo jogo
             onBatteryChanged?.Invoke(currentBattery);
         }
     }

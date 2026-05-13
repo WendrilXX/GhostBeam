@@ -164,11 +164,19 @@ namespace GhostBeam.Managers
         {
             if (gameplayMusic != null)
             {
+                // Ensure volume is not zero (common issue on mobile)
+                if (musicSource.volume <= 0)
+                {
+                    musicVolume = 1f;
+                    masterVolume = 1f;
+                }
+                
                 PlayMusic(gameplayMusic, true);
+                Debug.Log($"[AudioManager] Playing gameplay music. Volume: {musicSource.volume}");
                 return;
             }
 
-            Debug.LogWarning("[AudioManager] Gameplay music clip is not assigned.");
+            Debug.LogError("[AudioManager] CRITICAL: Gameplay music clip is NOT assigned! Please assign it in the Inspector.");
         }
 
         public void PlayMenuClick()

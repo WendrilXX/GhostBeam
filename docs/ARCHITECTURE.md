@@ -145,41 +145,103 @@ public static event Action<bool> onMainMenuChanged;
 
 ---
 
-### 3.2 SpawnManager
-**Arquivo:** `Assets/_Project/Scripts/Managers/SpawnManager.cs`
+### 3.2 GameplayIntroState
+**Arquivo:** `Assets/_Project/Scripts/Managers/GameplayIntroState.cs`
 
 **Responsabilidades:**
-- Controlar spawn de inimigos
-- Aplicar curva de dificuldade (stages)
-- Usar Object Pooling para performance
+- Gerenciar estado da introdução (fade-in, contagem regressiva)
+- Bloquear gameplay até intro terminar
+- Fornecer `StageElapsedSeconds` para fases de spawn
+- Fallback automático se não houver animação de intro
 
-**Parâmetros Principais:**
+**Propriedades:**
 ```csharp
-[SerializeField] private GameObject enemyPrefab;
-[SerializeField] private int poolSize = 30;
-[SerializeField] private float spawnRate = 2.0f;
-[SerializeField] private float spawnRadius = 15f;
-[SerializeField] private int maxSimultaneous = 6;
+public static bool AllowGameplay { get; private set; }    // false durante intro, true após
+public static float StageElapsedSeconds                   // Tempo desde fim da intro (0 se intro ativa)
 ```
 
-**Lógica de Stage:**
+**Métodos Públicos:**
 ```csharp
-private void AdjustForStage()
-{
-    float gameTime = Time.timeSinceLevelLoad;
-    
-    if (gameTime < 35f)         // Stage 1
-        spawnRate = 2.8f - (gameTime * 0.018f);
-    else if (gameTime < 125f)   // Stage 2
-        spawnRate = 1.4f - ((gameTime - 35) * 0.020f);
-    else                         // Stage 3
-        spawnRate = 0.95f - ((gameTime - 125) * 0.025f);
-}
+public static void BeginIntro()           // Inicia intro (AllowGameplay = false)
+public static void EndIntro()             // Finaliza intro (AllowGameplay = true, inicia contagem)
+public static void EnsureGameplayStarted() // Auto-start se nenhum intro foi acionado (fallback)
+public static void AutoEndIntroIfStuck(float maxWaitSeconds) // Auto-end se intro travar
+```
+
+**Fluxo de Tempo:**
+```
+[Início da Cena]
+    ↓ GameplayIntroFade.cs → BeginIntro()
+    ↓ [Fade + contagem 3-2-1]
+    ↓ GameplayIntroFade.cs → EndIntro()
+    ↓ gameplayEpoch = Time.timeSinceLevelLoad
+    ↓ StageElapsedSeconds começa a contar (Time.timeSinceLevelLoad - gameplayEpoch)
+
+[Fallback: Se nenhum GameplayIntroFade existir]
+    ↓ SpawnManager chama EnsureGameplayStarted() na primeira Update
+    ↓ gameplayEpoch é inicializado automaticamente
+    ↓ Gameplay inicia sem animação
 ```
 
 ---
 
-### 3.3 ScoreManager
+### 3.3 SpawnManager
+**Arquivo:** `Assets/_Project/Scripts/Managers/SpawnManager.cs`
+
+**Responsabilidades:**
+- Controlar spawn de inimigos com dificuldade progressiva
+- Escolher arquétipo de inimigo por fase (baseado em StageElapsedSeconds)
+- Usar Object Pooling para performance
+- Gerenciar contagem simultânea de inimigos
+
+**Parâmetros Principais:**
+```csharp
+[SerializeField] private float initialSpawnRate = 1.5f;  // Spawn inicial (50% mais rápido)
+[SerializeField] private int poolSize = 30;
+[SerializeField] private float spawnRadius = 15f;
+[SerializeField] private int maxSimultaneous = 4;        // Evolui por fase
+```
+
+**Fases de Progresso (Baseadas em GameplayIntroState.StageElapsedSeconds):**
+
+| Fase | Tempo | Inimigos | Max | Spawn Rate | Objetivo |
+|------|-------|----------|-----|-----------|----------|
+| 1 | 0-40s | Penado 100% | 4 | 1.8→1.5s | Tutorial |
+| 2 | 40-80s | Penado 38% + Ictericia 62% | 5 | 1.5→1.2s | 2º tipo |
+| 3 | 80-120s | 3 tipos (50% Ectogangue) | 6 | 1.2→0.9s | Mistura |
+| 4 | 120-160s | 4 tipos (32% Titã) | 7 | 0.9→0.6s | Desafio |
+| 5+ | 160s+ | Espectro ondas + 4 tipos | 8 | 0.6→0.25s | Endgame |
+
+**Seleção de Arquétipo:**
+```csharp
+private EnemyController.EnemyArchetype ChooseEnemyArchetype(float gameTime)
+{
+    if (gameTime < 40f)
+        return Penado;  // 100%
+    
+    if (gameTime < 80f)
+        return PickWeighted(Penado 38%, Ictericia 62%);
+    
+    if (gameTime < 120f)
+        return PickWeighted3(Penado 22%, Ictericia 28%, Ectogangue 50%);
+    
+    if (gameTime < 160f)
+        return PickWeighted4(Penado 12%, Ictericia 18%, Ectogangue 38%, Tita 32%);
+    
+    // 160s+: Espectro em ondas (32s ON / 48s OFF)
+    return ChooseArchetypeSpectrePhase(gameTime);
+}
+```
+
+**Otimizações v1.2.2:**
+- ✅ Spawn rates 50% mais rápidos (2.8s → 1.5s inicial)
+- ✅ Fases reduzidas de 60s → 40s (33% mais rápido)
+- ✅ Gameplay mais arcade e dinâmico
+- ✅ Fallback automático via `GameplayIntroState.EnsureGameplayStarted()`
+
+---
+
+### 3.4 ScoreManager
 **Arquivo:** `Assets/_Project/Scripts/Managers/ScoreManager.cs`
 
 **Responsabilidades:**
@@ -204,36 +266,49 @@ PlayerPrefs.SetInt("Coins", coins);
 
 ---
 
-### 3.4 BatterySystem
-**Arquivo:** `Assets/_Project/Scripts/Items/BatterySystem.cs`
+### 3.5 BatterySystem
+**Arquivo:** `Assets/_Project/Scripts/Gameplay/BatterySystem.cs`
 
 **Responsabilidades:**
 - Rastrear energia da lanterna
-- Drenar quando Light está active
-- Recarregar via pickup
+- Drenar entre 2-7% por segundo quando Light está active
+- Recarregar APENAS ao matar inimigos (10-45% aleatório)
+- Disparar game over quando bateria atinge 0
 
 **Valores:**
 ```csharp
 private float maxBattery = 150f;
-private float drainRate = 10f;      // pts/seg
-private float rechargeAmount = 100f; // por pickup
+private float minDrainPercentPerSecond = 2f;   // Mínimo 2%/seg
+private float maxDrainPercentPerSecond = 7f;   // Máximo 7%/seg
+// Recarga acontece em EnemyController.Die() com 10-45% aleatório
 ```
 
-**Lógica:**
+**Lógica de Drenagem:**
 ```csharp
 private void Update()
 {
     if (isLighting)
-        currentBattery -= drainRate * Time.deltaTime;
-    
-    if (currentBattery <= 0)
-        OnBatteryDepleted();
+    {
+        // Drena entre 2-7% por segundo (variável)
+        float drainPercentPerSecond = Random.Range(minDrainPercentPerSecond, maxDrainPercentPerSecond);
+        float drainAmount = (maxBattery * drainPercentPerSecond / 100f) * Time.deltaTime;
+        currentBattery -= drainAmount;
+        
+        if (currentBattery <= 0)
+        {
+            currentBattery = 0;
+            OnBatteryDepleted(); // → Triggers GameManager.TriggerGameOver()
+        }
+    }
+    // SEM RECARGA AUTOMÁTICA - apenas por kills
 }
+```
 
-public void Recharge()
-{
-    currentBattery = Mathf.Min(currentBattery + rechargeAmount, maxBattery);
-}
+**Recarga (em EnemyController.cs - ao matar inimigo):**
+```csharp
+float rechargePercent = Random.Range(10f, 45f);
+float rechargeAmount = batterySystem.MaxBattery * (rechargePercent / 100f);
+batterySystem.Recharge(rechargeAmount);
 ```
 
 ---
@@ -280,7 +355,48 @@ private Dictionary<EnemyType, float> coinMultiplier = new()
 
 ---
 
-### 3.7 AudioManager
+### 3.7 BackgroundConfigurator
+**Arquivo:** `Assets/_Project/Scripts/Utilities/BackgroundConfigurator.cs`
+
+**Responsabilidades:**
+- Configurar background sprite da cena automaticamente
+- Aplicar iluminação global (Global Light 2D)
+- Escalar background para preencher tela
+- Remover pixelação com Filter Mode Bilinear
+
+**Configuração:**
+```csharp
+[SerializeField] private Sprite backgroundImage;
+[SerializeField] private float globalLightIntensity = 1.3f;  // v1.2.2: 1.3 (86% mais claro)
+
+private void Start()
+{
+    ConfigureBackground();
+    ConfigureGlobalLight();
+}
+```
+
+**Otimizações v1.2.2:**
+- ✅ Global Light Intensity: 0.7 → **1.3** (Floresta completamente visível)
+- ✅ Filter Mode: **Bilinear** (Remove pixelação dos sprites)
+- ✅ Auto-scaling: Mantém aspect ratio enquanto preenche tela
+- ✅ Sorting Order: -10 (Fundo sempre atrás do gameplay)
+
+**Implementação:**
+```csharp
+// Remove pixelação
+if (backgroundImage.texture != null)
+{
+    backgroundImage.texture.filterMode = FilterMode.Bilinear;
+}
+
+// Configura Global Light
+globalLight.intensity = globalLightIntensity;  // 1.3 para v1.2.2
+```
+
+---
+
+### 3.8 AudioManager
 **Arquivo:** `Assets/_Project/Scripts/Managers/AudioManager.cs`
 
 **Responsabilidades:**

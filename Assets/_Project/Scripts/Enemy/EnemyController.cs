@@ -204,6 +204,7 @@ namespace GhostBeam.Enemy
                 return;
 
             isDead = true;
+            Debug.Log($"[EnemyController] {archetype} killed at {transform.position}");
 
             // Score
             if (Managers.ScoreManager.Instance != null)
@@ -211,11 +212,14 @@ namespace GhostBeam.Enemy
                 Managers.ScoreManager.Instance.AddScore(15); // +15 pontos por kill
             }
 
-            // Recarrega uma parte da bateria a cada inimigo eliminado
+            // Recarrega bateria entre 10-45% ao matar inimigo
             var batterySystem = FindAnyObjectByType<Gameplay.BatterySystem>();
-            if (batterySystem != null && batteryRechargeOnKill > 0f)
+            if (batterySystem != null)
             {
-                batterySystem.Recharge(batteryRechargeOnKill);
+                float rechargePercent = UnityEngine.Random.Range(10f, 45f);
+                float rechargeAmount = batterySystem.MaxBattery * (rechargePercent / 100f);
+                batterySystem.Recharge(rechargeAmount);
+                Debug.Log($"[EnemyController] Enemy killed! Battery recharged +{rechargePercent:F1}%");
             }
 
             // Evento para spawners

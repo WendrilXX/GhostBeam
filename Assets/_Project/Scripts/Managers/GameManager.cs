@@ -47,9 +47,11 @@ namespace GhostBeam.Managers
                 if (Instance.isGameOver)
                     return;
 
+                // RULE: Game Over if EITHER Health OR Battery reaches 0 (OR logic)
                 Instance.isGameOver = true;
                 Instance.isPaused = false;
                 Time.timeScale = 0f;
+                Debug.Log("[GameManager] GAME OVER triggered (Health or Battery depleted)");
                 onGameOver?.Invoke();
             }
         }

@@ -36,11 +36,11 @@ Ghost Beam é um **survival arcade 2D** onde você controla **Luna**, uma garota
    ├─ MOVIMENTO: Joystick virtual ESQUERDA (6 pontos)
    ├─ MIRA: Joystick virtual DIREITA (rotação contínua)
    ├─ COMBATE: Inimigos morrem com iluminação sustentada
-   ├─ BATERIA: Drena enquanto ilumina, recarrega com pickups
+   ├─ BATERIA: Drena 2-7%/seg enquanto ilumina, recarrega 10-45% AO MATAR INIMIGO
    ├─ SCORE: +5 pts/seg + 15 pts/inimigo
    ├─ MOEDAS: 100% de drop ao matar inimigo
    ├─ PAUSAR: Botão UI (toque) → Pause Menu
-   └─ GAME OVER: Vida = 0 OU bateria apaga 3s
+   └─ GAME OVER: Vida = 0 OU bateria = 0 (imediato)
 
 3. GAME OVER
    ├─ Mostra: Score Final, High Score, Moedas Ganhas
@@ -101,11 +101,11 @@ bool isIlluminated = (distance < 15f && angle < 35f);
 | Atributo | Valor |
 |----------|-------|
 | **Capacidade Máxima** | 150 pontos |
-| **Drenagem** | 10 pts/seg (quando ilumina) |
-| **Recarga** | Apenas pickup Battery (+100 pts) |
-| **Tempo Máximo de Lanterna** | ~15 segundos |
-| **Blackout** | Lanterna apaga por 3s se = 0 |
-| **Game Over** | Se blackout permanece após 3s |
+| **Drenagem** | 2-7% por segundo (aleatório enquanto ilumina) |
+| **Recarga** | APENAS ao matar inimigo: 10-45% (aleatório) |
+| **Sem Recarga Automática** | Bateria não recarrega passivamente |
+| **Tempo Máximo de Lanterna** | ~25-50 segundos (depende de kills) |
+| **Game Over** | Se bateria = 0 (imediato, sem delay) |
 | **Upgrade Disponível** | +50 pts capacidade (custa 100 moedas) |
 
 ### 3.3 Score (Pontos)
@@ -229,39 +229,67 @@ bool isIlluminated = (distance < 15f && angle < 35f);
 
 ---
 
-### 4.2 Curva de Dificuldade (Stages)
+### 4.2 Curva de Dificuldade (Stages) - v1.2.2
 
-#### 🟢 STAGE 1: Presentation (0-35s)
+**Atualização v1.2.2:** Fases reduzidas de 60s → 40s. Spawn rates 50% mais rápidos. Gameplay mais arcade!
+
+#### 🟢 FASE 1: Apresentação (0-40s)
 ```
 ┌─ Objetivo: Tutorial passivo
-├─ Spawn Interval: 2.8s → 1.6s (aceleração 0.018/seg)
-├─ Máximo Simultâneo: 6 inimigos
-├─ Tipos Permitidos: Penado (70%), Ictericia (30%)
+├─ Spawn Interval: 1.8s → 1.5s (50% mais rápido que antes)
+├─ Máximo Simultâneo: 4 inimigos
+├─ Tipos Permitidos: Penado 100%
 ├─ Bônus Score: +0% (normal)
 ├─ Bônus Pickup: +0% (normal)
-└─ Resultado: Introdução suave, sem pressão
+└─ Resultado: Introdução suave, sem pressão, apenas Penados
 ```
 
-#### 🟡 STAGE 2: Test (35-125s)
+#### 🟡 FASE 2: Teste (40-80s)
 ```
-├─ Objetivo: Testar habilidades
-├─ Spawn Interval: 1.4s → 1.0s (aceleração 0.020/seg)
-├─ Máximo Simultâneo: 12 inimigos
-├─ Tipos Permitidos: Todos (Penado 40%, Ictericia 30%, Ectogangue 20%, Espectro 5%, Tita 5%)
-├─ Bônus Score: +25% (1.25x score)
+├─ Objetivo: Introduzir variedade
+├─ Spawn Interval: 1.5s → 1.2s
+├─ Máximo Simultâneo: 5 inimigos
+├─ Tipos Permitidos: Penado 38%, Ictericia 62%
+├─ Bônus Score: +0%
+├─ Bônus Pickup: +0%
+└─ Resultado: Pressão leve, primeiro encontro com Ictericia
+```
+
+#### 🟠 FASE 3: Progressão (80-120s)
+```
+├─ Objetivo: Aumentar variedade
+├─ Spawn Interval: 1.2s → 0.9s
+├─ Máximo Simultâneo: 6 inimigos
+├─ Tipos Permitidos: Penado 22%, Ictericia 28%, Ectogangue 50%
+├─ Bônus Score: +25% (1.25x)
 ├─ Bônus Pickup: +25%
-└─ Resultado: Pressão moderada, variedade
+└─ Resultado: Pressão moderada, Ectogangues em grupos
 ```
 
-#### 🔴 STAGE 3: Climax (125s+)
+#### 🔴 FASE 4: Intensidade (120-160s)
 ```
-├─ Objetivo: Sobrevivência pura
-├─ Spawn Interval: 0.95s → 0.75s (aceleração 0.025/seg)
-├─ Máximo Simultâneo: 18 inimigos
-├─ Tipos Permitidos: Todos (distribuição randômica)
-├─ Bônus Score: +50% (1.50x score)
+├─ Objetivo: Desafio significativo
+├─ Spawn Interval: 0.9s → 0.6s
+├─ Máximo Simultâneo: 7 inimigos
+├─ Tipos Permitidos: Penado 12%, Ictericia 18%, Ectogangue 38%, Titã 32%
+├─ Bônus Score: +50% (1.50x)
 ├─ Bônus Pickup: +50%
-└─ Resultado: Pressão extrema, quase impossível depois 180s
+└─ Resultado: Pressão alta, Titãs aparecem (tanques)
+```
+
+#### 🔥 FASE 5: Caos (160s+)
+```
+├─ Objetivo: Sobrevivência pura (endgame)
+├─ Spawn Interval: 0.6s → 0.25s (frenético!)
+├─ Máximo Simultâneo: 8 inimigos
+├─ Tipos Permitidos: TODOS (com ondas de Espectro)
+│  └─ Espectro: 32s ON (no pool), 48s OFF (sem Espectro)
+├─ Distribuição:
+│  └─ Espectro ON: 33% Espectro + 67% distribuído entre 4 tipos
+│  └─ Espectro OFF: 100% distribuído entre Penado/Ictericia/Ectogangue/Titã
+├─ Bônus Score: +100% (2.00x)
+├─ Bônus Pickup: +100%
+└─ Resultado: Frenético! Quase impossível depois 180s
 ```
 
 ---

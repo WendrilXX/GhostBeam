@@ -1,8 +1,8 @@
 # GHOSTBEAM - Arcade de Sobrevivência 2D
 
-**Versão:** 1.2  
+**Versão:** 1.2.2  
 **Status:** Pronto para Produção  
-**Última Atualização:** 11 de Maio de 2026
+**Última Atualização:** 13 de Maio de 2026
 
 ---
 
@@ -20,6 +20,7 @@ GHOSTBEAM é um jogo arcade de sobrevivência 2D para celular onde o jogador con
 | Tela de Game Over | ✓ Completo | Detecção automática, reiniciar, retornar ao menu |
 | HUD do Jogo | ✓ Completo | Barra de saúde, pontuação, timer, onda, moedas, bateria |
 | Localização | ✓ Completo | Português (PT-BR) |
+| Background da Floresta | ✓ Completo | Fundo visível com iluminação configurável |
 | Desempenho | ✓ Completo | 60 FPS estável, otimizado para celular |
 | Suporte de Plataforma | ✓ Completo | Android, iOS, Windows Desktop |
 | Compilação | ✓ Completo | 0 erros, 0 avisos |
@@ -57,6 +58,59 @@ O script cria automaticamente:
 - Canvas de Game Over
 - Canvas HUD do Jogo
 - EventSystem (para interações de botão)
+
+### ⚠️ Setup #5 - Verificação da Hierarquia do Projeto
+
+**IMPORTANTE:** Após executar o setup acima, **certifique-se que a hierarquia do projeto contém as duas cenas principais:**
+
+```
+Hierarchy
+├── All
+├── MainMenu
+└── Gameplay
+```
+
+Ambas as cenas devem estar presentes no projeto para o fluxo de menu funcionasse corretamente.
+
+### 🎨 Setup #6 - Configurar Background da Floresta
+
+**Como adicionar o fundo visível durante o jogo:**
+
+#### Passo 1: Importe a Imagem do Background
+1. Copie sua imagem de fundo (PNG/JPG) para: `Assets/_Project/Sprites/`
+2. Selecione a imagem no Project
+3. No Inspector, configure:
+   - **Texture Type:** Sprite (2D and UI)
+   - **Sprite Mode:** Single
+   - **Pixels Per Unit:** 100
+   - **Filter Mode:** Bilinear
+4. Clique **Apply**
+
+#### Passo 2: Adicione BackgroundConfigurator na Cena
+1. Na cena **Gameplay**, selecione o GameManager ou qualquer GameObject no root
+2. **Add Component** → `BackgroundConfigurator`
+3. No Inspector, arraste sua imagem para o campo **Background Image**
+4. Defina **Global Light Intensity** (padrão: 0.4)
+
+#### Passo 3: Execute
+- Play no editor
+- O script automaticamente:
+  - Cria GameObject "Background" com sua imagem
+  - Configura sorting order (-10) para ficar atrás
+  - Aumenta Global Light 2D Intensity para 0.4 (ilumina o cenário)
+
+**Resultado:** Seu fundo aparecerá visível com iluminação ambiente adequada! 🌲
+
+**Para instruções de setup detalhadas, veja [docs/SETUP_COMPLETO.md](docs/SETUP_COMPLETO.md)**
+
+**IMPORTANTE - Novas Regras:**
+
+- **Bateria drena 2-7% por segundo** (aleatório) enquanto ilumina
+- **Bateria APENAS recarrega ao matar inimigos:** +10% a +45% (aleatório)
+- ⚠️ **Sem recarga automática** - A bateria não recarrega passivamente
+- **Game Over acontece se:** Vida = 0 OU Bateria = 0 (imediato)
+
+Essas mudanças tornaram o jogo **mais estratégico**: você precisa gerenciar melhor a bateria matando inimigos!
 
 **Para instruções de setup detalhadas, veja [docs/SETUP_COMPLETO.md](docs/SETUP_COMPLETO.md)**
 
@@ -249,7 +303,8 @@ Atualizar HUD: MainMenuUIBuilder
 
 - **5 Tipos de Inimigo:** Dificuldade progressiva com comportamentos únicos
 - **Escalonamento de Dificuldade:** 3 estágios com progressão baseada em ondas
-- **Sistema de Bateria:** Gerenciamento de recursos com mecânica de drenagem
+- **Sistema de Bateria:** Drenagem 2-7% por segundo enquanto ilumina, recarrega 10-45% AO MATAR INIMIGOS
+- **Regra de Game Over:** Vida = 0 OU Bateria = 0 (imediato, sem delay)
 - **Coleta de Moeda:** 100% de queda na derrota de inimigo
 - **Sistema de Pickup:** Pickups de bateria e moeda com feedback de texto flutuante
 - **Sistema de Onda:** Spawning progressivo de inimigos com curva de dificuldade
@@ -310,17 +365,19 @@ Documentação completa está disponível na pasta `/docs/`. Comece com o índic
 
 ## Status de Desenvolvimento
 
-### Versão Atual: v1.1 (Pronto para Produção)
+### Versão Atual: v1.2.2 (Otimizações Finais)
 
-**Status de Conclusão:** 88%
+**Status de Conclusão:** 90%
 
 | Componente | Status | Última Atualização |
 |-----------|--------|-------------|
-| Gameplay Principal | ✓ Completo | 30 de Abril de 2026 |
-| Sistema de Menu | ✓ Completo | 30 de Abril de 2026 |
-| Sistema HUD | ✓ Completo | 30 de Abril de 2026 |
+| Gameplay Principal | ✓ Completo | 13 de Maio de 2026 |
+| Sistema de Menu | ✓ Completo | 11 de Maio de 2026 |
+| Sistema HUD | ✓ Completo | 13 de Maio de 2026 |
 | Sistema de Pausa | ✓ Completo | 30 de Abril de 2026 |
-| Sistema de Áudio | ✓ Completo | 30 de Abril de 2026 |
+| Sistema de Áudio | ✓ Completo | 13 de Maio de 2026 |
+| Sistema de Bateria | ✓ Completo | 13 de Maio de 2026 |
+| Background Visual | ✓ Completo | 13 de Maio de 2026 |
 | Localização | ✓ Completo | 30 de Abril de 2026 |
 | Otimização de Desempenho | ✓ Completo | 30 de Abril de 2026 |
 | Teste em Dispositivo | Em Progresso | - |
@@ -328,6 +385,8 @@ Documentação completa está disponível na pasta `/docs/`. Comece com o índic
 
 ### Histórico de Versão
 
+- **v1.2.1** (13 de Maio de 2026) - Balanceamento de bateria, game over unificado, background visual
+- **v1.2** (11 de Maio de 2026) - Redesign do menu principal com novo layout grid
 - **v1.1** (14 de Abril de 2026) - Consolidação de menu, melhorias de balanceamento
 - **v1.0** (1º de Abril de 2026) - Lançamento inicial
 - **v0.x** (Sprints anteriores) - Iterações de desenvolvimento
@@ -493,22 +552,6 @@ Recebemos contribuições! Por favor, siga estas diretrizes:
 ### Branches
 
 - `main` - Código pronto para produção
-- `develop` - Branch de integração
-- `feature/*` - Novas funcionalidades
-- `bugfix/*` - Correções de bugs
-
----
-
-## Licença
-
-GHOSTBEAM - Todos os direitos reservados (2026)
-
-**Software Proprietário**  
-Copyright © Ghost Beam Development Team. Todos os direitos reservados.
-
-Cópia, modificação ou distribuição não autorizada deste software é proibida.
-
----
 
 ## Informações do Projeto
 
@@ -517,8 +560,8 @@ Cópia, modificação ou distribuição não autorizada deste software é proibi
 **Engine:** Unity 6 LTS  
 **Plataformas:** Android, iOS, Windows  
 **Status:** Pronto para Produção  
-**Versão:** 1.1  
-**Última Atualização:** 15 de Abril de 2026
+**Versão:** 1.2.1  
+**Última Atualização:** 13 de Maio de 2026
 
 ### Contatos Importantes
 
@@ -537,6 +580,62 @@ Cópia, modificação ou distribuição não autorizada deste software é proibi
 
 ## Changelog
 
+### v1.2.2 - 13 de Maio de 2026 (Otimizações Finais)
+
+**Sistema de Intro - Fallback Automático:**
+- ✅ GameplayIntroState com `EnsureGameplayStarted()` - auto-inicia gameplay se não houver GameplayIntroFade
+- ✅ Fallback automático após 2 segundos se intro ficar travada
+- ✅ Resolve issue de fases de spawn presas em 0 segundos
+- ✅ Compatível com scenes sem animação de intro
+
+**Visual do Background - Brilho Aumentado:**
+- ✅ Global Light 2D Intensity aumentado de 0.7 → **1.3** (86% mais claro)
+- ✅ Floresta de fundo agora **completamente visível** durante gameplay
+- ✅ BackgroundConfigurator.cs atualizado com novo valor de intensidade
+- ✅ Aplicação automática de Filter Mode **Bilinear** para remover pixelação
+
+**Progressão de Spawn - Fases Aceleradas:**
+- ✅ Fases reduzidas de **60s → 40s** por fase (33% mais rápido)
+- ✅ Spawn rates 50% mais rápidos: 2.8s → **1.5s** inicial (reduz até 0.25s máximo)
+- ✅ Nova progressão:
+  - 0-40s: Penado 100% (1.8→1.5s spawn)
+  - 40-80s: Penado 38% + Ictericia 62% (1.5→1.2s spawn)
+  - 80-120s: 3 tipos (1.2→0.9s spawn)
+  - 120-160s: 4 tipos com Titã (0.9→0.6s spawn)
+  - 160s+: Espectro ondas (0.6→0.25s spawn)
+- ✅ Gameplay **mais dinâmico e arcade**
+
+**Limpeza do Setup:**
+- ✅ Removido Background duplicado do MainMenu (apenas MenuCanvas UI background)
+- ✅ AutoSetupCompleteGame.cs atualizado para não criar sprite Background redundante
+- ✅ Hierarquia mais limpa e otimizada
+
+**Verificação Completa:**
+- ✅ Todos 5 mobs (Penado, Ictericia, Ectogangue, Titã, Espectro) spawning corretamente
+- ✅ Compilação: 0 erros, 0 avisos
+- ✅ Documentação atualizada (README, ARCHITECTURE, GAME_DESIGN)
+
+### v1.2.1 - 13 de Maio de 2026
+
+**Balanceamento de Gameplay - Regra de Bateria & Game Over:**
+- ✅ **Bateria agora drena 2-7% por segundo** (variável aleatória) enquanto ilumina
+- ✅ **Bateria APENAS recarrega ao matar inimigos**: 10-45% aleatório por kill
+- ✅ Removida a recarga automática de bateria (antes recarregava ~1% por segundo)
+- ✅ **Regra de Game Over unificada:** Vida = 0 OU Bateria = 0 (imediato, sem delay)
+- ✅ **Corrigido bug:** Bateria agora dispara game over mesmo que jogador solte o botão de iluminar
+- ✅ Melhorias em AudioManager: Verificação de volume zero em celular
+- ✅ Debug logs para bateria recarregada ao matar inimigo
+
+**Background da Floresta - Sistema Visual:**
+- ✅ BackgroundConfigurator.cs - Script automático para configurar background e iluminação
+- ✅ Global Light 2D Intensity aumentado automaticamente (0 → 0.4)
+- ✅ Setup simplificado: Basta arrastar imagem no Inspector
+- ✅ Instruções de setup adicionadas: README (Setup #6)
+
+**Documentação Atualizada:**
+- ✅ GAME_DESIGN.md, ARCHITECTURE.md, README.md atualizados
+- ✅ Changelog v1.2.1 com todas as mudanças
+
 ### v1.2 - 11 de Maio de 2026
 
 **Redesign do Menu Principal:**
@@ -551,37 +650,10 @@ Cópia, modificação ou distribuição não autorizada deste software é proibi
 - ✅ Documentação: MENU_REDESIGN.md adicionado
 - ✅ Responsivo para mobile landscape (1920×1080)
 
-### v1.1 - 11 de Maio de 2026
 
-**Rebuild Completo (Abr/2026):**
-- ✅ 24 scripts reconstruídos com namespaces e organização clara
-- ✅ Estrutura Assets/_Project com 7 subpastas temáticas
-- ✅ Ferramentas de desenvolvimento: ProjectValidator, PerformanceOverlay
-- ✅ Input System migration completo: LunaController, FlashlightController, PauseController
-- ✅ Compilação limpa: 0 erros, 0 avisos críticos
-- ✅ Documentação atualizada: SETUP_RÁPIDO.md, STATUS_RECONSTRUÇÃO.md
-- ✅ Object pooling implementado (inimigos, pickups, UI)
-- ✅ Vibração integrada com SettingsManager
-- ✅ Spawn distance fix e adaptação por performance
-
-### v1.0 - 1º de Abril de 2026
-
-**Lançamento Inicial**
-- Mecânicas principais de gameplay
-- Sistema de UI básico
-- Gerenciamento de áudio
-- Otimização para celular
-
----
 
 ## Reconhecimentos
 
 - Unity Technologies pelo game engine
 - TextMesh Pro para renderização de texto
 - Feedback e testes da comunidade
-
----
-
-**Para perguntas ou suporte, consulte a documentação ou entre em contato com a equipe de desenvolvimento.**
-
-**GHOSTBEAM v1.2 - Pronto para Produção | Última Atualização: 11 de Maio de 2026 | Redesign de Menu**

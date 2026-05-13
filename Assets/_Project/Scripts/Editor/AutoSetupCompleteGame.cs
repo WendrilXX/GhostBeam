@@ -698,11 +698,11 @@ namespace GhostBeam.Editor
                 SetupMenuCamera();
                 Debug.Log("  [2/4] Camera setup");
 
-                SetupMenuBackground();
-                Debug.Log("  [3/4] Background setup");
+                // Removed duplicate Background sprite - MenuCanvas has its own UI background
+                // SetupMenuBackground();
 
                 SetupMainMenuUI();
-                Debug.Log("  [4/4] Menu UI setup");
+                Debug.Log("  [3/4] Menu UI setup");
 
                 // Save ONLY at the end
                 EditorSceneManager.SaveScene(scene, MAINMENU_SCENE_PATH);

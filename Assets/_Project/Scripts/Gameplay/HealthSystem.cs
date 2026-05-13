@@ -55,6 +55,7 @@ namespace GhostBeam.Gameplay
             if (currentHealth <= 0)
             {
                 onHealthDepleted?.Invoke();
+                Debug.Log("[HealthSystem] Health depleted - triggering game over");
                 Managers.GameManager.TriggerGameOver();
             }
         }

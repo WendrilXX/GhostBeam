@@ -7,17 +7,17 @@ namespace GhostBeam.Managers
     {
         [SerializeField] private GameObject enemyPrefab;
         [SerializeField] private int poolSize = 30;
-        [SerializeField] private float initialSpawnRate = 2.8f;
+        [SerializeField] private float initialSpawnRate = 1.5f;  // Reduzido de 2.8f para spawn mais rápido
         [SerializeField] private int maxSimultaneous = 6;
         [SerializeField] private float spawnRadius = 15f;
 
-        [Header("Espectro (fase 240s+) — ondas")]
+        [Header("Espectro (fase 160s+) — ondas")]
         [SerializeField] [Tooltip("Segundos em que Espectros podem sair no sorteio.")]
         private float spectreWindowOnSeconds = 32f;
         [SerializeField] [Tooltip("Segundos sem Espectro no sorteio (só outros tipos).")]
         private float spectreWindowOffSeconds = 48f;
         [SerializeField] [Tooltip("Tempo de jogo em que a oscilação começa (após intro).")]
-        private float spectreWavePhaseStartTime = 240f;
+        private float spectreWavePhaseStartTime = 160f;
 
         private Utilities.ObjectPool<GameObject> enemyPool;
         private float spawnTimer = 0f;
@@ -79,6 +79,12 @@ namespace GhostBeam.Managers
             if (GameManager.Instance == null || GameManager.Instance.IsPaused)
                 return;
 
+            // Ensure gameplay has started (fallback if no intro fade)
+            GameplayIntroState.EnsureGameplayStarted();
+
+            // Auto-end intro if it's stuck (fallback for scenes without GameplayIntroFade)
+            GameplayIntroState.AutoEndIntroIfStuck(2f);
+
             if (!GameplayIntroState.AllowGameplay)
                 return;
 
@@ -95,36 +101,36 @@ namespace GhostBeam.Managers
         {
             float t = GameplayIntroState.StageElapsedSeconds;
 
-            if (t < 60f)
+            if (t < 40f)
             {
                 maxSimultaneous = 4;
-                currentSpawnRate = Mathf.Lerp(3f, 2.45f, t / 60f);
+                currentSpawnRate = Mathf.Lerp(1.8f, 1.5f, t / 40f);
+            }
+            else if (t < 80f)
+            {
+                maxSimultaneous = 5;
+                float u = (t - 40f) / 40f;
+                currentSpawnRate = Mathf.Lerp(1.5f, 1.2f, u);
             }
             else if (t < 120f)
             {
-                maxSimultaneous = 5;
-                float u = (t - 60f) / 60f;
-                currentSpawnRate = Mathf.Lerp(2.45f, 2f, u);
-            }
-            else if (t < 180f)
-            {
                 maxSimultaneous = 6;
-                float u = (t - 120f) / 60f;
-                currentSpawnRate = Mathf.Lerp(2f, 1.5f, u);
+                float u = (t - 80f) / 40f;
+                currentSpawnRate = Mathf.Lerp(1.2f, 0.9f, u);
             }
-            else if (t < 240f)
+            else if (t < 160f)
             {
                 maxSimultaneous = 7;
-                float u = (t - 180f) / 60f;
-                currentSpawnRate = Mathf.Lerp(1.5f, 1.05f, u);
+                float u = (t - 120f) / 40f;
+                currentSpawnRate = Mathf.Lerp(0.9f, 0.6f, u);
             }
             else
             {
                 maxSimultaneous = 8;
-                currentSpawnRate = Mathf.Max(0.32f, 1.05f - (t - 240f) * 0.0035f);
+                currentSpawnRate = Mathf.Max(0.25f, 0.6f - (t - 160f) * 0.002f);
             }
 
-            currentSpawnRate = Mathf.Max(currentSpawnRate, 0.32f);
+            currentSpawnRate = Mathf.Max(currentSpawnRate, 0.25f);
         }
 
         private void UpdateSpawning()
@@ -133,6 +139,9 @@ namespace GhostBeam.Managers
 
             if (spawnTimer >= currentSpawnRate && currentEnemyCount < maxSimultaneous)
             {
+                float debugTime = GameplayIntroState.StageElapsedSeconds;
+                bool allowGameplay = GameplayIntroState.AllowGameplay;
+                Debug.Log($"[SpawnManager DEBUG] Time={debugTime:F1}s, AllowGameplay={allowGameplay}, Rate={currentSpawnRate:F2}s");
                 SpawnEnemy();
                 spawnTimer = 0f;
             }
@@ -149,6 +158,8 @@ namespace GhostBeam.Managers
 
             EnemyController.EnemyArchetype archetype =
                 ChooseEnemyArchetype(GameplayIntroState.StageElapsedSeconds);
+
+            Debug.Log($"[SpawnManager] Spawning: {archetype} | Time: {GameplayIntroState.StageElapsedSeconds:F1}s | Current: {currentEnemyCount}/{maxSimultaneous}");
 
             if (archetype == EnemyController.EnemyArchetype.Ectogangue && room >= 2)
             {
@@ -208,29 +219,35 @@ namespace GhostBeam.Managers
             return spawnPos;
         }
 
-        /// <summary>GDD: 0–60 só Penado; 60–120 Icterícia; 120–180 Ectogangue; 180–240 Titã; 240+ Espectro + mistura.</summary>
+        /// <summary>GDD: 0–40 só Penado; 40–80 Icterícia; 80–120 Ectogangue; 120–160 Titã; 160+ Espectro + mistura.</summary>
         private EnemyController.EnemyArchetype ChooseEnemyArchetype(float gameTime)
         {
-            if (gameTime < 60f)
-                return EnemyController.EnemyArchetype.Penado;
-
-            if (gameTime < 120f)
+            if (gameTime < 40f)
             {
+                Debug.Log($"[ChooseEnemyArchetype] Time {gameTime:F1}s < 40s → Penado only");
+                return EnemyController.EnemyArchetype.Penado;
+            }
+
+            if (gameTime < 80f)
+            {
+                Debug.Log($"[ChooseEnemyArchetype] Time {gameTime:F1}s: 40-80s phase → Penado (38%) or Ictericia (62%)");
                 return PickWeighted(
                     EnemyController.EnemyArchetype.Penado, 0.38f,
                     EnemyController.EnemyArchetype.Ictericia, 0.62f);
             }
 
-            if (gameTime < 180f)
+            if (gameTime < 120f)
             {
+                Debug.Log($"[ChooseEnemyArchetype] Time {gameTime:F1}s: 80-120s phase → Mix of 3 types");
                 return PickWeighted3(
                     EnemyController.EnemyArchetype.Penado, 0.22f,
                     EnemyController.EnemyArchetype.Ictericia, 0.28f,
                     EnemyController.EnemyArchetype.Ectogangue, 0.50f);
             }
 
-            if (gameTime < 240f)
+            if (gameTime < 160f)
             {
+                Debug.Log($"[ChooseEnemyArchetype] Time {gameTime:F1}s: 120-160s phase → Mix of 4 types with Titã");
                 return PickWeighted4(
                     EnemyController.EnemyArchetype.Penado, 0.12f,
                     EnemyController.EnemyArchetype.Ictericia, 0.18f,
@@ -238,11 +255,12 @@ namespace GhostBeam.Managers
                     EnemyController.EnemyArchetype.Tita, 0.32f);
             }
 
+            Debug.Log($"[ChooseEnemyArchetype] Time {gameTime:F1}s: 160s+ phase → Spectro waves");
             return ChooseArchetypeSpectrePhase(gameTime);
         }
 
         /// <summary>
-        /// Após 240s: alterna janelas com Espectro no pool e janelas só com os outros tipos (respiração de dificuldade).
+        /// Após 160s: alterna janelas com Espectro no pool e janelas só com os outros tipos (respiração de dificuldade).
         /// </summary>
         private EnemyController.EnemyArchetype ChooseArchetypeSpectrePhase(float gameTime)
         {
