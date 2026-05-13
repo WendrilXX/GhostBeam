@@ -21,10 +21,10 @@
 
 | Plataforma | Versão | Status | Download |
 |-----------|--------|--------|----------|
-| **Android (APK)** | 1.2.3 | ✅ Pronto | [Baixar APK](https://github.com/WendrilXX/GhostBeam/releases/download/v1.2.3/ghostbeam-v1.2.3.apk) |
+| **Android (APK)** | 1.2.3 | ✅ Pronto | [Baixar APK](https://github.com/WendrilXX/GhostBeam/releases/tag/V1.2.3) |
 | **Android (AAB)** | 1.2.3 | ✅ Disponível | Google Play Store (em breve) |
 | **iOS** | 1.2.3 | ⏳ Em Preparação | App Store (em breve) |
-| **Windows** | 1.2.3 | ✅ Pronto | [Executável](https://github.com/WendrilXX/GhostBeam/releases/download/v1.2.3/ghostbeam-v1.2.3.zip) |
+| **Windows** | 1.2.3 | ✅ Pronto | [Executável](https://github.com/WendrilXX/GhostBeam/releases/tag/V1.2.3) |
 
 ### 🚀 Como Instalar o APK
 
