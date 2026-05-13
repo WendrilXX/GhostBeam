@@ -1,6 +1,6 @@
 # GHOSTBEAM - Arcade de Sobrevivência 2D
 
-**Versão:** 1.2.2  
+**Versão:** 1.2.3  
 **Status:** Pronto para Produção  
 **Última Atualização:** 13 de Maio de 2026
 
@@ -27,6 +27,7 @@ GHOSTBEAM é um jogo arcade de sobrevivência 2D para celular onde o jogador con
 | Menu de Configurações | ✓ Completo | Controle de volume, alternância de vibração |
 | Tela de Game Over | ✓ Completo | Detecção automática, reiniciar, retornar ao menu |
 | HUD do Jogo | ✓ Completo | Barra de saúde, pontuação, timer, onda, moedas, bateria |
+| Botão de Pausa | ✓ Completo | Centro superior da tela, ícone ⏸ |
 | Localização | ✓ Completo | Português (PT-BR) |
 | Background da Floresta | ✓ Completo | Fundo visível com iluminação configurável |
 | Desempenho | ✓ Completo | 60 FPS estável, otimizado para celular |
@@ -149,34 +150,6 @@ Essas mudanças tornaram o jogo **mais estratégico**: você precisa gerenciar m
 - **Plataformas Alvo:** Android 5.0+, iOS 11.0+, Windows Desktop
 
 ---
-
-## Instalação
-
-### Clonar o Repositório
-
-```bash
-git clone <repository-url>
-cd GhostBeam
-```
-
-### Abrir no Unity
-
-1. Abra Unity Hub
-2. Selecione "Abrir Projeto"
-3. Navegue até a pasta GhostBeam
-4. Unity carregará o projeto (primeira carga pode levar alguns minutos)
-
-### Verificar Instalação
-
-Execute o seguinte no console:
-```csharp
-// Teste 1: Verificar GameManager
-Debug.Assert(GameManager.Instance != null, "GameManager não encontrado");
-
-// Teste 2: Verificar gerenciadores necessários
-Debug.Assert(HealthSystem.Instance != null, "HealthSystem não encontrado");
-Debug.Assert(ScoreManager.Instance != null, "ScoreManager não encontrado");
-```
 
 ---
 
@@ -406,185 +379,47 @@ Documentação completa está disponível na pasta `/docs/`. Comece com o índic
 1. **Teste em Dispositivo Real** - Validar em 5+ dispositivos Android/iOS
 2. **Perfil de Desempenho** - Garantir 60 FPS estável em todos os dispositivos
 3. **Expansão de Conteúdo** - Skins adicionais, cosméticos
+
 ---
 
-## Build & Implantação
+## 📱 Downloads & Releases
 
-### Build para Android
+### ✅ Versão Pronta para Download
 
-```bash
-# 1. Defina a plataforma alvo
-Unity → File → Build Settings → Android
+| Plataforma | Versão | Status | Download |
+|-----------|--------|--------|----------|
+| **Android (APK)** | 1.2.3 | ✅ Pronto | [Baixar APK](https://github.com/WendrilXX/GhostBeam/releases/download/v1.2.3/ghostbeam-v1.2.3.apk) |
+| **Android (AAB)** | 1.2.3 | ✅ Disponível | Google Play Store (em breve) |
+| **iOS** | 1.2.3 | ⏳ Em Preparação | App Store (em breve) |
+| **Windows** | 1.2.3 | ✅ Pronto | [Executável](https://github.com/WendrilXX/GhostBeam/releases/download/v1.2.3/ghostbeam-v1.2.3.zip) |
 
-# 2. Configure as configurações de build
-- Orientação: Paisagem
-- Nível de API: 21+ (mínimo)
-- Arquitetura: ARMv7 + ARM64
+### 🚀 Como Instalar o APK
 
-# 3. Build APK/AAB
-- Build de desenvolvimento: Para testes
-- Build de lançamento: Para app store
-```
+1. **Baixar o arquivo APK**
+2. **Transferir para seu dispositivo Android**
+3. **Habilitar instalação de fontes desconhecidas** (Configurações → Segurança)
+4. **Tocar no arquivo APK para instalar**
+5. **Pronto! Começar a jogar**
 
-### Build para iOS
-
-```bash
-# 1. Defina a plataforma alvo
-Unity → File → Build Settings → iOS
-
-# 2. Configure as configurações de build
-- Orientação: Paisagem
-- iOS alvo: 11.0+
-- Arquitetura: ARM64
-
-# 3. Build e abra no Xcode
-- Configure a assinatura de código
-- Selecione a equipe de desenvolvimento/distribuição
-- Build e implante
-```
-
-### Build para Windows
-
-```bash
-# 1. Defina a plataforma alvo
-Unity → File → Build Settings → Windows
-
-# 2. Configure as configurações de build
-- Resolução: 1920x1080
-- Standalone: Sim
-
-# 3. Build do executável
-```
-
-### Configuração de Ambiente
-
-```bash
-# Instale as ferramentas de build necessárias
-- Unity 2023 LTS ou superior
-- Android SDK & NDK (para builds Android)
-- Xcode 12+ (para builds iOS)
 ---
 
-## Suporte & Resolução de Problemas
-
-### Problemas Comuns
-
-#### Botões Não Clicáveis
-
-**Problema:** Botões de UI não respondem a cliques/toques  
-**Solução:**
-1. Verifique se EventSystem existe na Hierarquia
-2. MainMenuUIBuilder deve criá-lo automaticamente
-3. Se estiver faltando, adicione manualmente: Clique direito Hierarquia → UI → Event System
-
-#### HUD Não Exibindo Valores
-
-**Problema:** HUD mostra valores padrão/vazios  
-**Solução:**
-1. Verifique se existem na cena: GameManager, HealthSystem, ScoreManager, BatterySystem
-2. Verifique se MainMenuUIBuilder está anexado ao UIRoot
-3. Console não deve mostrar erros - verifique a saída Debug.Log
-
-#### Jogo Congela na Inicialização
-
-**Problema:** Jogo trava durante a inicialização  
-**Solução:**
-1. Verifique se todos os Singletons inicializam corretamente
-2. Verifique se nenhum script tem loops infinitos em Start()
-3. Verifique referências de script faltantes
-
-#### Problemas de Desempenho (FPS Baixo)
-
-**Problema:** Jogo roda abaixo de 60 FPS  
-**Solução:**
-1. Use Profiler: Window → Analysis → Profiler
-2. Verifique alocação excessiva de lixo
-3. Verifique se sistemas de partículas estão otimizados
-4. Reduza a contagem de inimigos ou distância de renderização se necessário
-
-### Obtendo Ajuda
-
-1. **Verifique a Documentação:** [docs/INDEX.md](docs/INDEX.md) para guias abrangentes
-2. **Revise a Arquitetura:** [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) para detalhes do sistema
-3. **Erros do Console:** Verifique o Console do Unity para mensagens de erro e rastreamentos de pilha
-4. **Problemas Conhecidos:** Veja [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md)
-
-### Reportar Problemas
-
-Ao reportar um problema, inclua:
-- Versão do Unity usada
-- Plataforma alvo (Android, iOS, Windows)
-- Passos para reproduzir
-- Screenshots/vídeo se aplicável
----
-
-## Contribuindo
-
-Recebemos contribuições! Por favor, siga estas diretrizes:
-
-### Fluxo de Trabalho de Desenvolvimento
-
-1. **Leia a Documentação**
-   - Comece com [SETUP_COMPLETO.md](docs/SETUP_COMPLETO.md)
-   - Revise [ARCHITECTURE.md](docs/ARCHITECTURE.md)
-
-2. **Crie uma Branch de Funcionalidade**
-   ```bash
-   git checkout -b feature/seu-nome-da-funcionalidade
-   ```
-
-3. **Siga Padrões de Código**
-   - Convenções de codificação C#
-   - Nomenclatura consistente (PascalCase para classes, camelCase para variáveis)
-   - Comente métodos públicos e lógica complexa
-   - Sem avisos de compilador
-
-4. **Teste Completamente**
-   - Teste no editor
-   - Teste em plataformas alvo (Android/iOS)
-   - Verifique desempenho (60 FPS)
-   - Verifique console para erros/avisos
-
-5. **Envie Pull Request**
-   - Descrição clara das mudanças
-   - Link para problemas relevantes
-   - Screenshots/vídeos para mudanças de UI
-   - Resultados de teste em todas as plataformas
-
-### Padrões de Código
+## Padrões de Código
 
 - **Linguagem:** C# (.NET)
 - **Versão Unity:** 2023 LTS+
 - **Formatação:** Use .editorconfig se disponível
 - **Comentários:** Documentação em inglês com intenção clara
 - **Testes:** Testes unitários para sistemas críticos
+- **Convenções:** PascalCase para classes, camelCase para variáveis
+- **Sem avisos de compilador**
 
-### Branches
+## Links Importantes
 
-- `main` - Código pronto para produção
-
-## Informações do Projeto
-
-**Nome do Projeto:** GHOSTBEAM  
-**Tipo:** Jogo Arcade 2D de Sobrevivência para Celular  
-**Engine:** Unity 6 LTS  
-**Plataformas:** Android, iOS, Windows  
-**Status:** Pronto para Produção  
-**Versão:** 1.2.1  
-**Última Atualização:** 13 de Maio de 2026
-
-### Contatos Importantes
-
-- **Líder de Projeto:** [Contato da Equipe]
-- **Líder Técnico:** [Contato da Equipe]  
-- **Líder de Design:** [Contato da Equipe]
-
-### Links Importantes
-
-- **Documentação:** [docs/INDEX.md](docs/INDEX.md)
-- **Arquitetura:** [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- **Documentação Geral:** [docs/INDEX.md](docs/INDEX.md)
+- **Arquitetura Técnica:** [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - **Design do Jogo:** [docs/GAME_DESIGN.md](docs/GAME_DESIGN.md)
-- **Cronograma:** [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md)
+- **Game Design Document:** [GDD (1).pdf](GDD%20(1).pdf)
+- **Cronograma & Status:** [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md)
 
 ---
 

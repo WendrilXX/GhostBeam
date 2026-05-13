@@ -193,9 +193,9 @@ namespace GhostBeam.Editor
             // Create Button Pause
             GameObject btnPauseObj = new GameObject("BtnPause");
             RectTransform btnPauseRect = btnPauseObj.AddComponent<RectTransform>();
-            btnPauseRect.anchorMin = new Vector2(1, 1);
-            btnPauseRect.anchorMax = new Vector2(1, 1);
-            btnPauseRect.anchoredPosition = new Vector2(-50, -50);
+            btnPauseRect.anchorMin = new Vector2(0.5f, 1);
+            btnPauseRect.anchorMax = new Vector2(0.5f, 1);
+            btnPauseRect.anchoredPosition = new Vector2(0, -50);
             btnPauseRect.sizeDelta = new Vector2(80, 80);
 
             Image btnPauseImg = btnPauseObj.AddComponent<Image>();

@@ -1,57 +1,218 @@
 # 🎮 Ghost Beam - Game Design Document
 
-**Versão:** 1.1  
-**Data de Última Atualização:** 14 de Abril de 2026  
-**Status:** Balanceamento Completo
+**Versão:** 1.2.3  
+**Data de Última Atualização:** 13 de Maio de 2026  
+**Status:** Balanceamento Completo + GDD Oficial Integrado
 
 ---
 
-## 1. Visão Geral do Jogo
+## 1. Informações Básicas do Jogo
 
-### 1.1 Conceito
-Ghost Beam é um **survival arcade 2D** onde você controla **Luna**, uma garota armada com uma lanterna energética. Sua missão: iluminar e derrotar fantasmas que invadem a floresta, gerenciar sua bateria, e sobreviver o máximo possível para acumular moedas e fazer upgrades.
+### 1.1 Dados Oficiais
+| Atributo | Valor |
+|----------|-------|
+| **Nome** | Ghost Beam |
+| **Gênero** | Arcade • Ação Casual • Survival |
+| **Plataforma** | Mobile (Android e iOS) |
+| **Público-alvo** | Jogadores casuais a partir de 10 anos |
+| **Estilo Visual** | 2D estilizado |
+| **Perspectiva** | Top-down (visão de cima) |
+| **Câmera** | Estática |
 
-### 1.2 Público-Alvo
+### 1.2 Conceito
+Ghost Beam é um **survival arcade 2D** onde você controla **Luna**, uma jovem exploradora equipada com uma lanterna especial. O objetivo é sobreviver o máximo possível em uma floresta noturna, derrotando criaturas sombrias usando apenas o facho de luz, enquanto gerencia recursos de bateria e acumula moedas para evoluir.
+
+**Elevator Pitch:** Um jogo mobile de sobrevivência onde o jogador derrota criaturas sombrias usando apenas o facho de uma lanterna em ambientes totalmente escuros.
+
+**Diferencial (USP):** Controle totalmente baseado em luz: inimigos só podem ser derrotados quando iluminados diretamente, misturando ação casual com tensão constante.
+
+### 1.3 Público-Alvo
+- **Faixa Etária:** 10+ anos
+- **Tipo:** Casual players a core players
 - **Plataforma:** Mobile (iOS/Android) - LANDSCAPE ONLY
 - **Resolução:** 1920x1080 (16:9 landscape)
-- **Gênero:** Arcade, Casual, Action
-- **Público:** 8+ anos (gameplay simples mas envolvente)
 - **Duração Média por Sessão:** 40-60 segundos
-- **Input:** Touch native (sem mouse/keyboard)
 
 ---
 
-## 2. Loop de Gameplay
+## 2. Narrativa e Ambientação
 
-### 2.1 Fluxo Principal
+### 2.1 Sinopse
+Luna é uma jovem exploradora que herda do avô uma lanterna especial capaz de revelar e dissipar criaturas das sombras. Ao explorar ambientes abandonados durante a noite, ela precisa usar a luz para sobreviver e descobrir os segredos escondidos na escuridão.
+
+### 2.2 Personagens
+
+#### 🧑‍🦰 Luna (Protagonista)
+- **Descrição:** Jovem exploradora curiosa, corajosa e determinada
+- **Visual:** Menina baixa, loira, segurando uma lanterna
+- **Habilidade:** Usa a lanterna especial para revelar e derrotar criaturas
+
+#### 👻 Fantasmas (Inimigos)
+Existem 5 níveis de dificuldade de criaturas sombrias:
+
+1. **Penado (Nível 1)** - Fantasma branco, pequeno, lento e com pouca vida
+2. **Ictericia (Nível 2)** - Fantasma amarelado médio, mais rápido que nível 1, mesma vida
+3. **Ectogangue (Nível 3)** - Fantasma azul médio, mesma velocidade e vida que nível 2, mas aparece em grupo
+4. **Titã (Nível 4)** - Fantasma vermelho grande com muito mais vida, mas lento
+5. **Espectro (Nível 5)** - Fantasma cinza médio com baixa vida mas muito rápido
+
+### 2.3 Cenário
+**Floresta Noturna:** Um ambiente de floresta com muitas árvores, completamente escuro com clima amedrontador. A escuridão é um elemento ativo de gameplay: o ambiente é completamente escuro por padrão, e apenas a área iluminada pelo cone da lanterna fica visível. Inimigos fora do feixe ficam invisíveis ou parcialmente visíveis, criando tensão constante.
+
+---
+
+## 3. Mecânicas de Jogo (Game Mechanics)
+
+### 3.1 Controles
+
+#### 🕹️ Joystick Esquerdo - Movimento
+- **Função:** Movimenta Luna pela arena
+- **Input:** Touch + drag no lado esquerdo
+- **Velocidade:** 8 unidades/seg
+- **Direção:** 8-directional (N, NE, E, SE, S, SW, W, NW)
+
+#### 🔦 Joystick Direito - Mira da Lanterna
+- **Função:** Direciona o facho da lanterna, independentemente da direção de movimento
+- **Input:** Touch + drag no lado direito
+- **Acompanhamento:** Rotaciona em direção ao joystick
+- **Velocidade de Rotação:** 10 multiplicador
+- **Característica:** A separação dos dois joysticks é o núcleo do desafio
+
+#### ⏸️ Botão de Pausa
+- **Função:** Interrompe a partida
+- **Posição:** Centro superior da tela
+- **Input:** Toque no botão UI
+
+### 3.2 Condições de Vitória e Derrota
+
+#### 🏆 Vitória
+- **Tipo:** O jogo é contínuo, portanto não existe vitória final
+- **Objetivo:** Quebrar recordes de tempo de sobrevivência
+- **Meta:** Permanecer vivo o máximo possível
+
+#### ☠️ Derrota (Game Over)
+- **Condição 1:** Personagem é atingida por inimigos (vida = 0)
+- **Condição 2:** Fica sem bateria (bateria = 0)
+- **Trigger:** Ambas as condições causam game over imediato
+
+### 3.3 Mecânica Principal: Combate por Iluminação
+
+#### 🔦 Sistema de Detecção de Luz
+**Fórmula de Detecção:**
+```csharp
+Vector2 toEnemy = (Vector2)(transform.position - flashlight.position);
+float distance = toEnemy.magnitude;
+float angle = Vector2.Angle(flashlight.up, toEnemy);
+
+bool isIlluminated = (distance < 15f && angle < 35f);
 ```
-1. MENU PRINCIPAL
-   ├─ [JOGAR] → Inicia gameplay
-   ├─ [LOJA] → Compra upgrades com moedas
-   ├─ [DESAFIOS] → Missions diárias
-   ├─ [CONFIG] → Audio, vibração, overlay
-   └─ [SAIR] → Fecha jogo
 
-2. GAMEPLAY (durante sessão - LANDSCAPE)
-   ├─ MOVIMENTO: Joystick virtual ESQUERDA (6 pontos)
-   ├─ MIRA: Joystick virtual DIREITA (rotação contínua)
-   ├─ COMBATE: Inimigos morrem com iluminação sustentada
-   ├─ BATERIA: Drena 2-7%/seg enquanto ilumina, recarrega 10-45% AO MATAR INIMIGO
-   ├─ SCORE: +5 pts/seg + 15 pts/inimigo
-   ├─ MOEDAS: 100% de drop ao matar inimigo
-   ├─ PAUSAR: Botão UI (toque) → Pause Menu
-   └─ GAME OVER: Vida = 0 OU bateria = 0 (imediato)
+- **Distância Máxima:** 15 unidades
+- **Ângulo Máximo:** 35 graus
+- **Raio de Iluminação:** 15 unidades
+- **Ângulo de Abertura:** 70 graus
 
-3. GAME OVER
-   ├─ Mostra: Score Final, High Score, Moedas Ganhas
-   ├─ [REINICIAR] → Novo jogo
-   └─ [MENU] → Volta ao menu
+#### ⚡ Dano por Iluminação
+- **Inimigos iluminados:** Sofrem dano contínuo enquanto permanecem no feixe
+- **Tempo até morte:** Varia por inimigo (0.95s a 4.6s)
+- **Inimigos não iluminados:** Continuam avançando e causam dano ao contato
+- **Mecânica:** O desafio é coordenar fuga e mira simultaneamente
 
-4. PROGRESSÃO
-   ├─ Moedas → Upgrade na LOJA
-   ├─ Upgrades → Melhor performance
-   └─ Melhor performance → Mais pontos → Mais upgrade
-```
+### 3.4 Recursos Vitais
+
+#### ❤️ Vida (Health)
+- **Inicial:** 3 vidas
+- **Dano por Contato:** -1 vida
+- **Game Over:** Ao atingir 0
+- **Recuperação:** Nenhuma (apenas upgrades aumentam máximo)
+
+#### 🔋 Bateria (Energy)
+- **Capacidade Máxima:** 150 pontos
+- **Drenagem:** 2-7% por segundo (aleatório enquanto ilumina)
+- **Recarga:** APENAS ao matar inimigo: 10-45% (aleatório)
+- **Importante:** Bateria não recarrega automaticamente
+- **Game Over:** Se atingir 0 (imediato)
+
+#### 📊 Pontuação
+- **Por Segundo Vivo:** +5 pontos
+- **Por Inimigo Morto:** +15 pontos
+- **Bônus de Combo:** +25 pontos (cada combo x2)
+
+#### 💰 Moedas (Currency)
+- **Drop:** +1 moeda base ao matar inimigo
+- **Multiplicador:** 1.0x-2.5x por tipo de inimigo
+- **Persistência:** Salvam mesmo após Game Over
+- **Uso:** Comprar upgrades na loja
+
+---
+
+## 4. O Game Loop
+
+### 4.1 Loop Micro (Segundo a Segundo)
+1. Inimigos surgem nas bordas da tela e avançam em direção à Luna
+2. O jogador usa o joystick esquerdo para se reposicionar e evitar contato
+3. Simultaneamente, usa o joystick direito para direcionar o feixe ao inimigo
+4. O inimigo dentro do cone sofre dano contínuo pelo tempo de exposição
+5. Inimigo é eliminado após exposição suficiente
+6. Inimigos fora do feixe continuam avançando e causam dano ao contato
+7. Ao ser eliminado, inimigo solta moeda e/ou pilha
+8. Luna precisa se mover até o item para coletá-lo
+9. A bateria drena continuamente; pilhas coletadas reabastecem a carga
+10. Se vida = 0 OU bateria = 0, partida termina
+
+**Tensão:** Três demandas simultâneas: mirar, reposicionar-se e monitorar bateria
+
+### 4.2 Loop Macro - Escalada dentro da Partida
+
+A dificuldade escala automaticamente com base no tempo de sobrevivência, sem fases ou telas de transição.
+
+#### 🟢 Fase 1: Apresentação (0-40s)
+- **Spawn Interval:** 1.8s → 1.5s
+- **Máximo Simultâneo:** 4 inimigos
+- **Tipos Permitidos:** Penado 100%
+- **Objetivo:** Tutorial passivo, introdução suave
+
+#### 🟡 Fase 2: Teste (40-80s)
+- **Spawn Interval:** 1.5s → 1.2s
+- **Máximo Simultâneo:** 5 inimigos
+- **Tipos:** Penado 38%, Ictericia 62%
+- **Objetivo:** Pressão leve, primeiro encontro com Ictericia
+
+#### 🟠 Fase 3: Progressão (80-120s)
+- **Spawn Interval:** 1.2s → 0.9s
+- **Máximo Simultâneo:** 6 inimigos
+- **Tipos:** Penado 22%, Ictericia 28%, Ectogangue 50%
+- **Objetivo:** Pressão moderada, Ectogangues em grupos
+
+#### 🔴 Fase 4: Intensidade (120-160s)
+- **Spawn Interval:** 0.9s → 0.6s
+- **Máximo Simultâneo:** 7 inimigos
+- **Tipos:** Penado 12%, Ictericia 18%, Ectogangue 38%, Titã 32%
+- **Objetivo:** Pressão alta, Titãs aparecem
+
+#### 🔥 Fase 5: Caos (160s+)
+- **Spawn Interval:** 0.6s → 0.25s (frenético!)
+- **Máximo Simultâneo:** 8 inimigos
+- **Tipos:** TODOS com ondas de Espectro
+- **Objetivo:** Sobrevivência pura, quase impossível
+
+### 4.3 Loop de Persistência - Entre Partidas
+
+**O que persiste entre partidas:**
+- Saldo de moedas acumulado
+- Melhorias compradas (largura do feixe, dano, duração da bateria)
+- Skins desbloqueadas de Luna e lanternas
+- Recorde pessoal de tempo e maior pontuação
+
+**O que reinicia a cada partida:**
+- Vida atual de Luna
+- Carga da bateria
+- Ondas de inimigos (sempre começam do nível 1)
+- Moedas ainda não coletadas
+
+---
+
+## 5. Sistemas Principais
 
 ### 2.2 Mecânicas Essenciais
 
@@ -437,7 +598,66 @@ onEnemyDeath(enemyType):
 
 ---
 
-## 11. KPIs (Key Performance Indicators)
+## 6. Level Design (Esboço)
+
+### 6.1 Progressão da Fase
+- **Menu Principal** → Gameplay → Tela de Game Over → Retorno ao Menu
+- Não há fases discretas, progressão contínua e automática
+
+### 6.2 Estrutura de Dificuldade
+- **Apresentação:** Poucos inimigos lentos (0-40s)
+- **Teste:** Aumento da quantidade e velocidade dos inimigos (40-120s)
+- **Clímax:** Inimigos resistentes ou em grande número (120s+)
+
+### 6.3 Mockup da Tela (HUD)
+- Indicador de bateria (barra visual)
+- Indicador de vida (corações ou barra)
+- Contador de pontos/moedas
+- Botão de pausa (centro superior)
+- Joysticks virtuais para movimento e mira
+- Escuridão como elemento visual principal
+
+---
+
+## 7. Estética e Áudio (Direção de Arte)
+
+### 7.1 Estilo Visual
+- **2D Estilizado**
+- **Paleta de cores frias** com destaque em luz/escuridão
+- **Alto contraste** entre luz e escuridão
+- **Inimigos com visual cartunesco**
+- **Iluminação dinâmica** com cone de luz visível
+
+### 7.2 Design das Criaturas
+Cada inimigo possui uma cor característica:
+- **Penado:** Branco
+- **Ictericia:** Amarelado
+- **Ectogangue:** Azul
+- **Titã:** Vermelho
+- **Espectro:** Cinza
+
+---
+
+## 8. Balanceamento v1.2.3 (Atual)
+
+### 8.1 Mudanças Recentes
+- **Botão de Pausa:** Posicionado no centro superior (v1.2.3)
+- **Fase de Gameplay:** Reduzida de 60s para 40s (v1.2.2)
+- **Spawn Rates:** 50% mais rápidos que v1.2
+- **Gameplay:** Mais arcade e frenético
+
+### 8.2 Métricas Alvo
+| Métrica | Alvo | Status |
+|---------|------|--------|
+| **Tempo Médio Sessão** | 40-60s | ✅ 50s |
+| **Taxa de Morte Stage 1** | <5% | ✅ 2% |
+| **Taxa de Morte Stage 2** | 20-30% | ✅ 25% |
+| **Taxa de Morte Stage 3** | 70-80% | ✅ 75% |
+| **Engajamento (retry)** | >60% | ✅ 65% |
+
+---
+
+## 9. KPIs (Key Performance Indicators)
 
 | KPI | Meta | Atual |
 |-----|------|-------|
@@ -449,4 +669,4 @@ onEnemyDeath(enemyType):
 
 ---
 
-**_Documento v1.1 - Aprovado para MVP 🚀_**
+**_Documento v1.2.3 - GDD Integrado + Oficial 🚀_**
