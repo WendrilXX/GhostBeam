@@ -24,7 +24,6 @@ GHOSTBEAM é um jogo arcade de sobrevivência 2D para celular onde o jogador con
 | Funcionalidade | Status | Detalhes |
 |--------|--------|---------|
 | Sistema de Menu Principal | ✓ Completo | Jogar, Loja, Configurações, Sair |
-| Sistema de Pausa | ✓ Completo | Tecla ESC + menu de pausa na UI |
 | Menu de Configurações | ✓ Completo | Controle de volume, alternância de vibração |
 | Tela de Game Over | ✓ Completo | Detecção automática, reiniciar, retornar ao menu |
 | HUD do Jogo | ✓ Completo | Barra de saúde, pontuação, timer, onda, moedas, bateria |
@@ -38,16 +37,17 @@ GHOSTBEAM é um jogo arcade de sobrevivência 2D para celular onde o jogador con
 
 ## Índice
 
-1. [Início Rápido](#início-rápido)
-2. [Requisitos do Sistema](#requisitos-do-sistema)
-3. [Instalação](#instalação)
-4. [Estrutura do Projeto](#estrutura-do-projeto)
-5. [Arquitetura](#arquitetura)
-6. [Funcionalidades](#funcionalidades)
-7. [Documentação](#documentação)
-8. [Status de Desenvolvimento](#status-de-desenvolvimento)
-9. [Build & Implantação](#build--implantação)
-10. [Suporte & Resolução de Problemas](#suporte--resolução-de-problemas)
+1. [GDD - Game Design Document](#gdd---game-design-document)
+2. [Início Rápido](#início-rápido)
+3. [Requisitos do Sistema](#requisitos-do-sistema)
+4. [Instalação](#instalação)
+5. [Estrutura do Projeto](#estrutura-do-projeto)
+6. [Arquitetura](#arquitetura)
+7. [Funcionalidades](#funcionalidades)
+8. [Documentação](#documentação)
+9. [Status de Desenvolvimento](#status-de-desenvolvimento)
+10. [Build & Implantação](#build--implantação)
+11. [Suporte & Resolução de Problemas](#suporte--resolução-de-problemas)
 
 ---
 
